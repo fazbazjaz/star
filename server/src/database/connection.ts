@@ -1,4 +1,4 @@
-import dotenvFlow from 'dotenv-flow';
+import dotenvFlow from "dotenv-flow";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
@@ -16,21 +16,23 @@ export const pool = new Pool({
 export const database = drizzle(pool);
 
 // These log messages about the Database Connection
-pool.on("connect", () => {
-  console.log("Database: Connection established with the Database");
-});
+if (process.env.NODE_ENV !== "test") {
+  pool.on("connect", () => {
+    console.log("Database: Connection established with the Database");
+  });
 
-pool.on("acquire", () => {
-  console.log("Database: Connection acquired from the Pool");
-});
+  pool.on("acquire", () => {
+    console.log("Database: Connection acquired from the Pool");
+  });
 
-pool.on("remove", () => {
-  console.log("Database: Connection removed from the Pool");
-});
+  pool.on("remove", () => {
+    console.log("Database: Connection removed from the Pool");
+  });
 
-pool.on("error", (error) => {
-  console.log(
-    "Database: Error occurred in a Connection from the Pool",
-    error.message
-  );
-});
+  pool.on("error", (error) => {
+    console.log(
+      "Database: Error occurred in a Connection from the Pool",
+      error.message
+    );
+  });
+}
