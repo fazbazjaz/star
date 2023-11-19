@@ -1,6 +1,6 @@
-import "dotenv/config";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import 'dotenv/config';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
 
 export const pool = new Pool({
   host: process.env.DATABASE_HOST,
@@ -8,27 +8,27 @@ export const pool = new Pool({
   user: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
-  connectionString: process.env.DATABASE_CONNECTION_STRING,
+  connectionString: process.env.DATABASE_CONNECTION_STRING
 });
 
 export const database = drizzle(pool);
 
 // These log messages about the Database Connection
-pool.on("connect", () => {
-  console.log("Database: Connection established with the Database");
+pool.on('connect', () => {
+  console.log('Database: Connection established with the Database');
 });
 
-pool.on("acquire", () => {
-  console.log("Database: Connection acquired from the Pool");
+pool.on('acquire', () => {
+  console.log('Database: Connection acquired from the Pool');
 });
 
-pool.on("remove", () => {
-  console.log("Database: Connection removed from the Pool");
+pool.on('remove', () => {
+  console.log('Database: Connection removed from the Pool');
 });
 
-pool.on("error", (error) => {
+pool.on('error', (error) => {
   console.log(
-    "Database: Error occurred in a Connection from the Pool",
+    'Database: Error occurred in a Connection from the Pool',
     error.message
   );
 });
