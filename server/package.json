@@ -10,7 +10,7 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "dev": "ts-node-dev src/index.ts",
-    "prettier": "node node_modules/prettier/bin/prettier.cjs --config .prettierrc src/**/*.ts --write",
+    "prettier": "node node_modules/prettier/bin/prettier.cjs --config .prettierrc . --write",
     "lint:fix": " node node_modules/eslint/bin/eslint.js . --fix",
     "database:migration:check": "drizzle-kit check:pg",
     "database:update:metadata": "drizzle-kit up:pg",
