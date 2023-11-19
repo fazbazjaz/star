@@ -1,6 +1,8 @@
-import "dotenv/config";
+import dotenvFlow from 'dotenv-flow';
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
+
+dotenvFlow.config();
 
 export const pool = new Pool({
   host: process.env.DATABASE_HOST,
