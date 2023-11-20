@@ -35,10 +35,16 @@ DATABASE_NAME=star_test
 
 ```
 
-### 3. Apply a Migration to the Test Database
+### 3. Apply a Migration the Test Database
 
-- `NODE_ENV=test npm run database:migration`
+- Open a Terminal and change to the `server` directory
 
-### 4. Run the Tests
+  - `cd server`
+
+- Now run the following command in that Terminal
+
+  - `NODE_ENV=test npm run database:migration`
+
+### 5. Run the Tests
 
 - `npm run test`
