@@ -8,11 +8,11 @@ const Navigation = () => {
   const { token, user } = useContext(AuthContext);
   return (
     <Box
-      border={1}
+      display={"flex"}
+      justifyContent={"space-between"}
       px={1}
       py={1}
-      display={"flex"}
-      justifyContent={"space-between"}>
+      border={1}>
       <Box display={"flex"} gap={1}>
         <Button component={NavLink} to={"/"} variant="contained">
           Home
