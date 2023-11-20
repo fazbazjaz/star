@@ -1,5 +1,5 @@
-import AuthProvider from "../context/AuthContext";
 import { Outlet } from "react-router-dom";
+import AuthProvider from "../context/AuthContext";
 import AuthState from "../components/AuthState";
 import Header from "../components/Header";
 import Navigation from "../components/Navigation";
