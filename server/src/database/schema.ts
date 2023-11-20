@@ -1,4 +1,9 @@
 import { pgTable, serial, varchar, timestamp } from "drizzle-orm/pg-core";
+import { InferSelectModel, InferInsertModel } from "drizzle-orm";
+
+// User Types
+export type SelectUserType = InferSelectModel<typeof users>;
+export type InsertUserType = InferInsertModel<typeof users>;
 
 // Users Table
 export const users = pgTable("users", {
