@@ -1,4 +1,5 @@
 export default {
   preset: "ts-jest",
-  testEnvironment: "node"
+  testEnvironment: "node",
+  testMatch: ["<rootDir>/src/tests/**/*.test.ts"]
 };
