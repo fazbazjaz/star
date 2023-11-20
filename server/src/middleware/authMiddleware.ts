@@ -1,5 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { Secret } from "jsonwebtoken";
+import { CustomJWTPayload } from "../types/types";
+
+// Add a new key to the Express Request interface
+declare module "express" {
+  interface Request {
+    customJWTPayload?: CustomJWTPayload;
+  }
+}
 
 export const authMiddleware = (
   req: Request,
@@ -32,21 +40,18 @@ export const authMiddleware = (
   }
 
   // Verify the customJWT
-  const verifyCustomJWT = jwt.verify(
+  const verifiedCustomJWT = jwt.verify(
     customJWT,
     process.env.JWT_SECRET as Secret
   );
-  // console.log("authMiddleware verifyCustomJWT:", verifyCustomJWT);
+  // console.log("authMiddleware verifiedCustomJWT:", verifiedCustomJWT);
 
-  if (!verifyCustomJWT) {
+  if (!verifiedCustomJWT || typeof verifiedCustomJWT === "string") {
     return res.status(401).json({ error: "Unauthorized - Invalid JWT" });
   }
 
-  const decodedCustomJWT = jwt.decode(customJWT);
-  console.log("decodedCustomJWT:", decodedCustomJWT);
-
   // store the User Information from the Payload in a User Property on the Request Object
-  // req.user = decodedCustomJWT;
+  req.customJWTPayload = verifiedCustomJWT as CustomJWTPayload;
 
   // all the checks have passed Authorize the Request
   next();

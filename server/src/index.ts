@@ -4,6 +4,7 @@ import cors from "cors";
 
 import { usersRouter } from "./routes/usersRoutes";
 import { authRouter } from "./routes/authRoutes";
+import { questionsRouter } from "./routes/questionsRouter";
 
 dotenvFlow.config();
 
@@ -19,6 +20,7 @@ app.get("/api", (req: Request, res: Response) => {
 
 app.use("/api/users", usersRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/questions", questionsRouter);
 
 export const server = app.listen(process.env.SERVER_PORT, () => {
   console.log(
