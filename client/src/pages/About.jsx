@@ -1,13 +1,8 @@
 import { Container, Typography, Box, CardMedia } from "@mui/material";
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
 
 const About = () => {
   const topBannerImage = "/images/about-us-top-image.jpg";
   const bottomBannerImage = "/images/about-us-bottom-image.jpg";
-
-  const { user } = useContext(AuthContext);
-  console.log("About user", user);
 
   return (
     <Container>
@@ -18,7 +13,6 @@ const About = () => {
         alt="Top Banner"
       />
       <Box marginY={7}>
-        <Typography>{user?.firstname}</Typography>
         <Typography variant="h2" marginBottom={4}>
           About Us
         </Typography>

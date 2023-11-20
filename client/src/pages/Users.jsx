@@ -1,5 +1,4 @@
-import { useContext, useState, useEffect } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useState, useEffect } from "react";
 import {
   Box,
   Table,
@@ -13,11 +12,6 @@ import {
 } from "@mui/material";
 
 const Users = () => {
-  // get the token from AuthContext
-  const { token } = useContext(AuthContext);
-
-  const usersBackgroundImage = "/images/background-001.jpg";
-
   // define state to store the Users Data
   const [usersData, setUsersData] = useState(null);
 
@@ -27,26 +21,30 @@ const Users = () => {
       try {
         const response = await fetch(
           `${import.meta.env.VITE_SERVER_URL}/api/users/all`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          { credentials: "include" } // include HTTP-Only Cookie with customJWT
         );
-        if (response.status !== 200) {
+        // console.log("fetchAllUsers response:", response);
+
+        if (!response.ok) {
           throw response;
         }
-        // console.log("fetchAllUsers response:", response);
+
         const data = await response.json();
         // console.log("fetchAllUsers data:", data);
+
+        const payload = data.payload;
+        // console.log("fetchAllUsers payload:", payload);
+
         // store the Users Data in state
-        setUsersData(data);
+        setUsersData(payload);
       } catch (error) {
         console.error("fetchAllUsers error:", error);
       }
     };
     fetchAllUsers();
   }, []);
+
+  const usersBackgroundImage = "/images/background-001.jpg";
 
   return (
     <Box

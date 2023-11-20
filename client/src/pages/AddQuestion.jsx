@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import {
   Box,
   Button,
@@ -7,13 +9,9 @@ import {
   TextareaAutosize,
   Typography,
 } from "@mui/material";
-import { useContext, useState } from "react";
-import { NavLink } from "react-router-dom";
 import SendIcon from "@mui/icons-material/Send";
-import { AuthContext } from "../context/AuthContext";
 
 const AddQuestion = () => {
-  const { token } = useContext(AuthContext);
   const [question, setQuestion] = useState("");
   const [validationError, setValidationError] = useState(null);
   const [isChecked, setIsChecked] = useState(false);
@@ -49,23 +47,29 @@ const AddQuestion = () => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
             },
+            credentials: "include", // attach the HTTP-Only Cookie with customJWT
             body: JSON.stringify({ question }),
           }
         );
-        // console.log("SubmitHandler response", response);
+        // console.log("submitHandler response", response);
+
         if (!response.ok) {
           throw response;
         }
+
         const data = await response.json();
-        // console.log("SubmitHandler data", data);
+        // console.log("submitHandler data", data);
+
         if (data.success) {
-          setSuccessMessage("Your question was successfully added!");
+          setSuccessMessage(
+            "Your question was successfully added! Thank you ⭐"
+          );
         }
+
         setQuestion("");
       } catch (error) {
-        console.error("Something went wrong! Please try again.", error);
+        console.error("AddQuestion submitHandler error:", error);
       } finally {
         setSubmitting(false);
         setIsChecked(false);
