@@ -1,5 +1,5 @@
 import { pool } from "../../database/connection";
 
-export async function disconnectFromDatabase() {
+export const disconnectFromDatabase = async () => {
   await pool.end();
-}
+};

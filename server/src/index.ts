@@ -6,6 +6,7 @@ import { usersRouter } from "./routes/usersRoutes";
 import { authRouter } from "./routes/authRoutes";
 
 dotenvFlow.config();
+
 export const app = express();
 
 app.use(cors());
