@@ -23,7 +23,7 @@ const AddQuestion = () => {
   const validate = (question) => {
     if (!question || question.length < 10 || question.length > 500) {
       setValidationError(
-        "Your question should be between 10 to 500 characters!"
+        "Your Question should be between 10 to 500 characters."
       );
       return false;
     } else {
@@ -68,6 +68,7 @@ const AddQuestion = () => {
         console.error("Something went wrong! Please try again.", error);
       } finally {
         setSubmitting(false);
+        setIsChecked(false);
       }
     }
   };
@@ -96,6 +97,7 @@ const AddQuestion = () => {
             control={<Checkbox />}
             label="I have made sure to keep all names anonymous"
             onChange={() => setIsChecked(!isChecked)}
+            checked={isChecked}
           />
           <Box display={"flex"} gap={1}>
             <Button variant="contained" component={NavLink} to={"/questions"}>

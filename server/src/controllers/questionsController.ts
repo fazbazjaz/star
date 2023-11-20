@@ -27,7 +27,7 @@ export const addQuestion = async (req: Request, res: Response) => {
     // console.log("userQuery:", userQuery);
 
     const userId = userQuery[0].id;
-    console.log("userId:", userId);
+    // console.log("userId:", userId);
 
     const insertQuestionQuery = await database
       .insert(questions)

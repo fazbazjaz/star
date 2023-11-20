@@ -1,4 +1,11 @@
-import { pgTable, serial, varchar, timestamp, text, integer } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  serial,
+  varchar,
+  timestamp,
+  text,
+  integer
+} from "drizzle-orm/pg-core";
 import { InferSelectModel, InferInsertModel, relations } from "drizzle-orm";
 
 // User Types
@@ -19,7 +26,7 @@ export const users = pgTable("users", {
 
 // Relation for Users Table
 export const usersRelations = relations(users, ({ many }) => ({
-  questions: many(questions),
+  questions: many(questions)
 }));
 
 // Questions Table
@@ -30,7 +37,7 @@ export const questions = pgTable("questions", {
     .notNull(),
   question: text("question").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 
 // Relations for Questions Table
@@ -40,6 +47,6 @@ export const questions = pgTable("questions", {
 export const questionsRelations = relations(questions, ({ one }) => ({
   user: one(users, {
     fields: [questions.userId],
-    references: [users.id],
-  }),
+    references: [users.id]
+  })
 }));
