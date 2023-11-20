@@ -3,7 +3,7 @@ import {
   authorizationCodePopupHandler,
   authorizationCodeRedirectHandler,
   accessTokenHandler,
-  idTokenHandler,
+  idTokenHandler
 } from "../controllers/authController";
 
 export const authRouter = express.Router();

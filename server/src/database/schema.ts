@@ -1,6 +1,9 @@
-import { pgTable, serial, varchar, timestamp, text } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
-import { integer } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, timestamp, text, integer } from "drizzle-orm/pg-core";
+import { InferSelectModel, InferInsertModel, relations } from "drizzle-orm";
+
+// User Types
+export type SelectUserType = InferSelectModel<typeof users>;
+export type InsertUserType = InferInsertModel<typeof users>;
 
 // Users Table
 export const users = pgTable("users", {
@@ -11,7 +14,7 @@ export const users = pgTable("users", {
   email: varchar("email").unique(),
   picture: varchar("picture"),
   created_at: timestamp("created_at").defaultNow(),
-  updated_at: timestamp("updated_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow()
 });
 
 // Relation for Users Table
