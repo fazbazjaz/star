@@ -28,6 +28,9 @@ const Navigation = () => {
             <Button component={NavLink} to={"/users"} variant="contained">
               Users
             </Button>
+            <Button component={NavLink} to={"/questions"} variant="contained">
+              Questions
+            </Button>
           </>
         )}
       </Box>

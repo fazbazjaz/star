@@ -16,7 +16,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   // verify the ID TOKEN
   const verifyIdToken = await oAuth2Client.verifyIdToken({
     idToken: idToken as string,
-    audience: process.env.GOOGLE_CLIENT_ID,
+    audience: process.env.GOOGLE_CLIENT_ID
   });
   // console.log("verifyIdToken:", verifyIdToken);
 
@@ -40,14 +40,14 @@ export const idTokenHandler = async (req: Request, res: Response) => {
 
   // if there is no Existing User with that Google ID, create a New User
   if (existingUser.length === 0) {
-    const newUser = await database
+    await database
       .insert(users)
       .values({
         google_id: userGoogleId,
         firstname: userFirstname,
         lastname: userLastname,
         email: userEmail,
-        picture: userPicture,
+        picture: userPicture
       })
       .returning();
     // console.log("newUser:", newUser);
@@ -59,7 +59,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     firstname: userFirstname,
     lastname: userLastname,
     email: userEmail,
-    picture: userPicture,
+    picture: userPicture
   };
 
   // generate our own custom JWT signing it with our own JWT_SECRET
@@ -67,7 +67,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     customJWTPayload,
     process.env.JWT_SECRET as Secret,
     {
-      expiresIn: "1h",
+      expiresIn: "1h"
     }
   );
   // console.log("customJWT", customJWT);
@@ -117,16 +117,16 @@ export const authorizationCodePopupHandler = async (
 
   // get the ACCESS TOKEN, REFRESH TOKEN, ID TOKEN, and Token Expiry Date
   const {
-    access_token: accessToken,
-    refresh_token: refreshToken,
-    id_token: idToken,
-    expiry_date: tokenExpiryDate,
+    // access_token: accessToken,
+    // refresh_token: refreshToken,
+    id_token: idToken
+    // expiry_date: tokenExpiryDate,
   } = response.tokens;
 
   // verify the ID TOKEN
   const verifyIdToken = await oAuth2Client.verifyIdToken({
     idToken: idToken as string,
-    audience: process.env.GOOGLE_CLIENT_ID,
+    audience: process.env.GOOGLE_CLIENT_ID
   });
   // console.log("verifyIdToken:", verifyIdToken);
 
@@ -155,14 +155,14 @@ export const authorizationCodePopupHandler = async (
 
   // if there is no Existing User with that Google ID, create a New User
   if (existingUser.length === 0) {
-    const newUser = await database
+    await database
       .insert(users)
       .values({
         google_id: userGoogleId,
         firstname: userFirstname,
         lastname: userLastname,
         email: userEmail,
-        picture: userPicture,
+        picture: userPicture
       })
       .returning();
 
@@ -175,7 +175,7 @@ export const authorizationCodePopupHandler = async (
     firstname: userFirstname,
     lastname: userLastname,
     email: userEmail,
-    picture: userPicture,
+    picture: userPicture
   };
   // console.log("customJWTPayload:", customJWTPayload);
 
@@ -184,7 +184,7 @@ export const authorizationCodePopupHandler = async (
     customJWTPayload,
     process.env.JWT_SECRET as Secret,
     {
-      expiresIn: "1h",
+      expiresIn: "1h"
     }
   );
   // console.log("customJWT", customJWT);
@@ -230,16 +230,16 @@ export const authorizationCodeRedirectHandler = async (
 
   // get the ACCESS TOKEN, REFRESH TOKEN, ID TOKEN, and Token Expiry Date
   const {
-    access_token: accessToken,
-    refresh_token: refreshToken,
-    id_token: idToken,
-    expiry_date: tokenExpiryDate,
+    // access_token: accessToken,
+    // refresh_token: refreshToken,
+    id_token: idToken
+    // expiry_date: tokenExpiryDate,
   } = response.tokens;
 
   // // verify the ID TOKEN
   const verifyIdToken = await oAuth2Client.verifyIdToken({
     idToken: idToken as string,
-    audience: process.env.GOOGLE_CLIENT_ID,
+    audience: process.env.GOOGLE_CLIENT_ID
   });
   // console.log("verifyIdToken:", verifyIdToken);
 
@@ -263,17 +263,16 @@ export const authorizationCodeRedirectHandler = async (
 
   // if there is no Existing User with that Google ID, create a New User
   if (existingUser.length === 0) {
-    const newUser = await database
+    await database
       .insert(users)
       .values({
         google_id: userGoogleId,
         firstname: userFirstname,
         lastname: userLastname,
         email: userEmail,
-        picture: userPicture,
+        picture: userPicture
       })
       .returning();
-    // console.log("newUser:", newUser);
   }
 
   // prepare a Payload for our own custom JWT with User information
@@ -282,7 +281,7 @@ export const authorizationCodeRedirectHandler = async (
     firstname: userFirstname,
     lastname: userLastname,
     email: userEmail,
-    picture: userPicture,
+    picture: userPicture
   };
   // console.log("customJWTPayload:", customJWTPayload);
 
@@ -291,7 +290,7 @@ export const authorizationCodeRedirectHandler = async (
     customJWTPayload,
     process.env.JWT_SECRET as Secret,
     {
-      expiresIn: "1h",
+      expiresIn: "1h"
     }
   );
   // console.log("customJWT", customJWT);
@@ -307,7 +306,7 @@ export const authorizationCodeRedirectHandler = async (
     // "sameSite" determines how the cookie is sent with Cross-Origin Requests
     sameSite: "none", // "strict" | "lax" | "none"
     // set expiry of 1 hour to match the customJWT
-    maxAge: 3600000,
+    maxAge: 3600000
   });
 
   // [1b] because we cannot access the HTTP-Only Cookie on the frontend
@@ -318,7 +317,7 @@ export const authorizationCodeRedirectHandler = async (
     httpOnly: false,
     secure: false,
     sameSite: "none",
-    maxAge: 60 * 60 * 1000,
+    maxAge: 60 * 60 * 1000
   });
 
   // [2] send the customJWT back in the Response Header

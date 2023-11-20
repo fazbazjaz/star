@@ -8,7 +8,7 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview build": "vite build && vite preview --port 3000",
-    "format": "prettier . --write",
+    "prettier": "prettier . --write",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
