@@ -3,9 +3,10 @@ import { Navigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 const Protected = ({ children }) => {
-  const { token, user } = useContext(AuthContext);
+  // get the userCookie from AuthContext
+  const { userCookie } = useContext(AuthContext);
 
-  if (token && user) {
+  if (userCookie) {
     return children;
   }
 

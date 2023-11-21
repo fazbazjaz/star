@@ -5,28 +5,36 @@ import { Request, Response } from "express";
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    // we chain methods eg. select() and from() to the db object
     const query = await database.select().from(users);
-    console.log("query:", query);
-    res.json(query);
+    // console.log("getAllUsers query:", query);
+
+    const data = query;
+    // console.log("getAllUsers data:", data);
+
+    res.json(data);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "server error" });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
 export const getUserById = async (req: Request, res: Response) => {
   try {
-    const userId = Number(req.params.userId);
-    console.log("userId:", userId);
-    // notice eq() Equal To (it must be imported at the top)
+    const requestedUserId = Number(req.params.userId);
+    // console.log("getUserById requestedUserId:", requestedUserId);
+
     const query = await database
       .select()
       .from(users)
-      .where(eq(users.id, userId));
-    res.json(query);
+      .where(eq(users.id, requestedUserId));
+    // console.log("getUserById query:", query);
+
+    const data = query[0];
+    // console.log("getUserById data:", data);
+
+    res.status(200).json(data);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "server error" });
+    res.status(500).json({ message: "Server Error" });
   }
 };

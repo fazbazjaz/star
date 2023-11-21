@@ -1,6 +1,7 @@
 import dotenvFlow from "dotenv-flow";
 import express, { Request, Response } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import { usersRouter } from "./routes/usersRoutes";
 import { authRouter } from "./routes/authRoutes";
@@ -10,7 +11,16 @@ dotenvFlow.config();
 
 export const app = express();
 
-app.use(cors());
+app.use(cookieParser());
+
+// for HTTP-Only Cookies :
+app.use(
+  cors({
+    origin: true,
+    credentials: true
+  })
+);
+
 app.use(express.json());
 
 // for a basic check on /api

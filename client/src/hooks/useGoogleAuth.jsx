@@ -2,7 +2,11 @@
 // github.com/bazmurphy : This is a living document of my Research into modern Google Auth
 // -------------------------------------------
 
-const useGoogleAuth = ({ setToken, setUser, navigate }) => {
+import { getCookieValue } from "../utils/getCookieValue";
+
+const useGoogleAuth = ({ setUserCookie, navigate }) => {
+  // setToken, setUser
+
   // -------------------------------------------
 
   // Declare the global google object
@@ -27,32 +31,60 @@ const useGoogleAuth = ({ setToken, setUser, navigate }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${googleIdToken}`,
         },
+        credentials: "include", // include HTTP-Only Cookie with customJWT
       }
     );
-    // console.log("response:", response);
+    // console.log("googleIdTokenClientCallback response:", response);
 
-    const data = await response.json();
-    // console.log("data:", data);
+    // handle fetch error here
+    if (!response.ok) {
+      console.error(response);
+      return;
+    }
 
-    const customJWT = data.customJWT;
-    // console.log("customJWT:", customJWT);
+    // --------------------------------------------------------------
 
-    // set the token in Local Storage
-    localStorage.setItem("token", customJWT);
+    // customJWT in Response Body Version
 
-    // get the payload from the token
-    const customJWTPayload = customJWT.split(".")[1];
-    // console.log("payload:", payload);
+    // const data = await response.json();
+    // console.log("googleIdTokenClientCallback data:", data);
 
-    // decode the token payload
-    const customJWTDecodedPayload = JSON.parse(atob(customJWTPayload));
-    // console.log("decodedPayload", decodedPayload);
+    // const customJWT = data.customJWT;
+    // // console.log("customJWT:", customJWT);
 
-    // set the token React State
-    setToken(customJWT);
+    // // set the token in Local Storage
+    // localStorage.setItem("token", customJWT);
 
-    // set the user React State
-    setUser(customJWTDecodedPayload);
+    // // get the payload from the token
+    // const customJWTPayload = customJWT.split(".")[1];
+    // // console.log("payload:", payload);
+
+    // // decode the token payload
+    // const customJWTDecodedPayload = JSON.parse(atob(customJWTPayload));
+    // // console.log("decodedPayload", decodedPayload);
+
+    // // set the token React State
+    // setToken(customJWT);
+
+    // // set the user React State
+    // setUser(customJWTDecodedPayload);
+
+    // --------------------------------------------------------------
+
+    // customJWT in HTTP-Only Cookie Version
+
+    // Retrieve the user Cookie
+    const userCookieFromBrowser = getCookieValue("user");
+    // console.log("userCookieFromBrowser:", userCookieFromBrowser);
+
+    // Parse the Cookie into a JavaScript Object
+    const userDataFromUserCookie = JSON.parse(userCookieFromBrowser);
+    // console.log("userDataFromUserCookie:", userDataFromUserCookie);
+
+    // set the userCookie React State
+    setUserCookie(userDataFromUserCookie);
+
+    // --------------------------------------------------------------
 
     // redirect to the Profile Page
     navigate("/profile");
@@ -125,29 +157,59 @@ const useGoogleAuth = ({ setToken, setUser, navigate }) => {
     );
     // console.log("response:", response);
 
+    // handle fetch error here
+    if (!response.ok) {
+      console.error(response);
+      return;
+    }
+
+    // --------------------------------------------------------------
+
+    // customJWT in Response Body Version
+
     // Receive the customJWT (in HTTP-Only Cookie or) in the Response Body
-    const data = await response.json();
+    // const data = await response.json();
     // console.log("data:", data);
 
-    const customJWT = data.customJWT;
+    // const customJWT = data.customJWT;
     // console.log("customJWT:", customJWT);
 
     // set the token in Local Storage
-    localStorage.setItem("token", customJWT);
+    // localStorage.setItem("token", customJWT);
 
     // get the payload from the token
-    const customJWTPayload = customJWT.split(".")[1];
+    // const customJWTPayload = customJWT.split(".")[1];
     // console.log("payload:", payload);
 
     // decode the token payload
-    const customJWTDecodedPayload = JSON.parse(atob(customJWTPayload));
+    // const customJWTDecodedPayload = JSON.parse(atob(customJWTPayload));
     // console.log("decodedPayload", decodedPayload);
 
     // set the token React State
-    setToken(customJWT);
+    // setToken(customJWT);
 
     // set the user React State
-    setUser(customJWTDecodedPayload);
+    // setUser(customJWTDecodedPayload);
+
+    // set the userCookie React State
+    // setUserCookie(customJWTDecodedPayload);
+
+    // --------------------------------------------------------------
+
+    // customJWT in HTTP-Only Cookie Version
+
+    // Retrieve the user Cookie
+    const userCookieFromBrowser = getCookieValue("user");
+    // console.log("userCookieFromBrowser:", userCookieFromBrowser);
+
+    // Parse the Cookie into a JavaScript Object
+    const userDataFromUserCookie = JSON.parse(userCookieFromBrowser);
+    // console.log("userDataFromUserCookie:", userDataFromUserCookie);
+
+    // set the userCookie React State
+    setUserCookie(userDataFromUserCookie);
+
+    // --------------------------------------------------------------
 
     navigate("/profile");
   };

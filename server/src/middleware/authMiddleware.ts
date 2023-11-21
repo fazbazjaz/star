@@ -14,45 +14,33 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  // every time the client makes a request it will come with the customJWT
-  // the authMiddleware will verify the customJWT against our JWT_SECRET
+  // every time the client makes a request
+  // it will come with the customJWT in an HTTP-Only Cookie
 
-  // get the Authorization Header from the Request
-  const authorizationHeader = req.header("Authorization");
-  // console.log("authMiddleware authorizationHeader:", authorizationHeader);
+  const cookies = req.cookies;
+  // console.log("authMiddleware cookies:", cookies);
 
-  if (
-    !authorizationHeader ||
-    !authorizationHeader.startsWith("Bearer") ||
-    authorizationHeader === "Bearer null"
-  ) {
-    return res
-      .status(401)
-      .json({ error: "Unauthorized - No Authorization Header Provided" });
-  }
-
-  // Get the customJWT from the Authorization Header
-  const customJWT = authorizationHeader.split(" ")[1];
+  const customJWT = cookies.customJWT;
   // console.log("authMiddleware customJWT:", customJWT);
 
-  if (!customJWT) {
+  if (!customJWT || typeof customJWT === "undefined") {
     return res.status(401).json({ error: "Unauthorized - No JWT Provided" });
   }
 
-  // Verify the customJWT
-  const verifiedCustomJWT = jwt.verify(
-    customJWT,
-    process.env.JWT_SECRET as Secret
-  );
-  // console.log("authMiddleware verifiedCustomJWT:", verifiedCustomJWT);
+  try {
+    // Verify the customJWT against our JWT_SECRET
+    const verifiedCustomJWT = jwt.verify(
+      customJWT,
+      process.env.JWT_SECRET as Secret
+    );
+    // console.log("authMiddleware verifiedCustomJWT:", verifiedCustomJWT);
 
-  if (!verifiedCustomJWT || typeof verifiedCustomJWT === "string") {
+    // store the User Information from the customJWT Payload in a User Property on the Request Object
+    req.customJWTPayload = verifiedCustomJWT as CustomJWTPayload;
+
+    // all the checks have passed Authorize the Request
+    next();
+  } catch (error) {
     return res.status(401).json({ error: "Unauthorized - Invalid JWT" });
   }
-
-  // store the User Information from the Payload in a User Property on the Request Object
-  req.customJWTPayload = verifiedCustomJWT as CustomJWTPayload;
-
-  // all the checks have passed Authorize the Request
-  next();
 };
