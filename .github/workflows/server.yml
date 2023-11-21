@@ -13,6 +13,9 @@ defaults:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    environment: development
+    env:
+      NODE_ENV: ${{ vars.NODE_ENV }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -31,6 +34,32 @@ jobs:
   test:
     needs: lint
     runs-on: ubuntu-latest
+    environment: test
+    env:
+      NODE_ENV: ${{ vars.NODE_ENV }}
+      SERVER_PORT: ${{ vars.SERVER_PORT }}
+      DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+      DATABASE_PORT: ${{ vars.DATABASE_PORT }}
+      DATABASE_USER: ${{ secrets.DATABASE_USER }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      DATABASE_NAME: ${{ vars.DATABASE_NAME }}
+      GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: ${{ secrets.DATABASE_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          POSTGRES_DB: ${{ vars.DATABASE_NAME }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -51,6 +80,9 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    environment: production
+    env:
+      NODE_ENV: ${{ vars.NODE_ENV }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

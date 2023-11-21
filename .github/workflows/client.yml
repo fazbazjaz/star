@@ -31,6 +31,10 @@ jobs:
   test:
     needs: lint
     runs-on: ubuntu-latest
+    environment: test
+    env:
+      VITE_SERVER_URL: ${{ vars.VITE_SERVER_URL }}
+      VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_SERVER_URL }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -51,6 +55,10 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    environment: production
+    env:
+      VITE_SERVER_URL: ${{ vars.VITE_SERVER_URL }}
+      VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_SERVER_URL }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
