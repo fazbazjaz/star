@@ -47,3 +47,24 @@ export const addQuestion = async (req: Request, res: Response) => {
     res.status(500).json(error);
   }
 };
+
+export const findAllQuestionsByUser = async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.userId);
+  // console.log("findAllQuestionsByUser userId:", userId);
+
+  try {
+    const query = await database
+      .select()
+      .from(questions)
+      .where(eq(questions.userId, userId));
+    // console.log("findAllQuestionsByUser query:", query);
+
+    const data = query;
+    // console.log("findAllQuestionsByUser data:", data);
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
