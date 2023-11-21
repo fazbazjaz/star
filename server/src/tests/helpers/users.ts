@@ -6,7 +6,7 @@ export const getAllUsers = async () => {
 };
 
 export const createUser = async (user: InsertUserType) => {
-  await database.insert(users).values(user).returning({ id: users.id });
+  return await database.insert(users).values(user).returning();
 };
 
 export const deleteAllUsers = async () => {

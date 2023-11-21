@@ -10,7 +10,9 @@ export const authRouter = express.Router();
 
 // for a basic check on /api/auth/
 authRouter.get("/", (req: Request, res: Response) => {
-  res.json("STAR Server /api/auth Auth Route");
+  res.status(200).json({
+    message: "STAR Server /api/auth Auth Route"
+  });
 });
 
 authRouter.post("/google/authorizationcode", authorizationCodePopupHandler);
