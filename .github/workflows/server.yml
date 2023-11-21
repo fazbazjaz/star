@@ -1,0 +1,89 @@
+name: Server Workflow
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ./server
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Cache Dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: server-node-modules-${{ hashFiles('./server/package-lock.json') }}
+      - name: Install Dependencies
+        run: npm ci
+      - name: Format Code
+        run: npm run prettier
+      - name: Lint Code
+        run: npm run lint
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Cache Dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: server-node-modules-${{ hashFiles('./server/package-lock.json') }}
+      - name: Install Dependencies
+        run: npm ci
+      - name: Format Code
+        run: npm run prettier
+      - name: Lint Code
+        run: npm run lint
+      - name: Test Code
+        run: npm run test
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Cache Dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: server-node-modules-${{ hashFiles('./server/package-lock.json') }}
+      - name: Install Dependencies
+        run: npm ci
+      - name: Format Code
+        run: npm run prettier
+      - name: Lint Code
+        run: npm run lint
+      - name: Build Server
+        id: build-server
+        run: npm run build
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: server-build-folder
+          path: ./server/build
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: server-build-folder
+          path: ./server/build
+      - name: Show Folder
+        run: ls
+      - name: Deploy
+        run: echo "Deploying..."

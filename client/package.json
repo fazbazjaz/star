@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview build": "vite build && vite preview --port 3000",
     "prettier": "prettier . --write",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0 --fix"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
