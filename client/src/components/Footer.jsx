@@ -1,40 +1,60 @@
-import { Box, Link as MaterialLink } from "@mui/material";
+import { Box, Link, Typography } from "@mui/material";
 
 const Footer = () => {
   return (
     <Box
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        borderTop: 1,
-        borderColor: "lightgray",
-        py: 3,
-      }}
-      paddingRight={{ xs: 0, sm: 5, md: 10, lg: 12 }}
-      paddingLeft={{ xs: 3, sm: 5, md: 10, lg: 12 }}
-      flexDirection={{ xs: "column", sm: "row" }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          flexDirection: "column",
-          maxWidth: "250px",
-        }}></Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-evenly",
-          flexDirection: "column",
-          lineHeight: 2,
-        }}
-        textAlign={{ xs: "left", sm: "right" }}>
-        <MaterialLink
+      display={"flex"}
+      flexDirection={{ xs: "column", sm: "row" }}
+      justifyContent={"space-between"}
+      px={{ xs: 2, sm: 4, md: 8, lg: 12 }}
+      py={4}
+      border={1}
+      backgroundColor={"#15164b"}>
+      <Box display={"flex"} flexDirection={"column"} maxWidth={"250px"}>
+        <Link
+          href="https://codeyourfuture.io/"
+          target={"_blank"}
+          underline={"hover"}
+          variant={"body1"}>
+          CodeYourFuture
+        </Link>
+      </Box>
+      <Box display={"flex"} flexDirection={"column"}>
+        <Link
+          href="https://www.linkedin.com/in/farzaneh-haghani/"
+          target={"_blank"}
+          underline={"hover"}
+          variant={"body1"}>
+          Coder Faz
+        </Link>
+        <Link
+          href="https://www.linkedin.com/in/bazmurphy/"
+          target={"_blank"}
+          underline={"hover"}
+          variant={"body1"}>
+          Coder Baz
+        </Link>
+        <Link
+          href="https://www.linkedin.com/in/jan-softa-680a79b2/"
+          target={"_blank"}
+          underline={"hover"}
+          variant={"body1"}>
+          Coder Jaz
+        </Link>
+      </Box>
+      <Box display={"flex"} flexDirection={"column"}>
+        <Link
           href="https://github.com/fazbazjaz/star"
-          target="_blank"
-          underline="none"
-          sx={{ color: "black", fontWeight: "bold" }}>
+          target={"_blank"}
+          underline={"hover"}
+          variant={"body1"}>
           Project Repository
-        </MaterialLink>
+        </Link>
+      </Box>
+      <Box color={"white"}>
+        <Typography variant={"body1"}>
+          &copy; {new Date().getFullYear()} STAR All rights reserved.
+        </Typography>
       </Box>
     </Box>
   );

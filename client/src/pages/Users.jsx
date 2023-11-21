@@ -45,46 +45,46 @@ const Users = () => {
 
   return (
     <Box
+      minHeight={"50vh"}
+      p={3}
+      border={1}
       sx={{
-        color: "white",
-        minHeight: "70vh",
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${usersBackgroundImage})`,
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${usersBackgroundImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center center",
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
-      }}
-      p={3}>
-      <Typography variant={"h3"} mb={1}>
-        Users Page
-      </Typography>
-      {usersData && (
-        <>
-          <Typography variant={"h6"} mb={1}>
-            users Table from the Database
-          </Typography>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  {Object.keys(usersData[0]).map((column) => (
-                    <TableCell key={column}>{column}</TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {usersData.map((user) => (
-                  <TableRow key={user.google_id}>
+      }}>
+      <Box color={"white"}>
+        <Typography variant={"h3"}>Users Page</Typography>
+        {usersData && (
+          <Box>
+            <Typography variant={"h6"}>
+              users Table from the Database
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
                     {Object.keys(usersData[0]).map((column) => (
-                      <TableCell key={column}>{user[column]}</TableCell>
+                      <TableCell key={column}>{column}</TableCell>
                     ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </>
-      )}
+                </TableHead>
+                <TableBody>
+                  {usersData.map((user) => (
+                    <TableRow key={user.google_id}>
+                      {Object.keys(usersData[0]).map((column) => (
+                        <TableCell key={column}>{user[column]}</TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 };
