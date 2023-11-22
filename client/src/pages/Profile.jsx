@@ -18,11 +18,11 @@ const Profile = () => {
   // get the userCookie from AuthContext
   const { userCookie } = useContext(AuthContext);
 
-  // define state to store the Users Data
+  // define state to store the Users Question Data
   const [userQuestionsData, setUserQuestionsData] = useState(null);
 
   useEffect(() => {
-    // fetch the Users Data from the backend
+    // fetch the Users Question Data from the backend
     const fetchUserQuestions = async () => {
       try {
         const response = await fetch(
@@ -47,7 +47,7 @@ const Profile = () => {
       }
     };
     fetchUserQuestions();
-  }, []);
+  }, [userCookie]);
 
   const profileBackgroundImage = "/images/background-001.jpg";
 
@@ -64,7 +64,7 @@ const Profile = () => {
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
       }}>
-      <Box marginBottom={5}>
+      <Box mb={3}>
         <Typography variant={"h3"}>Profile Page</Typography>
         <CardMedia
           component={"img"}
@@ -82,10 +82,10 @@ const Profile = () => {
           <Typography>{userCookie.email}</Typography>
         </Box>
       </Box>
-      {userQuestionsData && (
+      {userQuestionsData && userQuestionsData.length > 0 && (
         <>
-          <Typography variant="h4" padding={3}>
-            {userQuestionsData.length} Questions
+          <Typography variant={"h4"} mb={2}>
+            Your Questions ({userQuestionsData.length})
           </Typography>
           <TableContainer component={Paper}>
             <Table>

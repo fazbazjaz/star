@@ -63,7 +63,7 @@ export const getAllQuestions = async (req: Request, res: Response) => {
 };
 
 export const findAllQuestionsByUser = async (req: Request, res: Response) => {
-  const userId = parseInt(req.params.userId);
+  const userId = parseInt(req.params.id);
   // console.log("findAllQuestionsByUser userId:", userId);
 
   try {
@@ -84,7 +84,7 @@ export const findAllQuestionsByUser = async (req: Request, res: Response) => {
 };
 
 export const findOneQuestion = async (req: Request, res: Response) => {
-  const questionId = parseInt(req.params.questionId);
+  const questionId = parseInt(req.params.id);
   // console.log("findOneQuestion questionId:", questionId);
 
   try {

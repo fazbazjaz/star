@@ -53,7 +53,7 @@ const router = createBrowserRouter(
         }
       />
       <Route
-        path="questions/:questionId"
+        path="questions/:id"
         element={
           <Protected>
             <Question />

@@ -3,8 +3,9 @@ import { useParams } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 
 const Question = () => {
-  const [question, setQuestion] = useState("");
-  const questionId = useParams().questionId;
+  const questionId = useParams().id;
+
+  const [questionData, setQuestionData] = useState("");
 
   useEffect(() => {
     const fetchQuestionById = async (questionId) => {
@@ -15,24 +16,40 @@ const Question = () => {
             credentials: "include",
           }
         );
+        // console.log("fetchQuestionById response:", response);
+
         const data = await response.json();
-        // console.log(data);
-        setQuestion(data);
+        // console.log("fetchQuestionById data:", data);
+
+        setQuestionData(data);
       } catch (error) {
-        console.error(error);
+        console.error("fetchQuestionById error:", error);
       }
     };
     fetchQuestionById(questionId);
-  }, []);
+  }, [questionId]);
+
+  const questionBackgroundImage = "/images/background-001.jpg";
 
   return (
-    <Box margin={3}>
-      <Typography variant="h2">{question.question}</Typography>
-      <Typography>
-        Created At: {new Date(question.createdAt).toLocaleString()}
+    <Box
+      minHeight={"50vh"}
+      p={3}
+      color="white"
+      border={1}
+      sx={{
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${questionBackgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center center",
+        backgroundRepeat: "no-repeat",
+        overflow: "hidden",
+      }}>
+      <Typography variant="h3">{questionData.question}</Typography>
+      <Typography mt={2}>
+        Created At: {new Date(questionData.createdAt).toLocaleString()}
       </Typography>
-      <Typography>
-        Modified At:{new Date(question.updatedAt).toLocaleString()}
+      <Typography mt={2}>
+        Modified At:{new Date(questionData.updatedAt).toLocaleString()}
       </Typography>
     </Box>
   );
