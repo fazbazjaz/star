@@ -2,17 +2,26 @@ import { AppBar, Box, Typography } from "@mui/material";
 
 const Header = () => {
   return (
-    <AppBar position={"static"} sx={{ background: "white", color: "black" }}>
+    <AppBar position="static" sx={{ background: "#15164b", color: "white" }}>
       <Box
-        display={"flex"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
+        display="flex"
+        justifyContent="left" // Center the content horizontally
+        alignItems="left"
         flexDirection={{ xs: "column", md: "row" }}
         gap={{ xs: 2, md: 5 }}
         px={{ xs: 2, md: 2, lg: 2 }}
         py={{ xs: 2, md: 2, lg: 2 }}
         border={1}>
-        <Typography variant={"h2"}>STAR by CodeYourFuture</Typography>
+        {/* Add an image in the left corner */}
+        <Box>
+          <img
+            src="/images/codeyourfuture.png" // Update the path accordingly
+            alt="CodeYourFuture Logo"
+            height={50} // Adjust the height as needed
+          />
+        </Box>
+
+        <Typography variant="h2">STAR by CodeYourFuture</Typography>
       </Box>
     </AppBar>
   );

@@ -20,7 +20,7 @@ const Hero = () => {
         py={6}
         color={"white"}>
         <Typography align={"center"} variant={"h2"} marked={"center"}>
-          STAR - Situation, Task, Action and Result
+          STAR - Situation, Task, Action, Result
         </Typography>
         <Typography variant={"h5"} align={"center"} mt={6}>
           STAR solves a business problem.
