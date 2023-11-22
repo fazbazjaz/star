@@ -61,9 +61,10 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   const userPicture = idTokenPayload.picture;
 
   // check if there is an Existing User with the same Google ID
-  let existingUser;
+  let user;
+
   try {
-    existingUser = await database
+    user = await database
       .select()
       .from(users)
       .where(eq(users.google_id, userGoogleId));
@@ -76,9 +77,9 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   // console.log("existingUser:", existingUser);
 
   // if there is no Existing User with that Google ID, create a New User
-  if (existingUser.length === 0) {
+  if (user.length === 0) {
     try {
-      await database
+      user = await database
         .insert(users)
         .values({
           google_id: userGoogleId,
@@ -95,8 +96,12 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     }
   }
 
+  // get the userId from the previous Database Query
+  const userId = user[0].id;
+
   // prepare a Payload for our own custom JWT with User information
   const customJWTPayload: CustomJWTPayload = {
+    id: userId,
     google_id: userGoogleId,
     firstname: userFirstname,
     lastname: userLastname,
@@ -129,10 +134,6 @@ export const idTokenHandler = async (req: Request, res: Response) => {
 
   // because we cannot access the HTTP-Only Cookie on the frontend
   // we need to send another Cookie with Non-Sensitive User Information
-
-  // get the userId from the previous Database Query
-  const userId = existingUser[0].id;
-
   const userCookieData = {
     id: userId,
     google_id: userGoogleId,
