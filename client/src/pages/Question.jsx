@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router-dom";
-import { Box, Button, Typography } from "@mui/material";
+import { useParams } from "react-router-dom";
+import { Box, Typography } from "@mui/material";
 
 const Question = () => {
   const [question, setQuestion] = useState("");
-  const id = useParams().id;
+  const questionId = useParams().questionId;
 
   useEffect(() => {
-    const openHandler = async (id) => {
+    const fetchQuestionById = async (questionId) => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_SERVER_URL}/api/questions/${id}`,
+          `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}`,
           {
             credentials: "include",
           }
@@ -22,7 +22,7 @@ const Question = () => {
         console.error(error);
       }
     };
-    openHandler(id);
+    fetchQuestionById(questionId);
   }, []);
 
   return (

@@ -1,5 +1,16 @@
 import { useContext, useState, useEffect } from "react";
-import { Box, Card, CardMedia, ListItem, Typography } from "@mui/material";
+import {
+  Box,
+  CardMedia,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
 import { NavLink } from "react-router-dom";
 
@@ -53,7 +64,7 @@ const Profile = () => {
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
       }}>
-      <Box>
+      <Box marginBottom={5}>
         <Typography variant={"h3"}>Profile Page</Typography>
         <CardMedia
           component={"img"}
@@ -72,32 +83,39 @@ const Profile = () => {
         </Box>
       </Box>
       {userQuestionsData && (
-        <Card>
-          <Typography variant="h4" padding={3}>
-            {userQuestionsData.length} Questions
-          </Typography>
-          <Box display="flex" padding={2} backgroundColor="#dcdfe3">
-            <Typography marginRight={10}>ID</Typography>
-            <Typography width={500}>Question</Typography>
-            <Typography marginRight={20}>Created At</Typography>
-            <Typography>Modified At</Typography>
-          </Box>
-          {userQuestionsData.map((question) => (
-            <ListItem
-              component={NavLink}
-              key={question.id}
-              to={`/questions/${question.id}`}>
-              <Typography marginRight={10}>{question.id}</Typography>
-              <Typography width={500}>{question.question}</Typography>
-              <Typography marginRight={10}>
-                {new Date(question.createdAt).toLocaleString()}
-              </Typography>
-              <Typography>
-                {new Date(question.updatedAt).toLocaleString()}
-              </Typography>
-            </ListItem>
-          ))}
-        </Card>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Question</TableCell>
+                <TableCell>Created At</TableCell>
+                <TableCell>Modified At</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {userQuestionsData.map((question) => (
+                <TableRow
+                  hover
+                  style={{ textDecoration: "none" }}
+                  key={question.id}
+                  component={NavLink}
+                  to={`/questions/${question.id}`}>
+                  <TableCell key={`${question.id}1`}>{question.id}</TableCell>
+                  <TableCell key={`${question.id}2`}>
+                    {question.question}
+                  </TableCell>
+                  <TableCell key={`${question.id}3`}>
+                    {new Date(question.createdAt).toLocaleString()}
+                  </TableCell>
+                  <TableCell key={`${question.id}4`}>
+                    {new Date(question.updatedAt).toLocaleString()}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
     </Box>
   );
