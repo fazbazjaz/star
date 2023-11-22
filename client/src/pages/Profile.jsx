@@ -80,7 +80,7 @@ const Profile = () => {
             <Typography marginRight={10}>ID</Typography>
             <Typography width={500}>Question</Typography>
             <Typography marginRight={20}>Created At</Typography>
-            <Typography>Modified AT</Typography>
+            <Typography>Modified At</Typography>
           </Box>
           {userQuestionsData.map((question) => (
             <ListItem

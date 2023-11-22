@@ -68,3 +68,24 @@ export const findAllQuestionsByUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Server Error" });
   }
 };
+
+export const findOneQuestion = async (req: Request, res: Response) => {
+  const questionId = parseInt(req.params.questionId);
+  // console.log("findOneQuestion questionId:", questionId);
+
+  try {
+    const query = await database
+      .select()
+      .from(questions)
+      .where(eq(questions.id, questionId));
+    // console.log("findOneQuestion query:", query);
+
+    const data = query[0];
+    // console.log("findOneQuestion data:", data);
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
