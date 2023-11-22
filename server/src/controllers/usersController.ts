@@ -20,7 +20,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const getUserById = async (req: Request, res: Response) => {
   try {
-    const requestedUserId = Number(req.params.userId);
+    const requestedUserId = Number(req.params.id);
     // console.log("getUserById requestedUserId:", requestedUserId);
 
     const query = await database

@@ -1,10 +1,53 @@
-import { useContext } from "react";
-import { Box, CardMedia, Typography } from "@mui/material";
+import { useContext, useState, useEffect } from "react";
+import {
+  Box,
+  CardMedia,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
+import { NavLink } from "react-router-dom";
 
 const Profile = () => {
   // get the userCookie from AuthContext
   const { userCookie } = useContext(AuthContext);
+
+  // define state to store the Users Question Data
+  const [userQuestionsData, setUserQuestionsData] = useState(null);
+
+  useEffect(() => {
+    // fetch the Users Question Data from the backend
+    const fetchUserQuestions = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_SERVER_URL}/api/questions/user/${
+            userCookie.id
+          }`,
+          { credentials: "include" } // include HTTP-Only Cookie with customJWT
+        );
+        // console.log("fetchUserQuestions response:", response);
+
+        if (!response.ok) {
+          throw response;
+        }
+
+        const data = await response.json();
+        // console.log("fetchUserQuestions data:", data);
+
+        // store the Users Questions in state
+        setUserQuestionsData(data);
+      } catch (error) {
+        console.error("fetchUserQuestions error:", error);
+      }
+    };
+    fetchUserQuestions();
+  }, [userCookie]);
 
   const profileBackgroundImage = "/images/background-001.jpg";
 
@@ -12,6 +55,7 @@ const Profile = () => {
     <Box
       minHeight={"50vh"}
       p={3}
+      color="white"
       border={1}
       sx={{
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${profileBackgroundImage})`,
@@ -20,7 +64,7 @@ const Profile = () => {
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
       }}>
-      <Box color={"white"}>
+      <Box mb={3}>
         <Typography variant={"h3"}>Profile Page</Typography>
         <CardMedia
           component={"img"}
@@ -38,6 +82,46 @@ const Profile = () => {
           <Typography>{userCookie.email}</Typography>
         </Box>
       </Box>
+      {userQuestionsData && userQuestionsData.length > 0 && (
+        <>
+          <Typography variant={"h4"} mb={2}>
+            Your Questions ({userQuestionsData.length})
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Question</TableCell>
+                  <TableCell>Created At</TableCell>
+                  <TableCell>Modified At</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {userQuestionsData.map((question) => (
+                  <TableRow
+                    hover
+                    style={{ textDecoration: "none" }}
+                    key={question.id}
+                    component={NavLink}
+                    to={`/questions/${question.id}`}>
+                    <TableCell key={`${question.id}1`}>{question.id}</TableCell>
+                    <TableCell key={`${question.id}2`}>
+                      {question.question}
+                    </TableCell>
+                    <TableCell key={`${question.id}3`}>
+                      {new Date(question.createdAt).toLocaleString()}
+                    </TableCell>
+                    <TableCell key={`${question.id}4`}>
+                      {new Date(question.updatedAt).toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
+      )}
     </Box>
   );
 };

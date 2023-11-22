@@ -23,10 +23,9 @@ export const addQuestion = async (req: Request, res: Response) => {
     // console.log("addQuestion userGoogleId:", userGoogleId);
 
     const userQuery = await database
-      .selectDistinct({ id: users.id })
+      .select({ id: users.id })
       .from(users)
-      .where(eq(users.google_id, userGoogleId))
-      .limit(1);
+      .where(eq(users.google_id, userGoogleId));
     // console.log("addQuestion userQuery:", userQuery);
 
     const userId = userQuery[0].id;
@@ -55,6 +54,48 @@ export const getAllQuestions = async (req: Request, res: Response) => {
 
     const data = query;
     // console.log("getAllQuestions data:", data);
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const findAllQuestionsByUser = async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.id);
+  // console.log("findAllQuestionsByUser userId:", userId);
+
+  try {
+    const query = await database
+      .select()
+      .from(questions)
+      .where(eq(questions.userId, userId));
+    // console.log("findAllQuestionsByUser query:", query);
+
+    const data = query;
+    // console.log("findAllQuestionsByUser data:", data);
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const findOneQuestion = async (req: Request, res: Response) => {
+  const questionId = parseInt(req.params.id);
+  // console.log("findOneQuestion questionId:", questionId);
+
+  try {
+    const query = await database
+      .select()
+      .from(questions)
+      .where(eq(questions.id, questionId));
+    // console.log("findOneQuestion query:", query);
+
+    const data = query[0];
+    // console.log("findOneQuestion data:", data);
 
     res.status(200).json(data);
   } catch (error) {

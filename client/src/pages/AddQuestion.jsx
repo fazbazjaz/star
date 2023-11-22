@@ -3,9 +3,7 @@ import { NavLink } from "react-router-dom";
 import {
   Box,
   Button,
-  Checkbox,
   FormControl,
-  FormControlLabel,
   TextareaAutosize,
   Typography,
 } from "@mui/material";
@@ -14,7 +12,6 @@ import SendIcon from "@mui/icons-material/Send";
 const AddQuestion = () => {
   const [question, setQuestion] = useState("");
   const [validationError, setValidationError] = useState(null);
-  const [isChecked, setIsChecked] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
 
@@ -38,7 +35,7 @@ const AddQuestion = () => {
   const submitHandler = async (event) => {
     event.preventDefault();
     setSuccessMessage("");
-    if (validate(question) && isChecked) {
+    if (validate(question)) {
       try {
         setSubmitting(true);
         const response = await fetch(
@@ -67,56 +64,67 @@ const AddQuestion = () => {
         console.error("AddQuestion submitHandler error:", error);
       } finally {
         setSubmitting(false);
-        setIsChecked(false);
       }
     }
   };
 
+  const addQuestionBackground = "/images/background-001.jpg";
+
   return (
-    <Box display="flex" justifyContent="center" marginY={5}>
-      <form onSubmit={submitHandler}>
-        <FormControl>
-          <Typography variant="h2">Add a Question</Typography>
-          <Typography mb={1}>
-            Please provide the full question you were asked in your Interview
-          </Typography>
-          <TextareaAutosize
-            id="question"
-            aria-label="Add a question"
-            minRows={5}
-            placeholder="Please carefully type out the Question"
-            value={question}
-            onChange={changeHandler}
-            style={{ border: `1px solid ${validationError ? "red" : "black"}` }}
-          />
-          {validationError && (
-            <Typography color="error">{validationError}</Typography>
-          )}
-          <FormControlLabel
-            control={<Checkbox />}
-            label="I have made sure to keep all names anonymous"
-            onChange={() => setIsChecked(!isChecked)}
-            checked={isChecked}
-          />
-          <Box display={"flex"} gap={1}>
-            <Button variant="contained" component={NavLink} to={"/questions"}>
-              Back
-            </Button>
-            <Button
-              variant="contained"
-              type="submit"
-              endIcon={<SendIcon />}
-              disabled={submitting || !isChecked}>
-              Send
-            </Button>
-          </Box>
-          {successMessage && (
-            <Typography color={"success.main"} mt={1}>
-              {successMessage}
+    <Box
+      minHeight={"50vh"}
+      p={3}
+      color="white"
+      border={1}
+      sx={{
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${addQuestionBackground})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center center",
+        backgroundRepeat: "no-repeat",
+        overflow: "hidden",
+      }}>
+      <Box display="flex" justifyContent="center" marginY={5}>
+        <form onSubmit={submitHandler}>
+          <FormControl>
+            <Typography variant="h2">Add a Question</Typography>
+            <Typography mb={1}>
+              Please provide the full question you were asked in your Interview
             </Typography>
-          )}
-        </FormControl>
-      </form>
+            <TextareaAutosize
+              id="question"
+              aria-label="Add a question"
+              padding={5}
+              minRows={7}
+              placeholder="Please carefully type out the Question"
+              value={question}
+              onChange={changeHandler}
+              style={{
+                border: `1px solid ${validationError ? "red" : "black"}`,
+              }}
+            />
+            {validationError && (
+              <Typography color="error">{validationError}</Typography>
+            )}
+            <Box display={"flex"} gap={1} mt={2}>
+              <Button variant="contained" component={NavLink} to={"/questions"}>
+                Back
+              </Button>
+              <Button
+                variant="contained"
+                type="submit"
+                endIcon={<SendIcon />}
+                disabled={submitting}>
+                Send
+              </Button>
+            </Box>
+            {successMessage && (
+              <Typography color={"success.main"} mt={1}>
+                {successMessage}
+              </Typography>
+            )}
+          </FormControl>
+        </form>
+      </Box>
     </Box>
   );
 };
