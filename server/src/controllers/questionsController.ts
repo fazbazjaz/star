@@ -1,12 +1,13 @@
 import { database } from "../database/connection";
-import { questions, users } from "../database/schema";
+import { questions } from "../database/schema";
 import { eq } from "drizzle-orm";
+import { createQuestion } from "../helpers/questions";
 import { Request, Response } from "express";
 
 export const addQuestion = async (req: Request, res: Response) => {
   try {
     const user = req.customJWTPayload;
-    // console.log("addQuestion user:", user);
+    // console.log("addQuestion user", user);
 
     if (!user) {
       return res.status(500).json({ error: "No User attached to the Request" });
@@ -19,31 +20,71 @@ export const addQuestion = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "No Question on the Request Body" });
     }
 
-    const userGoogleId = user.google_id;
-    // console.log("addQuestion userGoogleId:", userGoogleId);
+    const userId = user.id;
+    // console.log("addQuestion userId", userId);
 
-    const userQuery = await database
-      .selectDistinct({ id: users.id })
-      .from(users)
-      .where(eq(users.google_id, userGoogleId))
-      .limit(1);
-    // console.log("addQuestion userQuery:", userQuery);
+    const queryQuestion = await createQuestion(userId, question);
+    // console.log("addQuestion queryQuestion:", queryQuestion);
 
-    const userId = userQuery[0].id;
-    // console.log("addQuestion userId:", userId);
+    res.status(200).json(queryQuestion);
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
+};
 
-    const insertQuestionQuery = await database
-      .insert(questions)
-      .values({ userId, question })
-      .returning();
-    // console.log("addQuestion insertQuestionQuery:", insertQuestionQuery);
+export const getAllQuestions = async (req: Request, res: Response) => {
+  try {
+    const query = await database.select().from(questions);
+    // console.log("getAllQuestions query:", query);
 
-    const data = insertQuestionQuery[0];
-    // console.log("addQuestion payload:", payload);
+    const data = query;
+    // console.log("getAllQuestions data:", data);
 
     res.status(200).json(data);
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const findAllQuestionsByUser = async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.id);
+  // console.log("findAllQuestionsByUser userId:", userId);
+
+  try {
+    const query = await database
+      .select()
+      .from(questions)
+      .where(eq(questions.userId, userId));
+    // console.log("findAllQuestionsByUser query:", query);
+
+    const data = query;
+    // console.log("findAllQuestionsByUser data:", data);
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const findOneQuestion = async (req: Request, res: Response) => {
+  const questionId = parseInt(req.params.id);
+  // console.log("findOneQuestion questionId:", questionId);
+
+  try {
+    const query = await database
+      .select()
+      .from(questions)
+      .where(eq(questions.id, questionId));
+    // console.log("findOneQuestion query:", query);
+
+    const data = query[0];
+    // console.log("findOneQuestion data:", data);
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
   }
 };

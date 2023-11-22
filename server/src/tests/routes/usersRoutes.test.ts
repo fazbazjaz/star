@@ -1,8 +1,9 @@
 import supertest from "supertest";
 import jwt, { Secret } from "jsonwebtoken";
 import { app } from "../../app";
-import { disconnectFromDatabase } from "../helpers/database";
-import { deleteAllUsers, createUser } from "../helpers/users";
+import { disconnectFromDatabase } from "../../helpers/database";
+import { createUser } from "../../helpers/users";
+import { deleteAllUsers } from "../helpers/dbCleaner";
 import { CustomJWTPayload } from "../../types/types";
 import { SelectUserType } from "../../database/schema";
 
@@ -57,6 +58,7 @@ describe("/api/users/all GET", () => {
     });
 
     const customJWTPayload: CustomJWTPayload = {
+      id: 1,
       google_id: "0123456789",
       firstname: "Bob",
       lastname: "Smith",
@@ -133,6 +135,7 @@ describe("/api/users/id/1 GET", () => {
     const createdUserId = user[0].id;
 
     const customJWTPayload: CustomJWTPayload = {
+      id: 1,
       google_id: "0123456789",
       firstname: "Bob",
       lastname: "Smith",
