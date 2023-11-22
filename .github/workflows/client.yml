@@ -2,10 +2,10 @@ name: Client Workflow
 
 on:
   push:
-    paths:
-      - "client/**"
     branches:
       - main
+    paths:
+      - "client/**"
   workflow_dispatch:
 
 defaults:
@@ -36,7 +36,7 @@ jobs:
     environment: test
     env:
       VITE_SERVER_URL: ${{ vars.VITE_SERVER_URL }}
-      VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_SERVER_URL }}
+      VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -60,7 +60,7 @@ jobs:
     environment: production
     env:
       VITE_SERVER_URL: ${{ vars.VITE_SERVER_URL }}
-      VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_SERVER_URL }}
+      VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
