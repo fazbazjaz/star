@@ -2,6 +2,12 @@
   /* placeholder */
 }
 
+body {
+  /* temporary color to differentiate between <body> and <div id="root"> */
+  background-color: #bfbfbf;
+}
+
+/* the <div id="root"> that contains the React Application */
 #root {
-  /* placeholder */
+  background-color: white;
 }

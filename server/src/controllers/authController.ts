@@ -4,63 +4,106 @@ import { database } from "../database/connection";
 import { users } from "../database/schema";
 import { eq } from "drizzle-orm";
 import { Request, Response } from "express";
+import { CustomJWTPayload } from "../types/types";
 
 export const idTokenHandler = async (req: Request, res: Response) => {
   // initialise a new OAuth2.0 Client
   const oAuth2Client = new OAuth2Client();
 
+  const authorizationHeader = req.headers["authorization"];
+  // console.log("authorizationHeader:", authorizationHeader);
+  if (!authorizationHeader || typeof authorizationHeader !== "string") {
+    return res
+      .status(401)
+      .json({ error: "Authorization Header missing or invalid" });
+  }
+
+  const jwtTokenParts = authorizationHeader.split(" ");
+  // console.log("jwtTokenParts:", jwtTokenParts);
+  if (
+    jwtTokenParts.length !== 2 ||
+    jwtTokenParts[0].toLowerCase() !== "bearer"
+  ) {
+    return res
+      .status(401)
+      .json({ error: "Invalid Authorization Header format" });
+  }
+
   // get the ID TOKEN from the Request Headers
-  const idToken = req.headers["authorization"]?.split(" ")[1];
+  const idToken = jwtTokenParts[1];
   // console.log("idToken:", idToken);
 
   // verify the ID TOKEN
-  const verifyIdToken = await oAuth2Client.verifyIdToken({
-    idToken: idToken as string,
-    audience: process.env.GOOGLE_CLIENT_ID
-  });
+  let verifyIdToken;
+  try {
+    verifyIdToken = await oAuth2Client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+  } catch (error) {
+    return res.status(401).json({ error: "Invalid ID Token" });
+  }
   // console.log("verifyIdToken:", verifyIdToken);
 
   // get the PAYLOAD from the ID TOKEN
   const idTokenPayload = verifyIdToken.getPayload();
-  // console.log("tokenPayload", idTokenPayload);
+  // console.log("idTokenPayload:", idTokenPayload);
 
-  // get the User Information from the PAYLOAD
-  const userGoogleId = idTokenPayload?.sub as string; // fix this typing issue later
-  const userFirstname = idTokenPayload?.given_name;
-  const userLastname = idTokenPayload?.family_name;
-  const userEmail = idTokenPayload?.email;
-  const userPicture = idTokenPayload?.picture;
+  if (!idTokenPayload) {
+    return res.status(401).json({ error: "Invalid ID Token Payload" });
+  }
+
+  // get the User Information from the ID TOKEN PAYLOAD
+  const userGoogleId = idTokenPayload.sub; // fix these typing issues later
+  const userFirstname = idTokenPayload.given_name;
+  const userLastname = idTokenPayload.family_name;
+  const userEmail = idTokenPayload.email;
+  const userPicture = idTokenPayload.picture;
 
   // check if there is an Existing User with the same Google ID
-  const existingUser = await database
-    .select()
-    .from(users)
-    .where(eq(users.google_id, userGoogleId));
+  let existingUser;
+  try {
+    existingUser = await database
+      .select()
+      .from(users)
+      .where(eq(users.google_id, userGoogleId));
+  } catch (error) {
+    // Handle database error
+    return res
+      .status(500)
+      .json({ error: "Error finding Existing User in the Database" });
+  }
   // console.log("existingUser:", existingUser);
 
   // if there is no Existing User with that Google ID, create a New User
   if (existingUser.length === 0) {
-    await database
-      .insert(users)
-      .values({
-        google_id: userGoogleId,
-        firstname: userFirstname,
-        lastname: userLastname,
-        email: userEmail,
-        picture: userPicture
-      })
-      .returning();
-    // console.log("newUser:", newUser);
+    try {
+      await database
+        .insert(users)
+        .values({
+          google_id: userGoogleId,
+          firstname: userFirstname,
+          lastname: userLastname,
+          email: userEmail,
+          picture: userPicture
+        })
+        .returning();
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ error: "Error creating a New User in the Database" });
+    }
   }
 
   // prepare a Payload for our own custom JWT with User information
-  const customJWTPayload = {
+  const customJWTPayload: CustomJWTPayload = {
     google_id: userGoogleId,
     firstname: userFirstname,
     lastname: userLastname,
     email: userEmail,
     picture: userPicture
   };
+  // console.log("customJWTPayload:", customJWTPayload);
 
   // generate our own custom JWT signing it with our own JWT_SECRET
   const customJWT = jwt.sign(
@@ -72,24 +115,42 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   );
   // console.log("customJWT", customJWT);
 
-  // now we can send the customJWT back [1] as HTTP-Only Cookie or [2] in the Response Body
+  if (!customJWT) {
+    return res.status(500).json({ error: "Error signing a new customJWT" });
+  }
 
-  // // [1a] set the JWT as an HTTP-Only Cookie
-  // res.cookie("accessToken", customJWT, {
-  //   httpOnly: true,
-  //   // Enable in production to use HTTPS
-  //   // secure: process.env.NODE_ENV === "production",
-  //   // Enable for cross-domain cookies
-  //   sameSite: "none",
-  //   // set expiry of 1 hour to match the jwt
-  //   maxAge: 3600000,
-  // });
+  // set the JWT as an HTTP-Only Cookie
+  res.cookie("customJWT", customJWT, {
+    httpOnly: true, // set the cookie as HTTP-Only
+    secure: false, // enable "secure" to use HTTPS
+    sameSite: "none", // "sameSite" determines how the cookie is sent with Cross-Origin Requests "strict" | "lax" | "none"
+    maxAge: 3600000 // set expiry of 1 hour to match the customJWT
+  });
 
-  // [1b] Send the Response with the HTTP-Only Cookie included
-  // res.send({ success: true });
+  // because we cannot access the HTTP-Only Cookie on the frontend
+  // we need to send another Cookie with Non-Sensitive User Information
 
-  // [2] send the customJWT back in the Response Body
-  res.json({ customJWT });
+  // get the userId from the previous Database Query
+  const userId = existingUser[0].id;
+
+  const userCookieData = {
+    id: userId,
+    google_id: userGoogleId,
+    firstname: userFirstname,
+    lastname: userLastname,
+    email: userEmail,
+    picture: userPicture
+  };
+
+  res.cookie("user", userCookieData, {
+    httpOnly: false,
+    secure: false,
+    sameSite: "none",
+    maxAge: 3600000
+  });
+
+  // Respond (but with no Body)
+  res.status(200).send();
 };
 
 export const authorizationCodePopupHandler = async (
@@ -189,24 +250,33 @@ export const authorizationCodePopupHandler = async (
   );
   // console.log("customJWT", customJWT);
 
-  // now we can send the customJWT back [1] as HTTP-Only Cookie or [2] in the Response Body
+  // set the JWT as an HTTP-Only Cookie
+  res.cookie("customJWT", customJWT, {
+    httpOnly: true, // set the cookie as HTTP-Only
+    secure: false, // enable "secure" to use HTTPS
+    sameSite: "none", // "sameSite" determines how the cookie is sent with Cross-Origin Requests "strict" | "lax" | "none"
+    maxAge: 3600000 // set expiry of 1 hour to match the customJWT
+  });
 
-  // // [1a] set the JWT as an HTTP-Only Cookie
-  // res.cookie("accessToken", customJWT, {
-  //   httpOnly: true,
-  //   // Enable in production to use HTTPS
-  //   // secure: process.env.NODE_ENV === "production",
-  //   // Enable for cross-domain cookies
-  //   sameSite: "none",
-  //   // set expiry of 1 hour to match the jwt
-  //   maxAge: 3600000,
-  // });
+  // because we cannot access the HTTP-Only Cookie on the frontend
+  // we need to send another Cookie with Non-Sensitive User Information
+  const userCookieData = {
+    google_id: userGoogleId,
+    firstname: userFirstname,
+    lastname: userLastname,
+    email: userEmail,
+    picture: userPicture
+  };
 
-  // [1b] Send the Response with the HTTP-Only Cookie included
-  // res.send({ success: true });
+  res.cookie("user", userCookieData, {
+    httpOnly: false,
+    secure: false,
+    sameSite: "none",
+    maxAge: 3600000
+  });
 
-  // [2] send the customJWT back in the Response Body
-  res.json({ customJWT });
+  // Respond (but with no Body)
+  res.status(200).send();
 };
 
 export const authorizationCodeRedirectHandler = async (
@@ -295,35 +365,32 @@ export const authorizationCodeRedirectHandler = async (
   );
   // console.log("customJWT", customJWT);
 
-  // now we can send the customJWT back [1] as HTTP-Only Cookie or [2] in the Response Header
-
-  // [1a] set the JWT as an HTTP-Only Cookie
+  // set the JWT as an HTTP-Only Cookie
   res.cookie("customJWT", customJWT, {
-    // set the cookie as HTTP-Only
-    httpOnly: true,
-    // enable "secure" to use HTTPS
-    secure: false,
-    // "sameSite" determines how the cookie is sent with Cross-Origin Requests
-    sameSite: "none", // "strict" | "lax" | "none"
-    // set expiry of 1 hour to match the customJWT
-    maxAge: 3600000
+    httpOnly: true, // set the cookie as HTTP-Only
+    secure: false, // enable "secure" to use HTTPS
+    sameSite: "none", // "sameSite" determines how the cookie is sent with Cross-Origin Requests "strict" | "lax" | "none"
+    maxAge: 3600000 // set expiry of 1 hour to match the customJWT
   });
 
-  // [1b] because we cannot access the HTTP-Only Cookie on the frontend
-  // we need to send another Cookie with User Information
-  const userCookieData = { google_id: userGoogleId };
+  // because we cannot access the HTTP-Only Cookie on the frontend
+  // we need to send another Cookie with Non-Sensitive User Information
+  const userCookieData = {
+    google_id: userGoogleId,
+    firstname: userFirstname,
+    lastname: userLastname,
+    email: userEmail,
+    picture: userPicture
+  };
 
   res.cookie("user", userCookieData, {
     httpOnly: false,
     secure: false,
     sameSite: "none",
-    maxAge: 60 * 60 * 1000
+    maxAge: 3600000
   });
 
-  // [2] send the customJWT back in the Response Header
-  // res.set("Authorization", `Bearer ${customJWT}`);
-
-  // redirect to the frontend (including the customJWT)
+  // redirect to the frontend (with the Cookies)
   res.redirect(`http://localhost:3000/`);
 };
 
@@ -339,7 +406,7 @@ export const accessTokenHandler = async (req: Request, res: Response) => {
   // console.log("accessTokenHandler response", response);
 
   const data = await response.json();
-  // console.log("accessTokenHandler data", data);
+  console.log("accessTokenHandler data", data);
 
   // return the ACCESS TOKEN data
   res.json({ accessTokenData: data });

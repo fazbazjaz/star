@@ -5,11 +5,11 @@ import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 const LoginLogoutButton = () => {
-  const { user, login, logout } = useContext(AuthContext);
+  const { userCookie, login, logout } = useContext(AuthContext);
 
   return (
     <>
-      {user ? (
+      {userCookie ? (
         <Button
           variant="contained"
           startIcon={<LogoutIcon />}

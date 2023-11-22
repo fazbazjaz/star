@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 
 const NotFound = () => {
   return (
-    <Box sx={{ textAlign: "center", p: 15 }}>
+    <Box minHeight={"50vh"} p={3} border={1}>
       <Typography variant="h2">Page Not Found</Typography>
     </Box>
   );

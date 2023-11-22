@@ -5,14 +5,16 @@ import LoginLogoutButton from "./LoginLogoutButton";
 import { AuthContext } from "../context/AuthContext";
 
 const Navigation = () => {
-  const { token, user } = useContext(AuthContext);
+  // get the userCookie from AuthContext
+  const { userCookie } = useContext(AuthContext);
+
   return (
     <Box
-      border={1}
+      display={"flex"}
+      justifyContent={"space-between"}
       px={1}
       py={1}
-      display={"flex"}
-      justifyContent={"space-between"}>
+      border={1}>
       <Box display={"flex"} gap={1}>
         <Button component={NavLink} to={"/"} variant="contained">
           Home
@@ -20,7 +22,7 @@ const Navigation = () => {
         <Button component={NavLink} to={"/about"} variant="contained">
           About
         </Button>
-        {token && user && (
+        {userCookie && (
           <>
             <Button component={NavLink} to={"/profile"} variant="contained">
               Profile

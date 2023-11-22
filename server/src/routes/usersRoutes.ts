@@ -10,4 +10,4 @@ usersRouter.get("/", (req: Request, res: Response) => {
 });
 
 usersRouter.get("/all", authMiddleware, getAllUsers);
-usersRouter.get("/id/:userId", authMiddleware, getUserById);
+usersRouter.get("/id/:id", authMiddleware, getUserById);
