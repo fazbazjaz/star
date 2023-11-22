@@ -127,7 +127,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   // set the JWT as an HTTP-Only Cookie
   res.cookie("customJWT", customJWT, {
     httpOnly: true, // set the cookie as HTTP-Only
-    secure: false, // enable "secure" to use HTTPS
+    secure: true, // enable "secure" to use HTTPS
     sameSite: "none", // "sameSite" determines how the cookie is sent with Cross-Origin Requests "strict" | "lax" | "none"
     maxAge: 3600000 // set expiry of 1 hour to match the customJWT
   });
@@ -145,7 +145,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
 
   res.cookie("user", userCookieData, {
     httpOnly: false,
-    secure: false,
+    secure: true,
     sameSite: "none",
     maxAge: 3600000
   });
