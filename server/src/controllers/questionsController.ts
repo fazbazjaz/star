@@ -23,10 +23,9 @@ export const addQuestion = async (req: Request, res: Response) => {
     // console.log("addQuestion userGoogleId:", userGoogleId);
 
     const userQuery = await database
-      .selectDistinct({ id: users.id })
+      .select({ id: users.id })
       .from(users)
-      .where(eq(users.google_id, userGoogleId))
-      .limit(1);
+      .where(eq(users.google_id, userGoogleId));
     // console.log("addQuestion userQuery:", userQuery);
 
     const userId = userQuery[0].id;

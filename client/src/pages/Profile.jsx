@@ -83,39 +83,44 @@ const Profile = () => {
         </Box>
       </Box>
       {userQuestionsData && (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Question</TableCell>
-                <TableCell>Created At</TableCell>
-                <TableCell>Modified At</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {userQuestionsData.map((question) => (
-                <TableRow
-                  hover
-                  style={{ textDecoration: "none" }}
-                  key={question.id}
-                  component={NavLink}
-                  to={`/questions/${question.id}`}>
-                  <TableCell key={`${question.id}1`}>{question.id}</TableCell>
-                  <TableCell key={`${question.id}2`}>
-                    {question.question}
-                  </TableCell>
-                  <TableCell key={`${question.id}3`}>
-                    {new Date(question.createdAt).toLocaleString()}
-                  </TableCell>
-                  <TableCell key={`${question.id}4`}>
-                    {new Date(question.updatedAt).toLocaleString()}
-                  </TableCell>
+        <>
+          <Typography variant="h4" padding={3}>
+            {userQuestionsData.length} Questions
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Question</TableCell>
+                  <TableCell>Created At</TableCell>
+                  <TableCell>Modified At</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {userQuestionsData.map((question) => (
+                  <TableRow
+                    hover
+                    style={{ textDecoration: "none" }}
+                    key={question.id}
+                    component={NavLink}
+                    to={`/questions/${question.id}`}>
+                    <TableCell key={`${question.id}1`}>{question.id}</TableCell>
+                    <TableCell key={`${question.id}2`}>
+                      {question.question}
+                    </TableCell>
+                    <TableCell key={`${question.id}3`}>
+                      {new Date(question.createdAt).toLocaleString()}
+                    </TableCell>
+                    <TableCell key={`${question.id}4`}>
+                      {new Date(question.updatedAt).toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
       )}
     </Box>
   );
