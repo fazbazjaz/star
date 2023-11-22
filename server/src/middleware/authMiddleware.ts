@@ -24,7 +24,9 @@ export const authMiddleware = (
   // console.log("authMiddleware customJWT:", customJWT);
 
   if (!customJWT || typeof customJWT === "undefined") {
-    return res.status(401).json({ error: "Unauthorized - No JWT Provided" });
+    return res
+      .status(401)
+      .json({ error: "Unauthorized - No Cookie with JWT Provided" });
   }
 
   try {

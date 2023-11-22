@@ -1,12 +1,12 @@
 import { database } from "../../database/connection";
-import { sql } from "drizzle-orm";
+import { users, questions } from "../../database/schema";
 
 export const deleteAllQuestions = async () => {
-  await database.execute(sql`truncate questions cascade;`);
+  await database.delete(questions);
 };
 
 export const deleteAllUsers = async () => {
-  await database.execute(sql`truncate users cascade;`);
+  await database.delete(users);
 };
 
 export const cleanAll = async () => {

@@ -6,7 +6,7 @@ export const usersRouter = express.Router();
 
 // for a basic check on /api/users/
 usersRouter.get("/", (req: Request, res: Response) => {
-  res.json("STAR Server /api/users/ Users Route");
+  res.status(200).json({ message: "STAR Server /api/users/ Users Route" });
 });
 
 usersRouter.get("/all", authMiddleware, getAllUsers);
