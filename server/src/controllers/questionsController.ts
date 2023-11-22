@@ -44,6 +44,21 @@ export const addQuestion = async (req: Request, res: Response) => {
     res.status(200).json(data);
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const getAllQuestions = async (req: Request, res: Response) => {
+  try {
+    const query = await database.select().from(questions);
+    // console.log("getAllQuestions query:", query);
+
+    const data = query;
+    // console.log("getAllQuestions data:", data);
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
   }
 };
