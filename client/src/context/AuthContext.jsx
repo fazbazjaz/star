@@ -12,11 +12,7 @@ import { getCookieValue } from "../utils/getCookieValue";
 export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  // store the customJWT, the user information from the customJWT Payload
-  const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null);
-
-  // store the userCookie
+  // store the userCookie in state
   const [userCookie, setUserCookie] = useState(null);
 
   // Necessary for redirecting after logout
@@ -28,25 +24,19 @@ const AuthProvider = ({ children }) => {
     // loginGoogleAuthorizationCodePopup,
     // loginGoogleAuthorizationCodeRedirect,
     // loginGoogleAccessToken,
-  } = useGoogleAuth({ setToken, setUser, navigate });
+  } = useGoogleAuth({ setUserCookie, navigate }); // setToken, setUser,
 
   useEffect(() => {
-    // Try to retrieve the customJWT from localStorage
-    const storedToken = localStorage.getItem("token");
-    // console.log("storedToken:", storedToken);
+    // Try to retrieve the "user" Cookie if it exists
+    const userCookieFromBrowser = getCookieValue("user");
+    // console.log("userCookieFromBrowser:", userCookieFromBrowser);
 
-    // Try to retrieve the user Cookie if it exists
-    const userCookie = getCookieValue("user");
-    // console.log("userCookie:", userCookie);
+    // Parse the Cookie into a JavaScript Object
+    const userDataFromUserCookie = JSON.parse(userCookieFromBrowser);
+    // console.log("userDataFromUserCookie:", userDataFromUserCookie);
 
-    if (storedToken) {
-      setToken(storedToken);
-      const user = JSON.parse(atob(storedToken.split(".")[1]));
-      setUser(user);
-    }
-
-    if (userCookie) {
-      setUserCookie(userCookie);
+    if (userDataFromUserCookie) {
+      setUserCookie(userDataFromUserCookie);
     }
   }, []);
 
@@ -59,12 +49,8 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   const logout = useCallback(() => {
-    // remove the token from local storage
-    localStorage.removeItem("token");
-    // clear the token React State
-    setToken(null);
-    // clear the user React State
-    setUser(null);
+    // Remove the "user" Cookie from the Browser
+    document.cookie = "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     // clear the userCookie React state
     setUserCookie(null);
     // Redirect to the Home Page
@@ -73,13 +59,11 @@ const AuthProvider = ({ children }) => {
 
   const contextValue = useMemo(
     () => ({
-      token,
-      user,
       userCookie,
       login,
       logout,
     }),
-    [token, user, userCookie]
+    [userCookie]
   );
 
   return (

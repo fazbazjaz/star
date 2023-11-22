@@ -3,8 +3,8 @@ import { Box, CardMedia, Typography } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
 
 const Profile = () => {
-  // get the user and token from AuthContext
-  const { user } = useContext(AuthContext);
+  // get the userCookie from AuthContext
+  const { userCookie } = useContext(AuthContext);
 
   const profileBackgroundImage = "/images/background-001.jpg";
 
@@ -24,18 +24,18 @@ const Profile = () => {
         <Typography variant={"h3"}>Profile Page</Typography>
         <CardMedia
           component={"img"}
-          image={user.picture}
+          image={userCookie.picture}
           sx={{ height: 64, width: 64 }}
         />
         <Box mt={2}>
           <Typography fontWeight={"bold"}>Name:</Typography>
           <Typography>
-            {user.firstname} {user.lastname}
+            {userCookie.firstname} {userCookie.lastname}
           </Typography>
         </Box>
         <Box mt={1}>
           <Typography fontWeight={"bold"}>Email:</Typography>
-          <Typography>{user.email}</Typography>
+          <Typography>{userCookie.email}</Typography>
         </Box>
       </Box>
     </Box>
