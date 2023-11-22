@@ -1,12 +1,13 @@
 import { database } from "../database/connection";
-import { questions, users } from "../database/schema";
+import { questions } from "../database/schema";
 import { eq } from "drizzle-orm";
+import { createQuestion } from "../helpers/questions";
 import { Request, Response } from "express";
 
 export const addQuestion = async (req: Request, res: Response) => {
   try {
     const user = req.customJWTPayload;
-    // console.log("addQuestion user:", user);
+    // console.log("addQuestion user", user);
 
     if (!user) {
       return res.status(500).json({ error: "No User attached to the Request" });
@@ -19,30 +20,14 @@ export const addQuestion = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "No Question on the Request Body" });
     }
 
-    const userGoogleId = user.google_id;
-    // console.log("addQuestion userGoogleId:", userGoogleId);
+    const userId = user.id;
+    // console.log("addQuestion userId", userId);
 
-    const userQuery = await database
-      .select({ id: users.id })
-      .from(users)
-      .where(eq(users.google_id, userGoogleId));
-    // console.log("addQuestion userQuery:", userQuery);
+    const queryQuestion = await createQuestion(userId, question);
+    // console.log("addQuestion queryQuestion:", queryQuestion);
 
-    const userId = userQuery[0].id;
-    // console.log("addQuestion userId:", userId);
-
-    const insertQuestionQuery = await database
-      .insert(questions)
-      .values({ userId, question })
-      .returning();
-    // console.log("addQuestion insertQuestionQuery:", insertQuestionQuery);
-
-    const data = insertQuestionQuery[0];
-    // console.log("addQuestion payload:", payload);
-
-    res.status(200).json(data);
+    res.status(200).json(queryQuestion);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: "Server Error" });
   }
 };

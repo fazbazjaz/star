@@ -33,7 +33,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const questions = pgTable("questions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id")
-    .references(() => users.id)
+    .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
   question: text("question").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
