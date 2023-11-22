@@ -2,6 +2,8 @@ name: Client Workflow
 
 on:
   push:
+    paths:
+      - "client/**"
     branches:
       - main
   workflow_dispatch:

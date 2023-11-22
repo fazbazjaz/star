@@ -2,6 +2,8 @@ name: Server Workflow
 
 on:
   push:
+    paths:
+      - "server/**"
     branches:
       - main
   workflow_dispatch:
@@ -30,7 +32,7 @@ jobs:
       - name: Format Code
         run: npm run prettier
       - name: Lint Code
-        run: npm run lint
+        run: npm run lint:fix
   test:
     needs: lint
     runs-on: ubuntu-latest
@@ -74,7 +76,7 @@ jobs:
       - name: Format Code
         run: npm run prettier
       - name: Lint Code
-        run: npm run lint
+        run: npm run lint:fix
       - name: Test Code
         run: npm run test
   build:
@@ -97,7 +99,7 @@ jobs:
       - name: Format Code
         run: npm run prettier
       - name: Lint Code
-        run: npm run lint
+        run: npm run lint:fix
       - name: Build Server
         id: build-server
         run: npm run build
