@@ -129,7 +129,12 @@ export const idTokenHandler = async (req: Request, res: Response) => {
 
   // because we cannot access the HTTP-Only Cookie on the frontend
   // we need to send another Cookie with Non-Sensitive User Information
+
+  // get the userId from the previous Database Query
+  const userId = existingUser[0].id;
+
   const userCookieData = {
+    id: userId,
     google_id: userGoogleId,
     firstname: userFirstname,
     lastname: userLastname,

@@ -23,7 +23,7 @@ const Users = () => {
           `${import.meta.env.VITE_SERVER_URL}/api/users/all`,
           { credentials: "include" } // include HTTP-Only Cookie with customJWT
         );
-        console.log("fetchAllUsers response:", response);
+        // console.log("fetchAllUsers response:", response);
 
         if (!response.ok) {
           throw response;

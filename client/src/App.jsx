@@ -13,6 +13,7 @@ import NotFound from "./pages/NotFound";
 import Protected from "./components/Protected";
 import Questions from "./pages/Questions";
 import AddQuestion from "./pages/AddQuestion";
+import Question from "./pages/Question";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -48,6 +49,14 @@ const router = createBrowserRouter(
         element={
           <Protected>
             <AddQuestion />
+          </Protected>
+        }
+      />
+      <Route
+        path="questions/:id"
+        element={
+          <Protected>
+            <Question />
           </Protected>
         }
       />

@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from "react";
-import { Box, CardMedia, Typography } from "@mui/material";
+import { Box, Card, CardMedia, ListItem, Typography } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
+import { NavLink } from "react-router-dom";
 
 const Profile = () => {
   // get the userCookie from AuthContext
@@ -43,6 +44,7 @@ const Profile = () => {
     <Box
       minHeight={"50vh"}
       p={3}
+      color="white"
       border={1}
       sx={{
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${profileBackgroundImage})`,
@@ -51,7 +53,7 @@ const Profile = () => {
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
       }}>
-      <Box color={"white"}>
+      <Box>
         <Typography variant={"h3"}>Profile Page</Typography>
         <CardMedia
           component={"img"}
@@ -70,18 +72,32 @@ const Profile = () => {
         </Box>
       </Box>
       {userQuestionsData && (
-        <Box color={"white"} mt={2}>
-          <Typography variant={"h4"} mb={2}>
-            Your Questions
+        <Card>
+          <Typography variant="h4" padding={3}>
+            {userQuestionsData.length} Questions
           </Typography>
+          <Box display="flex" padding={2} backgroundColor="#dcdfe3">
+            <Typography marginRight={10}>ID</Typography>
+            <Typography width={500}>Question</Typography>
+            <Typography marginRight={20}>Created At</Typography>
+            <Typography>Modified AT</Typography>
+          </Box>
           {userQuestionsData.map((question) => (
-            <Typography key={question.id}>
-              {question.id} {question.question}{" "}
-              {new Date(question.createdAt).toLocaleString()}{" "}
-              {new Date(question.updatedAt).toLocaleString()}
-            </Typography>
+            <ListItem
+              component={NavLink}
+              key={question.id}
+              to={`/questions/${question.id}`}>
+              <Typography marginRight={10}>{question.id}</Typography>
+              <Typography width={500}>{question.question}</Typography>
+              <Typography marginRight={10}>
+                {new Date(question.createdAt).toLocaleString()}
+              </Typography>
+              <Typography>
+                {new Date(question.updatedAt).toLocaleString()}
+              </Typography>
+            </ListItem>
           ))}
-        </Box>
+        </Card>
       )}
     </Box>
   );
