@@ -1,33 +1,42 @@
 import { database } from "../database/connection";
-import { questions } from "../database/schema";
+import { questions, users } from "../database/schema";
 import { eq } from "drizzle-orm";
-import { createQuestion } from "../helpers/questions";
 import { Request, Response } from "express";
 
 export const addQuestion = async (req: Request, res: Response) => {
   try {
     const user = req.customJWTPayload;
-    // console.log("addQuestion user", user);
 
     if (!user) {
       return res.status(500).json({ error: "No User attached to the Request" });
     }
 
     const question = req.body.question;
-    // console.log("addQuestion question:", question);
 
     if (!question) {
       return res.status(400).json({ error: "No Question on the Request Body" });
     }
 
-    const userId = user.id;
-    // console.log("addQuestion userId", userId);
+    const userGoogleId = user.google_id;
 
-    const queryQuestion = await createQuestion(userId, question);
-    // console.log("addQuestion queryQuestion:", queryQuestion);
+    const userQuery = await database
+      .selectDistinct({ id: users.id })
+      .from(users)
+      .where(eq(users.google_id, userGoogleId))
+      .limit(1);
 
-    res.status(200).json(queryQuestion);
+    const userId = userQuery[0].id;
+
+    const insertQuestionQuery = await database
+      .insert(questions)
+      .values({ userId, question })
+      .returning();
+
+    const data = insertQuestionQuery[0];
+
+    res.status(200).json(data);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Server Error" });
   }
 };
@@ -35,11 +44,7 @@ export const addQuestion = async (req: Request, res: Response) => {
 export const getAllQuestions = async (req: Request, res: Response) => {
   try {
     const query = await database.select().from(questions);
-    // console.log("getAllQuestions query:", query);
-
     const data = query;
-    // console.log("getAllQuestions data:", data);
-
     res.status(200).json(data);
   } catch (error) {
     console.error(error);
@@ -47,42 +52,24 @@ export const getAllQuestions = async (req: Request, res: Response) => {
   }
 };
 
-export const findAllQuestionsByUser = async (req: Request, res: Response) => {
-  const userId = parseInt(req.params.id);
-  // console.log("findAllQuestionsByUser userId:", userId);
-
+export const deleteQuestion = async (req: Request, res: Response) => {
   try {
-    const query = await database
-      .select()
-      .from(questions)
-      .where(eq(questions.userId, userId));
-    // console.log("findAllQuestionsByUser query:", query);
+    const questionId = req.params.id;
 
-    const data = query;
-    // console.log("findAllQuestionsByUser data:", data);
+    if (!questionId) {
+      return res.status(400).json({ error: "No questionId provided" });
+    }
 
-    res.status(200).json(data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Server Error" });
-  }
-};
+    // Convert questionId to number
+    const questionIdNumber = parseInt(questionId, 10);
 
-export const findOneQuestion = async (req: Request, res: Response) => {
-  const questionId = parseInt(req.params.id);
-  // console.log("findOneQuestion questionId:", questionId);
+    if (isNaN(questionIdNumber)) {
+      return res.status(400).json({ error: "Invalid questionId format" });
+    }
 
-  try {
-    const query = await database
-      .select()
-      .from(questions)
-      .where(eq(questions.id, questionId));
-    // console.log("findOneQuestion query:", query);
+    await database.delete(questions).where(eq(questions.id, questionIdNumber));
 
-    const data = query[0];
-    // console.log("findOneQuestion data:", data);
-
-    res.status(200).json(data);
+    res.status(204).end();
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server Error" });
