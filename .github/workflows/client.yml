@@ -53,7 +53,7 @@ jobs:
       - name: Lint Code
         run: npm run lint
       - name: Test Code
-        run: echo "Testing..." # npm run test
+        run: npm run test
   build:
     needs: test
     runs-on: ubuntu-latest
