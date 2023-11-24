@@ -3,14 +3,14 @@ import jwt, { Secret } from "jsonwebtoken";
 import { app } from "../../app";
 import { disconnectFromDatabase } from "../../helpers/database";
 import { createUser } from "../../helpers/users";
-import { deleteAllUsers } from "../helpers/dbCleaner";
+import { cleanAll } from "../helpers/dbCleaner";
 import { CustomJWTPayload } from "../../types/types";
 import { SelectUserType } from "../../database/schema";
 
 const request = supertest(app);
 
 beforeEach(async () => {
-  await deleteAllUsers();
+  await cleanAll();
 });
 
 afterAll(async () => {
@@ -113,7 +113,7 @@ describe("/api/users/all GET", () => {
   });
 });
 
-describe("/api/users/id/1 GET", () => {
+describe("/api/users/:id GET", () => {
   it("returns 401 error when no JWT is provided from an HTTP-Only Cookie", async () => {
     const response = await request.get("/api/users/id/1");
 
@@ -149,7 +149,7 @@ describe("/api/users/id/1 GET", () => {
     );
 
     const response = await request
-      .get(`/api/users/id/${createdUserId}`)
+      .get(`/api/users/${createdUserId}`)
       .set("Cookie", `customJWT=${customJWT}`);
 
     expect(response.statusCode).toBe(200);

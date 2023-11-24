@@ -73,6 +73,7 @@ export const findAllQuestionsByUser = async (req: Request, res: Response) => {
       .where(eq(questions.userId, userId));
 
     const data = query;
+
     res.status(200).json(data);
   } catch (error) {
     console.error(error);
@@ -90,6 +91,10 @@ export const findOneQuestion = async (req: Request, res: Response) => {
       .where(eq(questions.id, questionId));
 
     const data = query[0];
+    if (data === undefined){
+      res.status(404).json({"error": "No Question Found!"});
+      return
+    }
     res.status(200).json(data);
   } catch (error) {
     console.error(error);
