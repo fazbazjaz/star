@@ -136,16 +136,13 @@ const AuthProvider = ({ children }) => {
     // console.log("useEffect existingUserCookie:", existingUserCookie);
 
     // If the "user" Cookie exists
-    if (existingUserCookie) {
+    if (getUserCookieFromBrowser()) {
       // set the "user" Cookie into React State
       setUserCookie(existingUserCookie);
 
       // Navigate to the Profile Page
       navigate("/profile");
-    }
-
-    // If there is no "user" Cookie
-    if (!existingUserCookie) {
+    } else if (!existingUserCookie) {
       // Initialize the Google Sign In Client
       initializeGoogleSignIn();
     }
