@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
+import AddAnswer from "../components/AddAnswer";
 
 const Question = () => {
   const questionId = useParams().id;
@@ -51,6 +52,7 @@ const Question = () => {
       <Typography mt={2}>
         Modified At:{new Date(questionData.updatedAt).toLocaleString()}
       </Typography>
+      <AddAnswer />
     </Box>
   );
 };
