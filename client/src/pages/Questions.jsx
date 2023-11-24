@@ -1,9 +1,23 @@
+// version2 with tablerow includes my delete function
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { Box, Button, Typography, List, ListItem } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  IconButton,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const Questions = () => {
-  const [questions, setQuestions] = useState(null);
+  const [questionsData, setQuestionsData] = useState(null);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -18,13 +32,15 @@ const Questions = () => {
         }
 
         const data = await response.json();
-        setQuestions(data);
+        setQuestionsData(data);
       } catch (error) {
         console.error("Error fetching questions:", error.message);
       }
     };
     fetchQuestions();
   }, []);
+
+  const questionsBackgroundImage = "/images/background-001.jpg";
 
   const handleDelete = async (questionId) => {
     try {
@@ -40,8 +56,7 @@ const Questions = () => {
         throw new Error("Failed to delete question");
       }
 
-      // Remove the deleted question from the state
-      setQuestions((prevQuestions) =>
+      setQuestionsData((prevQuestions) =>
         prevQuestions.filter((q) => q.id !== questionId)
       );
     } catch (error) {
@@ -50,24 +65,68 @@ const Questions = () => {
   };
 
   return (
-    <Box marginY={5}>
+    <Box
+      minHeight={"50vh"}
+      p={3}
+      color="white"
+      border={1}
+      sx={{
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${questionsBackgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center center",
+        backgroundRepeat: "no-repeat",
+        overflow: "hidden",
+      }}>
       <Button variant="contained" component={NavLink} to="/questions/add">
         Add Question
       </Button>
-
       <Box marginTop={3}>
-        <Typography variant="h4">List of Questions</Typography>
-        <List>
-          {questions &&
-            questions.map((question) => (
-              <ListItem key={question.id}>
-                {question.question}
-                <Button onClick={() => handleDelete(question.id)}>
-                  Delete
-                </Button>
-              </ListItem>
-            ))}
-        </List>
+        {questionsData && questionsData.length > 0 && (
+          <>
+            <Typography variant="h4" mb={2}>
+              All Questions ({questionsData.length})
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>ID</TableCell>
+                    <TableCell>Question</TableCell>
+                    <TableCell>Created At</TableCell>
+                    <TableCell>Modified At</TableCell>
+                    <TableCell>Action</TableCell> {/* New column for action */}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {questionsData.map((question) => (
+                    <TableRow
+                      hover
+                      style={{ textDecoration: "none" }}
+                      key={question.id}
+                      component={NavLink}
+                      to={`/questions/${question.id}`}>
+                      <TableCell>{question.id}</TableCell>
+                      <TableCell>{question.question}</TableCell>
+                      <TableCell>
+                        {new Date(question.createdAt).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(question.updatedAt).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          onClick={() => handleDelete(question.id)}
+                          color="secondary">
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </>
+        )}
       </Box>
     </Box>
   );

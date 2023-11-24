@@ -1,6 +1,7 @@
 import { database } from "../database/connection";
-import { questions, users } from "../database/schema";
+import { questions } from "../database/schema";
 import { eq } from "drizzle-orm";
+import { createQuestion } from "../helpers/questions";
 import { Request, Response } from "express";
 
 export const addQuestion = async (req: Request, res: Response) => {
@@ -17,24 +18,11 @@ export const addQuestion = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "No Question on the Request Body" });
     }
 
-    const userGoogleId = user.google_id;
+    const userId = user.id;
 
-    const userQuery = await database
-      .selectDistinct({ id: users.id })
-      .from(users)
-      .where(eq(users.google_id, userGoogleId))
-      .limit(1);
+    const queryQuestion = await createQuestion(userId, question);
 
-    const userId = userQuery[0].id;
-
-    const insertQuestionQuery = await database
-      .insert(questions)
-      .values({ userId, question })
-      .returning();
-
-    const data = insertQuestionQuery[0];
-
-    res.status(200).json(data);
+    res.status(200).json(queryQuestion);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server Error" });
@@ -60,7 +48,6 @@ export const deleteQuestion = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "No questionId provided" });
     }
 
-    // Convert questionId to number
     const questionIdNumber = parseInt(questionId, 10);
 
     if (isNaN(questionIdNumber)) {
@@ -70,6 +57,40 @@ export const deleteQuestion = async (req: Request, res: Response) => {
     await database.delete(questions).where(eq(questions.id, questionIdNumber));
 
     res.status(204).end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const findAllQuestionsByUser = async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.id);
+
+  try {
+    const query = await database
+      .select()
+      .from(questions)
+      .where(eq(questions.userId, userId));
+
+    const data = query;
+    res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const findOneQuestion = async (req: Request, res: Response) => {
+  const questionId = parseInt(req.params.id);
+
+  try {
+    const query = await database
+      .select()
+      .from(questions)
+      .where(eq(questions.id, questionId));
+
+    const data = query[0];
+    res.status(200).json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server Error" });
