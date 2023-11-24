@@ -45,7 +45,7 @@ const Question = () => {
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
       }}>
-      <Typography variant="h3">{questionData.question}</Typography>
+      <Typography variant="h4">{questionData.question}</Typography>
       <Typography mt={2}>
         Created At: {new Date(questionData.createdAt).toLocaleString()}
       </Typography>
