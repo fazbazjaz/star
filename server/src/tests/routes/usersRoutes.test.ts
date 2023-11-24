@@ -41,7 +41,8 @@ describe("/api/users/all GET", () => {
   });
 
   it("returns 200 JSON Response with an Array of Users when a Valid JWT is provided", async () => {
-    await createUser({
+    // Create the First User
+    const user = await createUser({
       google_id: "0123456789",
       firstname: "Bob",
       lastname: "Smith",
@@ -49,6 +50,7 @@ describe("/api/users/all GET", () => {
       picture: "test.com/bob.png"
     });
 
+    // Create The Second User
     await createUser({
       google_id: "9876543210",
       firstname: "Ben",
@@ -57,13 +59,12 @@ describe("/api/users/all GET", () => {
       picture: "test.com/ben.png"
     });
 
+    // Get the First User's ID
+    const createdUserId = user[0].id;
+
     const customJWTPayload: CustomJWTPayload = {
-      id: 1,
-      google_id: "0123456789",
-      firstname: "Bob",
-      lastname: "Smith",
-      email: "bob@gmail.com",
-      picture: "test.com/bob.png"
+      id: createdUserId,
+      google_id: "0123456789"
     };
 
     const customJWT = jwt.sign(
@@ -135,12 +136,8 @@ describe("/api/users/id/1 GET", () => {
     const createdUserId = user[0].id;
 
     const customJWTPayload: CustomJWTPayload = {
-      id: 1,
-      google_id: "0123456789",
-      firstname: "Bob",
-      lastname: "Smith",
-      email: "bob@gmail.com",
-      picture: "test.com/bob.png"
+      id: createdUserId,
+      google_id: "0123456789"
     };
 
     const customJWT = jwt.sign(
