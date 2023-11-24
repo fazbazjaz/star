@@ -1,4 +1,3 @@
-// version2 with tablerow includes my delete function
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import {
