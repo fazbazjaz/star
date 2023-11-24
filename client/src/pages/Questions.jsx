@@ -11,7 +11,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  IconButton,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const Questions = () => {
   const [questionsData, setQuestionsData] = useState(null);
@@ -23,15 +25,12 @@ const Questions = () => {
           `${import.meta.env.VITE_SERVER_URL}/api/questions`,
           { credentials: "include" }
         );
-        // console.log("fetchQuestions response:", response);
 
         if (!response.ok) {
           throw new Error("Failed to fetch questions");
         }
 
         const data = await response.json();
-        // console.log("fetchQuestions data:", data);
-
         setQuestionsData(data);
       } catch (error) {
         console.error("Error fetching questions:", error.message);
@@ -41,6 +40,28 @@ const Questions = () => {
   }, []);
 
   const questionsBackgroundImage = "/images/background-001.jpg";
+
+  const handleDelete = async (questionId) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete question");
+      }
+
+      setQuestionsData((prevQuestions) =>
+        prevQuestions.filter((q) => q.id !== questionId)
+      );
+    } catch (error) {
+      console.error("Error deleting question:", error.message);
+    }
+  };
 
   return (
     <Box
@@ -72,6 +93,7 @@ const Questions = () => {
                     <TableCell>Question</TableCell>
                     <TableCell>Created At</TableCell>
                     <TableCell>Modified At</TableCell>
+                    <TableCell>Action</TableCell> {/* New column for action */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -82,17 +104,20 @@ const Questions = () => {
                       key={question.id}
                       component={NavLink}
                       to={`/questions/${question.id}`}>
-                      <TableCell key={`${question.id}1`}>
-                        {question.id}
-                      </TableCell>
-                      <TableCell key={`${question.id}2`}>
-                        {question.question}
-                      </TableCell>
-                      <TableCell key={`${question.id}3`}>
+                      <TableCell>{question.id}</TableCell>
+                      <TableCell>{question.question}</TableCell>
+                      <TableCell>
                         {new Date(question.createdAt).toLocaleString()}
                       </TableCell>
-                      <TableCell key={`${question.id}4`}>
+                      <TableCell>
                         {new Date(question.updatedAt).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          onClick={() => handleDelete(question.id)}
+                          color="secondary">
+                          <DeleteIcon />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   ))}
