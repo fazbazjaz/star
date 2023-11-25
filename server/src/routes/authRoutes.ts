@@ -1,10 +1,5 @@
 import express, { Request, Response } from "express";
-import {
-  authorizationCodePopupHandler,
-  authorizationCodeRedirectHandler,
-  accessTokenHandler,
-  idTokenHandler
-} from "../controllers/authController";
+import { idTokenHandler } from "../controllers/authController";
 
 export const authRouter = express.Router();
 
@@ -15,7 +10,4 @@ authRouter.get("/", (req: Request, res: Response) => {
   });
 });
 
-authRouter.post("/google/authorizationcode", authorizationCodePopupHandler);
-authRouter.get("/google/authorizationcode", authorizationCodeRedirectHandler);
-authRouter.post("/google/accesstoken", accessTokenHandler);
 authRouter.post("/google/idtoken", idTokenHandler);

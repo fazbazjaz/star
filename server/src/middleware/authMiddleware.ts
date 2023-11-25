@@ -14,8 +14,8 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  // every time the client makes a request
-  // it will come with the customJWT in an HTTP-Only Cookie
+  // Every time the client makes a Request
+  // It will come with the customJWT in an HTTP-Only Cookie
 
   const cookies = req.cookies;
   // console.log("authMiddleware cookies:", cookies);
@@ -37,10 +37,11 @@ export const authMiddleware = (
     );
     // console.log("authMiddleware verifiedCustomJWT:", verifiedCustomJWT);
 
-    // store the User Information from the customJWT Payload in a User Property on the Request Object
+    // Store the verfied Custom JWT Payload in a customJWTPayload Property on the Request Object
     req.customJWTPayload = verifiedCustomJWT as CustomJWTPayload;
+    // console.log("req.customJWTPayload:", req.customJWTPayload);
 
-    // all the checks have passed Authorize the Request
+    // All the checks have passed Authorize the Request
     next();
   } catch (error) {
     return res.status(401).json({ error: "Unauthorized - Invalid JWT" });
