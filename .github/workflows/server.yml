@@ -114,6 +114,7 @@ jobs:
           name: server-build-folder
           path: ./server/build
   deploy:
+    if: ${{ github.event_name != 'pull_request' }}
     needs: build
     runs-on: ubuntu-latest
     steps:
