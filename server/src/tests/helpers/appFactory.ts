@@ -1,7 +1,8 @@
 import {
   addQuestion,
   deleteQuestion,
-  findAllQuestionsByUser, findOneQuestion,
+  findAllQuestionsByUser,
+  findOneQuestion,
   getAllQuestions
 } from "../../controllers/questionsController";
 import express from "express";

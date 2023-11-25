@@ -1,8 +1,7 @@
 import supertest from "supertest";
-import {cleanAll} from "../helpers/dbCleaner";
-import {disconnectFromDatabase} from "../../helpers/database";
-import {app} from "../../app";
-
+import { cleanAll } from "../helpers/dbCleaner";
+import { disconnectFromDatabase } from "../../helpers/database";
+import { app } from "../../app";
 
 describe("API Routes", () => {
   const request = supertest(app);
@@ -26,4 +25,4 @@ describe("API Routes", () => {
       });
     });
   });
-})
+});

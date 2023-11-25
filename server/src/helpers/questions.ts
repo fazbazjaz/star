@@ -20,4 +20,3 @@ export const getOneQuestion = async (questionId: number) => {
     .from(questions)
     .where(eq(questions.id, questionId));
 };
-
