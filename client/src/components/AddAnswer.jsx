@@ -76,10 +76,10 @@ const AddAnswer = () => {
           },
           credentials: "include", // attach the HTTP-Only Cookie with customJWT
           body: JSON.stringify({
-            situation: answer.situation,
-            task: answer.task,
-            action: answer.action,
-            result: answer.result,
+            situation: answer.situation.content,
+            task: answer.task.content,
+            action: answer.action.content,
+            result: answer.result.content,
           }),
         }
       );
@@ -131,7 +131,7 @@ const AddAnswer = () => {
             borderRadius: 2,
             backgroundColor: "rgba(255, 255, 255, 0.15)",
           }}>
-          <Typography variant="h3">Add your Answer</Typography>
+          <Typography variant="h4">Add your Answer</Typography>
           <Typography variant="h5" my={2}>
             ⭐ Situation:
           </Typography>
