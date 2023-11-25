@@ -123,7 +123,7 @@ jobs:
         with:
           name: server-build-folder
           path: ./server/build
-      - name: Show Folder
-        run: ls
+      - name: Show Folder Contents
+        run: ls -R build
       - name: Deploy
         run: echo "Deploying..."
