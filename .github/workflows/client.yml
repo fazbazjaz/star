@@ -100,6 +100,6 @@ jobs:
           name: client-build-folder
           path: ./client/build
       - name: Show Folder Contents
-        run: ls
+        run: ls -R build
       - name: Deploy
         run: echo "Deploying..."
