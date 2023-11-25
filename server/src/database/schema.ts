@@ -73,3 +73,22 @@ export const answersRelations = relations(answers, ({ one }) => ({
     references: [questions.id]
   })
 }));
+
+// Comments Table
+export const comments = pgTable("comments", {
+  id: serial("id").primaryKey(),
+  answerId: integer("answer_id")
+    .references(() => answers.id, { onDelete: "cascade" })
+    .notNull(),
+  comment: text("comment").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Relations for Comments Table
+export const commentsRelations = relations(comments, ({ one }) => ({
+  answer: one(answers, {
+    fields: [comments.answerId],
+    references: [answers.id]
+  })
+}));
