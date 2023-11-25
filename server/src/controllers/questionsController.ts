@@ -1,8 +1,8 @@
 import { database } from "../database/connection";
 import { questions, answers } from "../database/schema";
 import { eq } from "drizzle-orm";
-import { createQuestion } from "../helpers/questions";
 import { Request, Response } from "express";
+import { createQuestion, deleteQuestions } from "../helpers/questions";
 
 export const addQuestion = async (req: Request, res: Response) => {
   try {
@@ -54,7 +54,7 @@ export const deleteQuestion = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid questionId format" });
     }
 
-    await database.delete(questions).where(eq(questions.id, questionIdNumber));
+    await deleteQuestions(questionIdNumber);
 
     res.status(204).end();
   } catch (error) {
