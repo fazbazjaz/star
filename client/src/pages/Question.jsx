@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import AddAnswer from "../components/AddAnswer";
+import AnswersList from "../components/AnswersList";
 import { formatDate } from "../utils/formatDate";
 
 const Question = () => {
@@ -45,22 +46,22 @@ const Question = () => {
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
       }}>
+      <Typography variant={"h5"}>Question</Typography>
       <Box
         p={4}
         borderRadius={2}
         sx={{ backgroundColor: "rgba(255, 255, 255, 0.15)" }}>
-        <Typography variant="h4" textAlign={"center"}>
-          {questionData.question}
-        </Typography>
-        <Box textAlign="end">
-          <Typography variant={"body2"}>
-            Created {formatDate(new Date(questionData.createdAt))}
-          </Typography>
-          <Typography variant={"body2"}>
-            Updated {formatDate(new Date(questionData.updatedAt))}
-          </Typography>
-        </Box>
+        <Typography variant="h4">{questionData.question}</Typography>
       </Box>
+      <Box textAlign="end">
+        <Typography variant={"body2"}>
+          Created {formatDate(new Date(questionData.createdAt))}
+        </Typography>
+        <Typography variant={"body2"}>
+          Updated {formatDate(new Date(questionData.updatedAt))}
+        </Typography>
+      </Box>
+      <AnswersList data={questionData.answers} />
       <AddAnswer />
     </Box>
   );

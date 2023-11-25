@@ -20,3 +20,12 @@ export const getOneQuestion = async (questionId: number) => {
     .from(questions)
     .where(eq(questions.id, questionId));
 };
+
+export const getQuestionAndAllAnswers = async (questionId: number) => {
+  return await database.query.questions.findMany({
+    with: {
+      answers: true
+    },
+    where: eq(questions.id, questionId)
+  });
+};

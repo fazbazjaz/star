@@ -2,7 +2,11 @@ import { database } from "../database/connection";
 import { questions, answers } from "../database/schema";
 import { eq } from "drizzle-orm";
 import { Request, Response } from "express";
-import { createQuestion, deleteQuestions } from "../helpers/questions";
+import {
+  createQuestion,
+  deleteQuestions,
+  getQuestionAndAllAnswers
+} from "../helpers/questions";
 
 export const addQuestion = async (req: Request, res: Response) => {
   try {
@@ -73,7 +77,6 @@ export const findAllQuestionsByUser = async (req: Request, res: Response) => {
       .where(eq(questions.userId, userId));
 
     const data = query;
-
     res.status(200).json(data);
   } catch (error) {
     console.error(error);
@@ -85,10 +88,8 @@ export const findOneQuestion = async (req: Request, res: Response) => {
   const questionId = parseInt(req.params.id);
 
   try {
-    const query = await database
-      .select()
-      .from(questions)
-      .where(eq(questions.id, questionId));
+    const query = await getQuestionAndAllAnswers(questionId);
+    // console.log("findOneQuestion query:", query);
 
     const data = query[0];
     if (data === undefined) {
