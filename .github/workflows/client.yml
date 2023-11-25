@@ -38,7 +38,7 @@ jobs:
   test:
     needs: lint
     runs-on: ubuntu-latest
-    environment: test
+    # environment: test
     env:
       VITE_SERVER_URL: ${{ vars.VITE_SERVER_URL }}
       VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
@@ -62,7 +62,7 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
-    environment: production
+    # environment: production
     env:
       VITE_SERVER_URL: ${{ vars.VITE_SERVER_URL }}
       VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
