@@ -18,10 +18,10 @@ const AddAnswer = () => {
   });
 
   const [answerValidation, setAnswerValidation] = useState({
-    situation: undefined,
-    task: undefined,
-    action: undefined,
-    result: undefined,
+    situation: false,
+    task: false,
+    action: false,
+    result: false,
   });
 
   const [status, setStatus] = useState({
@@ -34,25 +34,21 @@ const AddAnswer = () => {
   const questionId = useParams().id;
 
   const validateIndividualTextarea = (key) => {
-    console.log("validateIndividualTextarea key:", key);
-    if (!answer[key] || answer[key].length < 50 || answer[key].length > 500) {
-      setAnswerValidation((prevValidation) => ({
-        ...prevValidation,
-        [key]: false,
-      }));
+    if (answer[key].length < 10 || answer[key].length > 500) {
+      answerValidation[key] = true;
     } else {
-      setAnswerValidation((prevValidation) => ({
-        ...prevValidation,
-        [key]: true,
-      }));
+      answerValidation[key] = false;
     }
   };
 
   const validateAllTextareas = () => {
-    const isValidated = Object.values(answerValidation).every(
-      (value) => value === true
-    );
-    if (!isValidated) {
+    Object.keys(answer).forEach((key) => {
+      validateIndividualTextarea(key);
+    });
+
+    const isValidated = Object.values(answerValidation).some((value) => value);
+
+    if (isValidated) {
       return false;
     }
     return true;
@@ -60,17 +56,11 @@ const AddAnswer = () => {
 
   const changeHandler = (event) => {
     setAnswer((prevAnswer) => {
-      if (event.target.value === undefined) {
-        return { ...prevAnswer, [event.target.id]: undefined };
-      } else {
-        return { ...prevAnswer, [event.target.id]: event.target.value };
-      }
+      return { ...prevAnswer, [event.target.id]: event.target.value };
     });
-    validateIndividualTextarea(event.target.id);
-    console.log("answer:", answer, "answerValidation", answerValidation);
   };
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
     if (!validateAllTextareas()) {
       setStatus({
@@ -79,184 +69,170 @@ const AddAnswer = () => {
         success: false,
         message: "There are issues in your Answers Form 🙁",
       });
-      return;
-    }
-    postAnswer(questionId);
-  };
+    } else {
+      try {
+        setStatus({
+          submitting: true,
+          error: undefined,
+          success: undefined,
+          message: undefined,
+        });
+        const response = await fetch(
+          `${
+            import.meta.env.VITE_SERVER_URL
+          }/api/questions/${questionId}/answers`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include", // attach the HTTP-Only Cookie with customJWT
+            body: JSON.stringify({
+              situation: answer.situation,
+              task: answer.task,
+              action: answer.action,
+              result: answer.result,
+            }),
+          }
+        );
+        // console.log("AddAnswer response:", response);
 
-  const postAnswer = async (questionId) => {
-    try {
-      setStatus({
-        submitting: true,
-        error: undefined,
-        success: undefined,
-        message: undefined,
-      });
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_SERVER_URL
-        }/api/questions/${questionId}/answers`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // attach the HTTP-Only Cookie with customJWT
-          body: JSON.stringify({
-            situation: answer.situation,
-            task: answer.task,
-            action: answer.action,
-            result: answer.result,
-          }),
+        if (!response.ok) {
+          throw response;
         }
-      );
-      // console.log("AddAnswer postAnswer response:", response);
 
-      if (!response.ok) {
-        throw response;
+        // const data = await response.json();
+        // console.log("AddAnswer postAnswer data:", data);
+
+        setStatus({
+          submitting: false,
+          error: undefined,
+          success: true,
+          message: "Your answer was successfully added!😁 Thank you ⭐",
+        });
+        setAnswer({
+          situation: "",
+          task: "",
+          action: "",
+          result: "",
+        });
+        setAnswerValidation({
+          situation: undefined,
+          task: undefined,
+          action: undefined,
+          result: undefined,
+        });
+      } catch (error) {
+        setStatus({
+          submitting: false,
+          error: true,
+          success: false,
+          message: "There was an error sending the Form to the Server 😭",
+        });
+        console.error("AddAnswer postAnswer error:", error);
       }
-
-      // const data = await response.json();
-      // console.log("AddAnswer postAnswer data:", data);
-
-      setStatus({
-        submitting: false,
-        error: undefined,
-        success: true,
-        message: "Your answer was successfully added!😁 Thank you ⭐",
-      });
-      setAnswer({
-        situation: "",
-        task: "",
-        action: "",
-        result: "",
-      });
-      setAnswerValidation({
-        situation: undefined,
-        task: undefined,
-        action: undefined,
-        result: undefined,
-      });
-    } catch (error) {
-      setStatus({
-        submitting: false,
-        error: true,
-        success: false,
-        message: "There was an error sending the Form to the Server 😭",
-      });
-      console.error("AddAnswer postAnswer error:", error);
     }
   };
 
   return (
-    <Box display="flex" justifyContent="center" marginY={5}>
-      <form onSubmit={submitHandler}>
-        <FormControl>
-          <Typography variant="h3">Add your STAR Answer</Typography>
+    <Box mt={4}>
+      <form
+        onSubmit={submitHandler}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+        }}>
+        <FormControl
+          sx={{
+            minWidth: "50%",
+            py: 6,
+            px: 6,
+            borderRadius: 2,
+            backgroundColor: "rgba(255, 255, 255, 0.15)",
+          }}>
+          <Typography variant="h3">Add your Answer</Typography>
           <Typography variant="h5" my={2}>
-            Situation:
+            ⭐ Situation:
           </Typography>
           <TextareaAutosize
             id="situation"
             aria-label="Add your Situation"
-            padding={5}
             minRows={7}
             placeholder="Please carefully type out the Situation"
             value={answer.situation}
             onChange={changeHandler}
             style={{
+              fontSize: "16px",
               border: `1px solid ${
-                typeof answerValidation.situation === "boolean" &&
-                !answerValidation.situation
-                  ? "red"
-                  : "black"
+                answerValidation.situation ? "red" : "black"
               }`,
             }}
           />
-          {typeof answerValidation.situation === "boolean" &&
-            !answerValidation.situation && (
-              <Typography color="error">
-                Your Situation needs to be between 50-500 Characters
-              </Typography>
-            )}
+          {answerValidation.situation && (
+            <Typography color="error">
+              Your Situation needs to be between 10-500 Characters
+            </Typography>
+          )}
           <Typography variant="h5" my={2}>
-            Result:
+            ⭐ Task:
           </Typography>
           <TextareaAutosize
             id="task"
             aria-label="Add your Task"
-            padding={5}
             minRows={7}
             placeholder="Please carefully type out the Task"
             value={answer.task}
             onChange={changeHandler}
             style={{
-              border: `1px solid ${
-                typeof answerValidation.task === "boolean" &&
-                answerValidation.task === false
-                  ? "red"
-                  : "black"
-              }`,
+              fontSize: "16px",
+              border: `1px solid ${answerValidation.task ? "red" : "black"}`,
             }}
           />
-          {typeof answerValidation.task === "boolean" &&
-            answerValidation.task === false && (
-              <Typography color="error">
-                Your Task needs to be between 50-500 Characters
-              </Typography>
-            )}
+          {answerValidation.task && (
+            <Typography color="error">
+              Your Task needs to be between 10-500 Characters
+            </Typography>
+          )}
           <Typography variant="h5" my={2}>
-            Result:
+            ⭐ Action:
           </Typography>
           <TextareaAutosize
             id="action"
             aria-label="Add your Action"
-            padding={5}
             minRows={7}
             placeholder="Please carefully type out the Action"
             value={answer.action}
             onChange={changeHandler}
             style={{
-              border: `1px solid ${
-                typeof answerValidation.action === "boolean" &&
-                answerValidation.action === false
-                  ? "red"
-                  : "black"
-              }`,
+              fontSize: "16px",
+              border: `1px solid ${answerValidation.action ? "red" : "black"}`,
             }}
           />
-          {typeof answerValidation.action === "boolean" &&
-            answerValidation.action === false && (
-              <Typography color="error">
-                Your Action needs to be between 50-500 Characters
-              </Typography>
-            )}
+          {answerValidation.action && (
+            <Typography color="error">
+              Your Action needs to be between 10-500 Characters
+            </Typography>
+          )}
           <Typography variant="h5" my={2}>
-            Result:
+            ⭐ Result:
           </Typography>
           <TextareaAutosize
             id="result"
             aria-label="Add your Result"
-            padding={5}
             minRows={7}
             placeholder="Please carefully type out the Result"
             value={answer.result}
             onChange={changeHandler}
             style={{
-              border: `1px solid ${
-                typeof answerValidation.result === "boolean" &&
-                answerValidation.result === false
-                  ? "red"
-                  : "black"
-              }`,
+              fontSize: "inherit",
+              border: `1px solid ${answerValidation.result ? "red" : "black"}`,
             }}
           />
-          {typeof answerValidation.result === "boolean" &&
-            answerValidation.result === false && (
-              <Typography color="error">
-                Your Result must be between 10-500 Characters
-              </Typography>
-            )}
+          {answerValidation.result && (
+            <Typography color="error">
+              Your Result must be between 10-500 Characters
+            </Typography>
+          )}
           <Box display={"flex"} gap={1} mt={2}>
             <Button variant="contained" component={NavLink} to={"/questions"}>
               Back
@@ -271,35 +247,17 @@ const AddAnswer = () => {
           </Box>
           <Box>
             {status.submitting && (
-              <Typography
-                color={"info"}
-                mt={2}
-                py={0.5}
-                px={1}
-                borderRadius={1.5}
-                sx={{ backgroundColor: "rgba(255, 255, 255, 0.75)" }}>
+              <Typography color={"info"} mt={2} px={1}>
                 Submitting...
               </Typography>
             )}
             {status.success && (
-              <Typography
-                color={"success.main"}
-                mt={2}
-                py={0.5}
-                px={1}
-                borderRadius={1.5}
-                sx={{ backgroundColor: "rgba(255, 255, 255, 0.75)" }}>
+              <Typography color={"success.main"} mt={2} px={1}>
                 Success: {status.message}
               </Typography>
             )}
             {status.error && (
-              <Typography
-                color={"error"}
-                mt={2}
-                py={0.5}
-                px={1}
-                borderRadius={1.5}
-                sx={{ backgroundColor: "rgba(255, 255, 255, 0.75)" }}>
+              <Typography color={"error"} mt={2} px={1}>
                 Error: {status.message}
               </Typography>
             )}

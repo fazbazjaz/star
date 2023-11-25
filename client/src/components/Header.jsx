@@ -11,8 +11,9 @@ const Header = () => {
         gap={{ xs: 2, md: 5 }}
         px={{ xs: 2, md: 2, lg: 2 }}
         py={{ xs: 2, md: 2, lg: 2 }}
-        border={1}>
-        <Typography variant={"h2"}>STAR by CodeYourFuture</Typography>
+        backgroundColor={"#15164b"}
+        color={"white"}>
+        <Typography variant={"h2"}>⭐ STAR by CodeYourFuture</Typography>
       </Box>
     </AppBar>
   );

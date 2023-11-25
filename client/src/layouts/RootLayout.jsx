@@ -21,9 +21,9 @@ const RootLayout = () => {
           display={"grid"}
           gridTemplateRows={"auto auto auto 1fr auto"}
           border={4}>
-          <AuthState />
           <Header />
           <Navigation />
+          <AuthState />
           <Outlet />
           <Footer />
         </Box>
