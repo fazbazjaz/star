@@ -11,126 +11,107 @@ import SendIcon from "@mui/icons-material/Send";
 
 const AddAnswer = () => {
   const [answer, setAnswer] = useState({
-    situation: "",
-    task: "",
-    action: "",
-    result: "",
-  });
-
-  const [answerValidation, setAnswerValidation] = useState({
-    situation: false,
-    task: false,
-    action: false,
-    result: false,
+    situation: { content: "", error: undefined },
+    task: { content: "", error: undefined },
+    action: { content: "", error: undefined },
+    result: { content: "", error: undefined },
   });
 
   const [status, setStatus] = useState({
-    submitting: null,
-    error: null,
-    success: null,
+    submitting: false,
+    error: false,
+    success: false,
     message: null,
   });
 
   const questionId = useParams().id;
 
-  const validateIndividualTextarea = (key) => {
-    if (answer[key].length < 10 || answer[key].length > 500) {
-      answerValidation[key] = true;
-    } else {
-      answerValidation[key] = false;
-    }
+  const changeHandler = (event) => {
+    setAnswer((prevAnswer) => {
+      return {
+        ...prevAnswer,
+        [event.target.id]: {
+          content: event.target.value,
+          error:
+            event.target.value.length < 10 || event.target.value.length > 500
+              ? true
+              : false,
+        },
+      };
+    });
   };
 
   const validateAllTextareas = () => {
-    Object.keys(answer).forEach((key) => {
-      validateIndividualTextarea(key);
-    });
-
-    const isValidated = Object.values(answerValidation).some((value) => value);
-
-    if (isValidated) {
-      return false;
-    }
-    return true;
-  };
-
-  const changeHandler = (event) => {
-    setAnswer((prevAnswer) => {
-      return { ...prevAnswer, [event.target.id]: event.target.value };
-    });
+    return Object.values(answer).every((answer) => answer.error === false);
   };
 
   const submitHandler = async (event) => {
     event.preventDefault();
+
     if (!validateAllTextareas()) {
       setStatus({
         submitting: false,
         error: true,
         success: false,
-        message: "There are issues in your Answers Form 🙁",
+        message: "There are problems in your Answers Form 🙁",
       });
-    } else {
-      try {
-        setStatus({
-          submitting: true,
-          error: undefined,
-          success: undefined,
-          message: undefined,
-        });
-        const response = await fetch(
-          `${
-            import.meta.env.VITE_SERVER_URL
-          }/api/questions/${questionId}/answers`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include", // attach the HTTP-Only Cookie with customJWT
-            body: JSON.stringify({
-              situation: answer.situation,
-              task: answer.task,
-              action: answer.action,
-              result: answer.result,
-            }),
-          }
-        );
-        // console.log("AddAnswer response:", response);
+      return;
+    }
 
-        if (!response.ok) {
-          throw response;
+    try {
+      setStatus({
+        submitting: true,
+        error: false,
+        success: false,
+        message: null,
+      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_SERVER_URL
+        }/api/questions/${questionId}/answers`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // attach the HTTP-Only Cookie with customJWT
+          body: JSON.stringify({
+            situation: answer.situation,
+            task: answer.task,
+            action: answer.action,
+            result: answer.result,
+          }),
         }
+      );
+      // console.log("AddAnswer response:", response);
 
-        // const data = await response.json();
-        // console.log("AddAnswer postAnswer data:", data);
-
-        setStatus({
-          submitting: false,
-          error: undefined,
-          success: true,
-          message: "Your answer was successfully added!😁 Thank you ⭐",
-        });
-        setAnswer({
-          situation: "",
-          task: "",
-          action: "",
-          result: "",
-        });
-        setAnswerValidation({
-          situation: undefined,
-          task: undefined,
-          action: undefined,
-          result: undefined,
-        });
-      } catch (error) {
-        setStatus({
-          submitting: false,
-          error: true,
-          success: false,
-          message: "There was an error sending the Form to the Server 😭",
-        });
-        console.error("AddAnswer postAnswer error:", error);
+      if (!response.ok) {
+        throw response;
       }
+
+      // const data = await response.json();
+      // console.log("AddAnswer postAnswer data:", data);
+
+      setStatus({
+        submitting: false,
+        error: false,
+        success: true,
+        message: "Your answer was successfully added!😁 Thank you ⭐",
+      });
+
+      setAnswer({
+        situation: { content: "", error: undefined },
+        task: { content: "", error: undefined },
+        action: { content: "", error: undefined },
+        result: { content: "", error: undefined },
+      });
+    } catch (error) {
+      setStatus({
+        submitting: false,
+        error: true,
+        success: false,
+        message: "There was an error sending the Form to the Server 😭",
+      });
     }
   };
 
@@ -159,16 +140,14 @@ const AddAnswer = () => {
             aria-label="Add your Situation"
             minRows={7}
             placeholder="Please carefully type out the Situation"
-            value={answer.situation}
+            value={answer.situation.content}
             onChange={changeHandler}
             style={{
               fontSize: "16px",
-              border: `1px solid ${
-                answerValidation.situation ? "red" : "black"
-              }`,
+              border: `1px solid ${answer.situation.error ? "red" : "black"}`,
             }}
           />
-          {answerValidation.situation && (
+          {answer.situation.error && (
             <Typography color="error">
               Your Situation needs to be between 10-500 Characters
             </Typography>
@@ -181,14 +160,14 @@ const AddAnswer = () => {
             aria-label="Add your Task"
             minRows={7}
             placeholder="Please carefully type out the Task"
-            value={answer.task}
+            value={answer.task.content}
             onChange={changeHandler}
             style={{
               fontSize: "16px",
-              border: `1px solid ${answerValidation.task ? "red" : "black"}`,
+              border: `1px solid ${answer.task.error ? "red" : "black"}`,
             }}
           />
-          {answerValidation.task && (
+          {answer.task.error && (
             <Typography color="error">
               Your Task needs to be between 10-500 Characters
             </Typography>
@@ -201,14 +180,14 @@ const AddAnswer = () => {
             aria-label="Add your Action"
             minRows={7}
             placeholder="Please carefully type out the Action"
-            value={answer.action}
+            value={answer.action.content}
             onChange={changeHandler}
             style={{
               fontSize: "16px",
-              border: `1px solid ${answerValidation.action ? "red" : "black"}`,
+              border: `1px solid ${answer.action.error ? "red" : "black"}`,
             }}
           />
-          {answerValidation.action && (
+          {answer.action.error && (
             <Typography color="error">
               Your Action needs to be between 10-500 Characters
             </Typography>
@@ -221,14 +200,14 @@ const AddAnswer = () => {
             aria-label="Add your Result"
             minRows={7}
             placeholder="Please carefully type out the Result"
-            value={answer.result}
+            value={answer.result.content}
             onChange={changeHandler}
             style={{
               fontSize: "inherit",
-              border: `1px solid ${answerValidation.result ? "red" : "black"}`,
+              border: `1px solid ${answer.result.error ? "red" : "black"}`,
             }}
           />
-          {answerValidation.result && (
+          {answer.result.error && (
             <Typography color="error">
               Your Result must be between 10-500 Characters
             </Typography>
