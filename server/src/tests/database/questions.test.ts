@@ -7,7 +7,6 @@ import {
 import { createUser } from "../../helpers/users";
 import { cleanAll } from "../helpers/dbCleaner";
 
-
 describe("Get From Questions Table", () => {
   let questionId: number;
   let question: string;

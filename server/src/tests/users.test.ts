@@ -2,16 +2,14 @@ import { createUser, getAllUsers, findUserById } from "../helpers/users";
 import { disconnectFromDatabase } from "../helpers/database";
 import { cleanAll } from "./helpers/dbCleaner";
 
-describe("Users",  ()=>{
-
-  beforeEach( async () => {
+describe("Users", () => {
+  beforeEach(async () => {
     await cleanAll();
   });
 
   afterAll(async () => {
     await disconnectFromDatabase();
   });
-
 
   test("createUser", async () => {
     await createUser({
@@ -33,4 +31,4 @@ describe("Users",  ()=>{
     const result = await findUserById(user[0].id);
     expect(result.length).toBe(1);
   });
-})
+});

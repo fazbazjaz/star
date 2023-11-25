@@ -2,8 +2,6 @@ import { disconnectFromDatabase } from "../../helpers/database";
 import { getAllUsers, createUser, findUserById } from "../../helpers/users";
 import { cleanAll } from "../helpers/dbCleaner";
 
-
-
 describe("Users", () => {
   let userId: number;
 
