@@ -8,8 +8,9 @@ const Footer = () => {
       justifyContent={"space-between"}
       px={{ xs: 2, sm: 4, md: 8, lg: 12 }}
       py={4}
-      border={1}
-      backgroundColor={"#15164b"}>
+      // border={1}
+      backgroundColor={"#15164b"}
+      color={"white"}>
       <Box display={"flex"} flexDirection={"column"} maxWidth={"250px"}>
         <Link
           href="https://codeyourfuture.io/"

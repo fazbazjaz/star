@@ -5,7 +5,8 @@ import {
   addQuestion,
   deleteQuestion,
   findAllQuestionsByUser,
-  findOneQuestion
+  findOneQuestion,
+  createAnswer
 } from "../controllers/questionsController";
 
 export const questionsRouter = express.Router();
@@ -15,3 +16,5 @@ questionsRouter.post("/add", authMiddleware, addQuestion);
 questionsRouter.delete("/:id", authMiddleware, deleteQuestion);
 questionsRouter.get("/user/:id", authMiddleware, findAllQuestionsByUser);
 questionsRouter.get("/:id", authMiddleware, findOneQuestion);
+
+questionsRouter.post("/:id/answers", authMiddleware, createAnswer);

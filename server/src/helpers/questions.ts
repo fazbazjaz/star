@@ -13,3 +13,11 @@ export const getAllQuestions = async () => {
 export const deleteQuestions = async (questionIdNumber: number) => {
   await database.delete(questions).where(eq(questions.id, questionIdNumber));
 };
+
+export const getOneQuestion = async (questionId: number) => {
+  return await database
+    .select()
+    .from(questions)
+    .where(eq(questions.id, questionId));
+};
+

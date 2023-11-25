@@ -1,6 +1,7 @@
 import dotenvFlow from "dotenv-flow";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
+import * as schema from "./schema";
 
 dotenvFlow.config();
 
@@ -13,7 +14,7 @@ export const pool = new Pool({
   connectionString: process.env.DATABASE_CONNECTION_STRING
 });
 
-export const database = drizzle(pool);
+export const database = drizzle(pool, { schema });
 
 // These log messages about the Database Connection
 if (process.env.NODE_ENV !== "test") {

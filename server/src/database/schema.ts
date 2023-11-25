@@ -44,9 +44,32 @@ export const questions = pgTable("questions", {
 // This is the connection between the Questions Table and Users Table
 // Each Question can only have one User
 // We make a Relation and a Foreign Key Constraint
-export const questionsRelations = relations(questions, ({ one }) => ({
+export const questionsRelations = relations(questions, ({ one, many }) => ({
   user: one(users, {
     fields: [questions.userId],
     references: [users.id]
+  }),
+  answers: many(answers)
+}));
+
+// Answers Table
+export const answers = pgTable("answers", {
+  id: serial("id").primaryKey(),
+  questionId: integer("question_id")
+    .references(() => questions.id, { onDelete: "cascade" })
+    .notNull(),
+  situation: text("situation").notNull(),
+  task: text("task").notNull(),
+  action: text("action").notNull(),
+  result: text("result").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Relations for Answers Table
+export const answersRelations = relations(answers, ({ one }) => ({
+  question: one(questions, {
+    fields: [answers.questionId],
+    references: [questions.id]
   })
 }));

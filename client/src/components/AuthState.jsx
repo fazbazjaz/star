@@ -6,19 +6,44 @@ const AuthState = () => {
   const { userCookie } = useContext(AuthContext);
 
   return (
-    <>
-      <Box display={"flex"} flexDirection={"column"} p={1} border={1}>
-        <Typography fontSize={10} fontWeight={800}>
-          Auth State:
-        </Typography>
-        <Typography fontSize={10} fontWeight={800}>
-          userCookie:
-        </Typography>
-        <Typography fontSize={10} sx={{ overflowWrap: "break-word" }}>
-          {userCookie ? JSON.stringify(userCookie) : "null"}
-        </Typography>
+    <Box
+      display={"flex"}
+      flexDirection={"column"}
+      p={1}
+      // border={1}
+      backgroundColor={"#15164b"}
+      color={"white"}>
+      <Typography fontSize={10} fontWeight={700}>
+        AuthProvider State &quot;userCookie&quot;
+      </Typography>
+      <Box display={"flex"} flexWrap={"wrap"} flexShrink={1} gap={0.5}>
+        {!userCookie && (
+          <Typography
+            fontSize={10}
+            border={1}
+            p={0.2}
+            borderColor={"lightgray"}>
+            null
+          </Typography>
+        )}
+        {userCookie && (
+          <>
+            {Object.entries(userCookie).map((entry) => {
+              return (
+                <Typography
+                  key={entry}
+                  fontSize={10}
+                  border={1}
+                  p={0.2}
+                  borderColor={"lightgray"}>
+                  {`${entry[0]}: ${entry[1]}`}
+                </Typography>
+              );
+            })}
+          </>
+        )}
       </Box>
-    </>
+    </Box>
   );
 };
 
