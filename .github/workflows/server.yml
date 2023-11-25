@@ -6,11 +6,11 @@ on:
       - main
     paths:
       - "server/**"
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - "server/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "server/**"
   workflow_dispatch:
 
 defaults:
