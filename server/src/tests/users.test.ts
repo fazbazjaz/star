@@ -5,8 +5,6 @@ import { cleanAll } from "./helpers/dbCleaner";
 describe("Users",  ()=>{
 
   beforeEach( async () => {
-
-
     await cleanAll();
   });
 
@@ -16,7 +14,7 @@ describe("Users",  ()=>{
 
 
   test("createUser", async () => {
-    let user = await createUser({
+    await createUser({
       google_id: "0123456789",
       firstname: "Bob",
       lastname: "Smith",
@@ -26,7 +24,7 @@ describe("Users",  ()=>{
   });
 
   test("findUserById", async () => {
-    let user = await createUser({
+    const user = await createUser({
       google_id: "0123456789",
       firstname: "Bob",
       lastname: "Smith",
