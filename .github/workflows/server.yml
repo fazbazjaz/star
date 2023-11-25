@@ -94,46 +94,46 @@ jobs:
         run: NODE_ENV=TEST npm run database:migration
       - name: Test Code
         run: npm run test
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    environment: production
-    env:
-      NODE_ENV: ${{ vars.NODE_ENV }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      - name: Cache Dependencies
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: server-node-modules-${{ hashFiles('./server/package-lock.json') }}
-      - name: Install Dependencies
-        run: npm ci
-      - name: Format Code
-        run: npm run prettier
-      - name: Lint Code
-        run: npm run lint:fix
-      - name: Build Server
-        id: build-server
-        run: npm run build
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: server-build-folder
-          path: ./server/build
-  deploy:
-    if: ${{ github.event_name != 'pull_request' }}
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: server-build-folder
-          path: ./server/build
-      - name: Show Folder Contents
-        run: ls -R build
-      - name: Deploy
-        run: echo "Deploying..."
+#  build:
+#    needs: test
+#    runs-on: ubuntu-latest
+#    environment: production
+#    env:
+#      NODE_ENV: ${{ vars.NODE_ENV }}
+#    steps:
+#      - name: Checkout Code
+#        uses: actions/checkout@v4
+#      - name: Cache Dependencies
+#        id: cache
+#        uses: actions/cache@v3
+#        with:
+#          path: ~/.npm
+#          key: server-node-modules-${{ hashFiles('./server/package-lock.json') }}
+#      - name: Install Dependencies
+#        run: npm ci
+#      - name: Format Code
+#        run: npm run prettier
+#      - name: Lint Code
+#        run: npm run lint:fix
+#      - name: Build Server
+#        id: build-server
+#        run: npm run build
+#      - name: Upload Artifact
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: server-build-folder
+#          path: ./server/build
+#  deploy:
+#    if: ${{ github.event_name != 'pull_request' }}
+#    needs: build
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Download Artifact
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: server-build-folder
+#          path: ./server/build
+#      - name: Show Folder Contents
+#        run: ls -R build
+#      - name: Deploy
+#        run: echo "Deploying..."
