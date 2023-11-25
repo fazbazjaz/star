@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
+import AddAnswer from "../components/AddAnswer";
+import { formatDate } from "../utils/formatDate";
 
 const Question = () => {
   const questionId = useParams().id;
@@ -36,7 +38,6 @@ const Question = () => {
       minHeight={"50vh"}
       p={3}
       color="white"
-      border={1}
       sx={{
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${questionBackgroundImage})`,
         backgroundSize: "cover",
@@ -44,13 +45,23 @@ const Question = () => {
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
       }}>
-      <Typography variant="h3">{questionData.question}</Typography>
-      <Typography mt={2}>
-        Created At: {new Date(questionData.createdAt).toLocaleString()}
-      </Typography>
-      <Typography mt={2}>
-        Modified At:{new Date(questionData.updatedAt).toLocaleString()}
-      </Typography>
+      <Box
+        p={4}
+        borderRadius={2}
+        sx={{ backgroundColor: "rgba(255, 255, 255, 0.15)" }}>
+        <Typography variant="h4" textAlign={"center"}>
+          {questionData.question}
+        </Typography>
+        <Box textAlign="end">
+          <Typography variant={"body2"}>
+            Created {formatDate(new Date(questionData.createdAt))}
+          </Typography>
+          <Typography variant={"body2"}>
+            Updated {formatDate(new Date(questionData.updatedAt))}
+          </Typography>
+        </Box>
+      </Box>
+      <AddAnswer />
     </Box>
   );
 };

@@ -6,7 +6,13 @@ const AuthState = () => {
   const { userCookie } = useContext(AuthContext);
 
   return (
-    <Box display={"flex"} flexDirection={"column"} p={1} border={1}>
+    <Box
+      display={"flex"}
+      flexDirection={"column"}
+      p={1}
+      // border={1}
+      backgroundColor={"#15164b"}
+      color={"white"}>
       <Typography fontSize={10} fontWeight={700}>
         AuthProvider State &quot;userCookie&quot;
       </Typography>

@@ -14,7 +14,9 @@ const Navigation = () => {
       justifyContent={"space-between"}
       px={1}
       py={1}
-      border={1}>
+      // border={1}
+      backgroundColor={"#15164b"}
+      color={"white"}>
       <Box display={"flex"} gap={1}>
         <Button component={NavLink} to={"/"} variant="contained">
           Home
