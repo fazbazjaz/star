@@ -1,14 +1,13 @@
 import { Box } from "@mui/material";
 import Hero from "../components/Hero";
 import Map from "../components/Map";
+import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
-const Home = () => {
-  const homeBackgroundImage = "/images/background-001.jpg";
-
+const HomePage = () => {
   return (
     <Box
       sx={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${homeBackgroundImage})`,
+        backgroundImage: consistentPageBackgroundImage,
         backgroundSize: "cover",
         backgroundPosition: "center center",
         backgroundRepeat: "no-repeat",
@@ -19,4 +18,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomePage;

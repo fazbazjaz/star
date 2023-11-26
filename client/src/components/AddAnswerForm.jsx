@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { NavLink, useParams } from "react-router-dom";
 import {
   Box,
   Button,
@@ -7,9 +6,20 @@ import {
   TextareaAutosize,
   Typography,
 } from "@mui/material";
+import RateReviewRoundedIcon from "@mui/icons-material/RateReviewRounded";
+import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import SendIcon from "@mui/icons-material/Send";
+import {
+  consistentBorder,
+  consistentBorderRadius,
+  consistentBgColor,
+  consistentBoxShadow,
+  consistentBackdropFilter,
+  consistentFormFieldBackgroundColor,
+  consistentFormFieldBorder,
+} from "../themes/ConsistentStyles";
 
-const AddAnswer = () => {
+const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
   const [answer, setAnswer] = useState({
     situation: { content: "", error: undefined },
     task: { content: "", error: undefined },
@@ -23,8 +33,6 @@ const AddAnswer = () => {
     success: false,
     message: null,
   });
-
-  const questionId = useParams().id;
 
   const changeHandler = (event) => {
     setAnswer((prevAnswer) => {
@@ -53,7 +61,7 @@ const AddAnswer = () => {
         submitting: false,
         error: true,
         success: false,
-        message: "There are problems in your Answers Form 🙁",
+        message: "There are problems in your Answer Form 🙁",
       });
       return;
     }
@@ -96,7 +104,7 @@ const AddAnswer = () => {
         submitting: false,
         error: false,
         success: true,
-        message: "Your answer was successfully added!😁 Thank you ⭐",
+        message: "Your Answer was successfully added!😁 Thank you ⭐",
       });
 
       setAnswer({
@@ -110,41 +118,54 @@ const AddAnswer = () => {
         submitting: false,
         error: true,
         success: false,
-        message: "There was an error sending the Form to the Server 😭",
+        message: "There was an error sending the Answer to the Server 😭",
       });
     }
   };
 
   return (
-    <Box mt={4}>
+    <Box
+      p={3}
+      border={consistentBorder}
+      borderRadius={consistentBorderRadius}
+      bgcolor={consistentBgColor}
+      boxShadow={consistentBoxShadow}
+      sx={{
+        backdropFilter: consistentBackdropFilter,
+      }}>
       <form
         onSubmit={submitHandler}
         style={{
-          display: "flex",
-          justifyContent: "center",
+          display: "grid",
         }}>
-        <FormControl
-          sx={{
-            minWidth: "50%",
-            py: 6,
-            px: 6,
-            borderRadius: 2,
-            backgroundColor: "rgba(255, 255, 255, 0.15)",
-          }}>
-          <Typography variant="h4">Add your Answer</Typography>
-          <Typography variant="h5" my={2}>
-            ⭐ Situation:
-          </Typography>
+        <FormControl>
+          <Box display={"flex"} alignItems={"center"} gap={0.5}>
+            <RateReviewRoundedIcon fontSize="medium" color="primary" />
+            <Typography variant={"answerformtitle"} color={"primary"}>
+              Add your Answer
+            </Typography>
+          </Box>
+          <Box display="flex" alignItems={"center"} gap={0.5} mt={1.5}>
+            <ArrowForwardIosRoundedIcon fontSize={"small"} color={"primary"} />
+            <Typography>Situation</Typography>
+          </Box>
           <TextareaAutosize
             id="situation"
             aria-label="Add your Situation"
-            minRows={7}
+            minRows={4}
             placeholder="Please carefully type out the Situation"
             value={answer.situation.content}
             onChange={changeHandler}
             style={{
-              fontSize: "16px",
-              border: `1px solid ${answer.situation.error ? "red" : "black"}`,
+              padding: "0.5rem",
+              backgroundColor: consistentFormFieldBackgroundColor,
+              border: `1px solid ${
+                answer.situation.error ? "red" : consistentFormFieldBorder
+              }`,
+              borderRadius: "0.5rem",
+              fontSize: "1rem",
+              fontFamily: "inherit",
+              resize: "none",
             }}
           />
           {answer.situation.error && (
@@ -152,19 +173,27 @@ const AddAnswer = () => {
               Your Situation needs to be between 10-500 Characters
             </Typography>
           )}
-          <Typography variant="h5" my={2}>
-            ⭐ Task:
-          </Typography>
+          <Box display="flex" alignItems={"center"} gap={0.5} mt={1.5}>
+            <ArrowForwardIosRoundedIcon fontSize={"small"} color={"primary"} />
+            <Typography>Task</Typography>
+          </Box>
           <TextareaAutosize
             id="task"
             aria-label="Add your Task"
-            minRows={7}
+            minRows={4}
             placeholder="Please carefully type out the Task"
             value={answer.task.content}
             onChange={changeHandler}
             style={{
-              fontSize: "16px",
-              border: `1px solid ${answer.task.error ? "red" : "black"}`,
+              padding: "0.5rem",
+              backgroundColor: consistentFormFieldBackgroundColor,
+              border: `1px solid ${
+                answer.task.error ? "red" : consistentFormFieldBorder
+              }`,
+              borderRadius: "0.5rem",
+              fontSize: "1rem",
+              fontFamily: "inherit",
+              resize: "none",
             }}
           />
           {answer.task.error && (
@@ -172,19 +201,27 @@ const AddAnswer = () => {
               Your Task needs to be between 10-500 Characters
             </Typography>
           )}
-          <Typography variant="h5" my={2}>
-            ⭐ Action:
-          </Typography>
+          <Box display="flex" alignItems={"center"} gap={0.5} mt={1.5}>
+            <ArrowForwardIosRoundedIcon fontSize={"small"} color={"primary"} />
+            <Typography>Action</Typography>
+          </Box>
           <TextareaAutosize
             id="action"
             aria-label="Add your Action"
-            minRows={7}
+            minRows={4}
             placeholder="Please carefully type out the Action"
             value={answer.action.content}
             onChange={changeHandler}
             style={{
-              fontSize: "16px",
-              border: `1px solid ${answer.action.error ? "red" : "black"}`,
+              padding: "0.5rem",
+              backgroundColor: consistentFormFieldBackgroundColor,
+              border: `1px solid ${
+                answer.action.error ? "red" : consistentFormFieldBorder
+              }`,
+              borderRadius: "0.5rem",
+              fontSize: "1rem",
+              fontFamily: "inherit",
+              resize: "none",
             }}
           />
           {answer.action.error && (
@@ -192,19 +229,27 @@ const AddAnswer = () => {
               Your Action needs to be between 10-500 Characters
             </Typography>
           )}
-          <Typography variant="h5" my={2}>
-            ⭐ Result:
-          </Typography>
+          <Box display="flex" alignItems={"center"} gap={0.5} mt={1.5}>
+            <ArrowForwardIosRoundedIcon fontSize={"small"} color={"primary"} />
+            <Typography>Result</Typography>
+          </Box>
           <TextareaAutosize
             id="result"
             aria-label="Add your Result"
-            minRows={7}
+            minRows={4}
             placeholder="Please carefully type out the Result"
             value={answer.result.content}
             onChange={changeHandler}
             style={{
-              fontSize: "inherit",
-              border: `1px solid ${answer.result.error ? "red" : "black"}`,
+              padding: "0.5rem",
+              backgroundColor: consistentFormFieldBackgroundColor,
+              border: `1px solid ${
+                answer.result.error ? "red" : consistentFormFieldBorder
+              }`,
+              borderRadius: "0.5rem",
+              fontSize: "1rem",
+              fontFamily: "inherit",
+              resize: "none",
             }}
           />
           {answer.result.error && (
@@ -213,15 +258,17 @@ const AddAnswer = () => {
             </Typography>
           )}
           <Box display={"flex"} gap={1} mt={2}>
-            <Button variant="contained" component={NavLink} to={"/questions"}>
-              Back
+            <Button
+              variant="contained"
+              onClick={() => setShowAnswerForm((prev) => !prev)}>
+              Cancel
             </Button>
             <Button
               variant="contained"
               type="submit"
               endIcon={<SendIcon />}
               disabled={status.submitting}>
-              Send
+              Add Answer
             </Button>
           </Box>
           <Box>
@@ -247,4 +294,4 @@ const AddAnswer = () => {
   );
 };
 
-export default AddAnswer;
+export default AddAnswerForm;

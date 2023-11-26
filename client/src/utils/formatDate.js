@@ -1,4 +1,5 @@
 export const formatDate = (date) => {
+  date = new Date(date);
   const now = new Date();
   const difference = now - date;
 
@@ -10,7 +11,7 @@ export const formatDate = (date) => {
     const minutes = date.getMinutes();
     const ampm = hours >= 12 ? "pm" : "am";
     const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-    return `today at ${formattedHours}.${
+    return `today, at ${formattedHours}.${
       minutes < 10 ? "0" : ""
     }${minutes}${ampm}`;
   } else if (daysAgo === 1) {
@@ -19,7 +20,7 @@ export const formatDate = (date) => {
     const minutes = date.getMinutes();
     const ampm = hours >= 12 ? "pm" : "am";
     const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-    return `yesterday at ${formattedHours}.${
+    return `yesterday, at ${formattedHours}.${
       minutes < 10 ? "0" : ""
     }${minutes}${ampm}`;
   } else {
@@ -29,7 +30,7 @@ export const formatDate = (date) => {
     const ampm = hours >= 12 ? "pm" : "am";
     const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
 
-    return `${daysAgo} days ago at ${formattedHours}.${
+    return `${daysAgo} days ago, at ${formattedHours}.${
       minutes < 10 ? "0" : ""
     }${minutes}${ampm}`;
   }

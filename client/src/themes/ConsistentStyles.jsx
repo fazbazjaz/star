@@ -1,0 +1,13 @@
+export const consistentPageBackgroundImage = `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/images/background-001.jpg")`;
+export const consistentBorder = "1px solid rgba(255, 255, 255, 0.3)";
+export const consistentBorderRadius = 2;
+export const consistentBgColor = "rgba(255, 255, 255, 0.2)";
+export const consistentBoxShadow = "0 4px 30px rgba(0, 0, 0, 0.1)";
+export const consistentBackdropFilter = "blur(5px)";
+export const consistentPrimaryBackgroundColor = "rgb(22, 14, 74)";
+export const consistentFontColor = "black";
+export const consistentHeaderFooterBorder = "3px solid #3421AE";
+export const consistentFormFieldBackgroundColor = "rgba(255, 255, 255, 0.5)";
+export const consistentFormFieldBorder = "rgba(255, 255, 255, 0.3)";
+export const consistentLinkColor = "rgb(255,255,255)";
+export const consistentLinkHoverColor = "rgb(253,216,53)";
