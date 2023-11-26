@@ -67,11 +67,12 @@ export const answers = pgTable("answers", {
 });
 
 // Relations for Answers Table
-export const answersRelations = relations(answers, ({ one }) => ({
+export const answersRelations = relations(answers, ({ one, many }) => ({
   question: one(questions, {
     fields: [answers.questionId],
     references: [questions.id]
-  })
+  }),
+  comments: many(comments)
 }));
 
 // Comments Table
