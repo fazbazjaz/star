@@ -30,7 +30,11 @@ const Map = () => {
   }, []);
 
   return (
-    <Box ref={mapContainerRef} width={"100%"} height={"300px"} border={1}></Box>
+    <Box
+      ref={mapContainerRef}
+      width={"100%"}
+      height={"30vh"}
+      marginTop={"auto"}></Box>
   );
 };
 

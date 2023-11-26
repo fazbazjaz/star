@@ -1,21 +1,48 @@
-import { AppBar, Box, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import {
+  consistentHeaderFooterBorder,
+  consistentPrimaryBackgroundColor,
+} from "../themes/ConsistentStyles";
+import Navigation from "./Navigation";
 
 const Header = () => {
   return (
-    <AppBar position={"static"} sx={{ background: "white", color: "black" }}>
+    <Box
+      px={2}
+      py={1}
+      backgroundColor={consistentPrimaryBackgroundColor}
+      borderBottom={consistentHeaderFooterBorder}>
       <Box
         display={"flex"}
+        flexWrap={"wrap"}
         justifyContent={"space-between"}
         alignItems={"center"}
-        flexDirection={{ xs: "column", md: "row" }}
-        gap={{ xs: 2, md: 5 }}
-        px={{ xs: 2, md: 2, lg: 2 }}
-        py={{ xs: 2, md: 2, lg: 2 }}
-        backgroundColor={"#15164b"}
+        gap={1}
         color={"white"}>
-        <Typography variant={"h2"}>⭐ STAR by CodeYourFuture</Typography>
+        <Box display="flex" flexWrap={"wrap"} gap={1} alignItems={"center"}>
+          <Box height={{ xs: "4rem", sm: "6rem" }}>
+            <img
+              src="/images/star-character-thumb-rub.png"
+              alt="Star Character"
+              style={{ height: "100%" }}
+            />
+          </Box>
+          <Typography
+            fontSize={{ xs: "2.5rem", sm: "3.5rem" }}
+            fontWeight={800}>
+            STAR
+          </Typography>
+        </Box>
+        <Box height={{ xs: "3rem", sm: "5rem" }}>
+          <img
+            src="/images/cyf-logo.svg"
+            alt="CodeYourFuture Logo"
+            style={{ height: "100%" }}
+          />
+        </Box>
       </Box>
-    </AppBar>
+      <Navigation />
+    </Box>
   );
 };
 

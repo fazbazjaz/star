@@ -5,26 +5,26 @@ import {
   Route,
 } from "react-router-dom";
 import RootLayout from "./layouts/RootLayout";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Profile from "./pages/Profile";
-import Users from "./pages/Users";
-import NotFound from "./pages/NotFound";
+import HomePage from "./pages/HomePage";
+import AboutPage from "./pages/AboutPage";
 import Protected from "./components/Protected";
-import Questions from "./pages/Questions";
-import AddQuestion from "./pages/AddQuestion";
-import Question from "./pages/Question";
+import ProfilePage from "./pages/ProfilePage";
+import UsersPage from "./pages/UsersPage";
+import QuestionsPage from "./pages/QuestionsPage";
+import AddQuestionPage from "./pages/AddQuestionPage";
+import QuestionPage from "./pages/QuestionPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
-      <Route index element={<Home />} />
-      <Route path="about" element={<About />} />
+      <Route index element={<HomePage />} />
+      <Route path="about" element={<AboutPage />} />
       <Route
         path="profile"
         element={
           <Protected>
-            <Profile />
+            <ProfilePage />
           </Protected>
         }
       />
@@ -32,7 +32,7 @@ const router = createBrowserRouter(
         path="users"
         element={
           <Protected>
-            <Users />
+            <UsersPage />
           </Protected>
         }
       />
@@ -40,7 +40,7 @@ const router = createBrowserRouter(
         path="questions"
         element={
           <Protected>
-            <Questions />
+            <QuestionsPage />
           </Protected>
         }
       />
@@ -48,7 +48,7 @@ const router = createBrowserRouter(
         path="questions/add"
         element={
           <Protected>
-            <AddQuestion />
+            <AddQuestionPage />
           </Protected>
         }
       />
@@ -56,11 +56,11 @@ const router = createBrowserRouter(
         path="questions/:id"
         element={
           <Protected>
-            <Question />
+            <QuestionPage />
           </Protected>
         }
       />
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Route>
   )
 );

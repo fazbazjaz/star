@@ -12,7 +12,7 @@
     "dev": "ts-node-dev src/index.ts",
     "prettier": "node node_modules/prettier/bin/prettier.cjs --config .prettierrc . --write",
     "lint:fix": "node node_modules/eslint/bin/eslint.js . --fix",
-    "test": "NODE_ENV=test node node_modules/jest/bin/jest.js --runInBand",
+    "test": "cross-env NODE_ENV=test node node_modules/jest/bin/jest.js",
     "database:migration:check": "drizzle-kit check:pg",
     "database:update:metadata": "drizzle-kit up:pg",
     "database:migration:generate": "drizzle-kit generate:pg",

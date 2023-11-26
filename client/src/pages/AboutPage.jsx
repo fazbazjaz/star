@@ -1,11 +1,11 @@
 import { Box, CardMedia, Typography } from "@mui/material";
 
-const About = () => {
+const AboutPage = () => {
   const topBannerImage = "/images/about-us-top-image.jpg";
   const bottomBannerImage = "/images/about-us-bottom-image.jpg";
 
   return (
-    <Box border={1}>
+    <Box>
       <CardMedia
         component={"img"}
         height={"500"}
@@ -47,4 +47,4 @@ const About = () => {
   );
 };
 
-export default About;
+export default AboutPage;

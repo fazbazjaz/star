@@ -1,15 +1,13 @@
 import { Box, Typography } from "@mui/material";
+import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
-const NotFound = () => {
-  const notFoundBackgroundImage = "/images/background-001.jpg";
-
+const NotFoundPage = () => {
   return (
     <Box
-      minHeight={"50vh"}
       p={3}
       color="white"
       sx={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${notFoundBackgroundImage})`,
+        backgroundImage: consistentPageBackgroundImage,
         backgroundSize: "cover",
         backgroundPosition: "center center",
         backgroundRepeat: "no-repeat",
@@ -20,4 +18,4 @@ const NotFound = () => {
   );
 };
 
-export default NotFound;
+export default NotFoundPage;
