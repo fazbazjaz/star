@@ -20,7 +20,7 @@ describe("Questions Routes", () => {
 
     const response = await request.get("/api/questions/7700432");
     expect(response.statusCode).toBe(404);
-    expect(response.body).toStrictEqual({ error: "No Question Found!" });
+    expect(response.body).toStrictEqual({ error: "No Question Found" });
   });
 
   test("findOneQuestion when the question id does exist", async () => {

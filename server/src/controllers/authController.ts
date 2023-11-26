@@ -8,7 +8,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   const oAuth2Client = new OAuth2Client();
 
   const authorizationHeader = req.headers["authorization"];
-  // console.log("authorizationHeader:", authorizationHeader);
+
   if (!authorizationHeader || typeof authorizationHeader !== "string") {
     return res
       .status(401)
@@ -16,7 +16,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   }
 
   const jwtTokenParts = authorizationHeader.split(" ");
-  // console.log("jwtTokenParts:", jwtTokenParts);
+
   if (
     jwtTokenParts.length !== 2 ||
     jwtTokenParts[0].toLowerCase() !== "bearer"
@@ -27,7 +27,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   }
 
   const idToken = jwtTokenParts[1];
-  // console.log("idToken:", idToken);
+
   let verifyIdToken;
 
   try {
@@ -38,7 +38,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(401).json({ error: "Invalid ID Token" });
   }
-  // console.log("verifyIdToken:", verifyIdToken);
+
   const idTokenPayload = verifyIdToken.getPayload();
 
   if (!idTokenPayload) {
@@ -55,7 +55,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
 
   try {
     user = await findUserByGoogleId(userGoogleId);
-    if (!user) {
+    if (!user || user.length === 0) {
       user = await createUser({
         google_id: userGoogleId,
         firstname: userFirstname,
@@ -67,14 +67,14 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(500).json({ error: "Server Error" });
   }
-  // console.log("existingUser:", existingUser);
+
   const userId = user[0].id;
 
   const customJWTPayload: CustomJWTPayload = {
     id: userId,
     google_id: userGoogleId
   };
-  // console.log("customJWTPayload:", customJWTPayload);
+
   const customJWT = jwt.sign(
     customJWTPayload,
     process.env.JWT_SECRET as Secret,
@@ -82,7 +82,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       expiresIn: "1h"
     }
   );
-  // console.log("customJWT", customJWT);
+
   if (!customJWT) {
     return res.status(500).json({ error: "Error signing a new customJWT" });
   }

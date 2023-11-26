@@ -198,6 +198,8 @@ export const createComment = async (req: Request, res: Response) => {
 
     res.status(200).json(data);
   } catch (error) {
-    return res.status(500).json({ error: "Server Error" });
+    return res
+      .status(500)
+      .json({ error: "Error Adding Your Comment to the Database" });
   }
 };
