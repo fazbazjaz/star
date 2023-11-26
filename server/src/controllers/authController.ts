@@ -2,13 +2,15 @@ import { OAuth2Client } from "google-auth-library";
 import jwt, { Secret } from "jsonwebtoken";
 import { Request, Response } from "express";
 import { CustomJWTPayload, UserCookie } from "../types/types";
-import { createUser, findUserByGoogleId } from "../helpers/users"; // Update import statements
+import { createUser, findUserByGoogleId } from "../helpers/users";
+import { logger } from "../logger";
 
 export const idTokenHandler = async (req: Request, res: Response) => {
+  logger.info(`idTokenHandler: ${req.headers["host"]}`);
   const oAuth2Client = new OAuth2Client();
 
   const authorizationHeader = req.headers["authorization"];
-  // console.log("authorizationHeader:", authorizationHeader);
+  logger.info("authorizationHeader:", authorizationHeader);
   if (!authorizationHeader || typeof authorizationHeader !== "string") {
     return res
       .status(401)
@@ -16,7 +18,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   }
 
   const jwtTokenParts = authorizationHeader.split(" ");
-  // console.log("jwtTokenParts:", jwtTokenParts);
+  logger.info("jwtTokenParts:", jwtTokenParts);
   if (
     jwtTokenParts.length !== 2 ||
     jwtTokenParts[0].toLowerCase() !== "bearer"
@@ -27,7 +29,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   }
 
   const idToken = jwtTokenParts[1];
-  // console.log("idToken:", idToken);
+  logger.info("idToken:", idToken);
   let verifyIdToken;
 
   try {
@@ -38,7 +40,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(401).json({ error: "Invalid ID Token" });
   }
-  // console.log("verifyIdToken:", verifyIdToken);
+  logger.info("verifyIdToken:", verifyIdToken);
   const idTokenPayload = verifyIdToken.getPayload();
 
   if (!idTokenPayload) {
@@ -67,14 +69,14 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(500).json({ error: "Server Error" });
   }
-  // console.log("existingUser:", existingUser);
+  logger.info("existingUser:", user);
   const userId = user[0].id;
 
   const customJWTPayload: CustomJWTPayload = {
     id: userId,
     google_id: userGoogleId
   };
-  // console.log("customJWTPayload:", customJWTPayload);
+  logger.info("customJWTPayload:", customJWTPayload);
   const customJWT = jwt.sign(
     customJWTPayload,
     process.env.JWT_SECRET as Secret,
@@ -82,7 +84,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       expiresIn: "1h"
     }
   );
-  // console.log("customJWT", customJWT);
+  logger.info("customJWT", customJWT);
   if (!customJWT) {
     return res.status(500).json({ error: "Error signing a new customJWT" });
   }

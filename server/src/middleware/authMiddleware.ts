@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { Secret } from "jsonwebtoken";
 import { CustomJWTPayload } from "../types/types";
+import { logger } from "../logger";
 
 // Add a new key to the Express Request interface
 declare module "express" {
@@ -18,10 +19,10 @@ export const authMiddleware = (
   // It will come with the customJWT in an HTTP-Only Cookie
 
   const cookies = req.cookies;
-  // console.log("authMiddleware cookies:", cookies);
+  logger.info("authMiddleware cookies:", cookies);
 
   const customJWT = cookies.customJWT;
-  // console.log("authMiddleware customJWT:", customJWT);
+  logger.info("authMiddleware customJWT:", customJWT);
 
   if (!customJWT || typeof customJWT === "undefined") {
     return res
@@ -35,11 +36,11 @@ export const authMiddleware = (
       customJWT,
       process.env.JWT_SECRET as Secret
     );
-    // console.log("authMiddleware verifiedCustomJWT:", verifiedCustomJWT);
+    logger.info("authMiddleware verifiedCustomJWT:", verifiedCustomJWT);
 
     // Store the verfied Custom JWT Payload in a customJWTPayload Property on the Request Object
     req.customJWTPayload = verifiedCustomJWT as CustomJWTPayload;
-    // console.log("req.customJWTPayload:", req.customJWTPayload);
+    logger.info("req.customJWTPayload:", req.customJWTPayload);
 
     // All the checks have passed Authorize the Request
     next();

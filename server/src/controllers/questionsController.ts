@@ -7,8 +7,10 @@ import {
   deleteQuestions,
   getQuestionAndAllAnswers
 } from "../helpers/questions";
+import { logger } from "../logger";
 
 export const addQuestion = async (req: Request, res: Response) => {
+  logger.info(`addQuestion: ${req}`);
   try {
     const user = req.customJWTPayload;
 
@@ -28,7 +30,7 @@ export const addQuestion = async (req: Request, res: Response) => {
 
     res.status(200).json(queryQuestion);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ error: "Server Error" });
   }
 };
@@ -39,7 +41,7 @@ export const getAllQuestions = async (req: Request, res: Response) => {
     const data = query;
     res.status(200).json(data);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ error: "Server Error" });
   }
 };
@@ -62,7 +64,7 @@ export const deleteQuestion = async (req: Request, res: Response) => {
 
     res.status(204).end();
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ error: "Server Error" });
   }
 };
@@ -79,7 +81,7 @@ export const findAllQuestionsByUser = async (req: Request, res: Response) => {
     const data = query;
     res.status(200).json(data);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ error: "Server Error" });
   }
 };
@@ -98,14 +100,14 @@ export const findOneQuestion = async (req: Request, res: Response) => {
     }
     res.status(200).json(data);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ error: "Server Error" });
   }
 };
 
 export const createAnswer = async (req: Request, res: Response) => {
   const questionId = Number(req.params.id);
-  // console.log("createAnswer questionId:", questionId);
+  logger.info("createAnswer questionId:", questionId);
 
   if (!questionId) {
     return res.status(401).json({ error: "You did not include a Question ID" });
@@ -138,10 +140,10 @@ export const createAnswer = async (req: Request, res: Response) => {
       .insert(answers)
       .values({ questionId, situation, task, action, result })
       .returning();
-    // console.log("createAnswer insertAnswerQuery:", insertAnswerQuery);
+    logger.info("createAnswer insertAnswerQuery:", insertAnswerQuery);
 
     const data = insertAnswerQuery[0];
-    // console.log("createAnswer data:", data);
+    logger.info("createAnswer data:", data);
 
     res.status(200).json(data);
   } catch (error) {
