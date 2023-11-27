@@ -208,21 +208,30 @@ export const createAnswer = async (req: Request, res: Response) => {
 
 export const createComment = async (req: Request, res: Response) => {
   const questionId = Number(req.params.id);
-  // console.log("createComment questionId:", questionId);
+  logger.info({
+    message: "createComment questionId",
+    value: questionId
+  });
 
   if (!questionId) {
     return res.status(400).json({ error: `Invalid Question ID Provided` });
   }
 
   const answerId = Number(req.params.answerId);
-  // console.log("createComment answerId:", answerId);
+  logger.info({
+    message: "createComment answerId",
+    value: answerId
+  });
 
   if (!answerId) {
     return res.status(400).json({ error: `Invalid Answer ID Provided` });
   }
 
   const comment = req.body.comment;
-  // console.log("createComment comment:", comment);
+  logger.info({
+    message: "createComment comment",
+    value: comment
+  });
 
   if (!comment) {
     return res.status(400).json({ error: `Invalid Comment Provided` });
@@ -234,7 +243,10 @@ export const createComment = async (req: Request, res: Response) => {
       .from(questions)
       .innerJoin(answers, eq(questions.id, answers.questionId))
       .where(and(eq(answers.id, answerId), eq(answers.id, answerId)));
-    // console.log("createComment answerQuery:", answerQuery);
+    logger.info({
+      message: "createComment answerQuery",
+      value: answerQuery
+    });
 
     if (!answerQuery || answerQuery.length === 0) {
       return res.status(404).json({ error: "Answer not found" });
@@ -247,10 +259,16 @@ export const createComment = async (req: Request, res: Response) => {
         comment
       })
       .returning();
-    // console.log("createComment insertCommentQuery:", insertCommentQuery);
+    logger.info({
+      message: "createComment insertCommentQuery",
+      value: insertCommentQuery
+    });
 
     const data = insertCommentQuery[0];
-    // console.log("createComment data:", data);
+    logger.info({
+      message: "createComment data",
+      value: data
+    });
 
     res.status(200).json(data);
   } catch (error) {
