@@ -15,7 +15,7 @@ export const logger = createLogger({
       } else if (Object.keys(value).length) {
         valueOutput = JSON.stringify(value);
       }
-      return `${timestamp} [${level}]: ${message}: ${valueOutput}`;
+      return `| ${timestamp} | ${level} | ${message}: ${valueOutput} |`;
     })
   )
 });

@@ -126,7 +126,7 @@ export const findOneQuestion = async (req: Request, res: Response) => {
     });
 
     if (!query || query.length === 0) {
-      res.status(404).json({ error: "No Question Found!" });
+      res.status(404).json({ error: "No Question Found" });
       return;
     }
 
