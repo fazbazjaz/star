@@ -2,12 +2,22 @@ import { OAuth2Client } from "google-auth-library";
 import jwt, { Secret } from "jsonwebtoken";
 import { Request, Response } from "express";
 import { CustomJWTPayload, UserCookie } from "../types/types";
-import { createUser, findUserByGoogleId } from "../helpers/users"; // Update import statements
+import { createUser, findUserByGoogleId } from "../helpers/users";
+import { logger } from "../logger";
 
 export const idTokenHandler = async (req: Request, res: Response) => {
+  logger.info({
+    message: "idTokenHandler req.headers.host",
+    value: req.headers["host"]
+  });
+
   const oAuth2Client = new OAuth2Client();
 
   const authorizationHeader = req.headers["authorization"];
+  logger.info({
+    message: "idTokenHandler authorizationHeader",
+    value: authorizationHeader
+  });
 
   if (!authorizationHeader || typeof authorizationHeader !== "string") {
     return res
@@ -16,6 +26,10 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   }
 
   const jwtTokenParts = authorizationHeader.split(" ");
+  logger.info({
+    message: "idTokenHandler jwtTokenParts",
+    value: jwtTokenParts
+  });
 
   if (
     jwtTokenParts.length !== 2 ||
@@ -27,6 +41,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   }
 
   const idToken = jwtTokenParts[1];
+  logger.info({ message: "idTokenHandler idToken", value: idToken });
 
   let verifyIdToken;
 
@@ -38,6 +53,10 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(401).json({ error: "Invalid ID Token" });
   }
+  logger.info({
+    message: "idTokenHandler verifyIdToken",
+    value: verifyIdToken
+  });
 
   const idTokenPayload = verifyIdToken.getPayload();
 
@@ -68,12 +87,18 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Server Error" });
   }
 
+  logger.info({ message: "idTokenHandler user", value: user });
+
   const userId = user[0].id;
 
   const customJWTPayload: CustomJWTPayload = {
     id: userId,
     google_id: userGoogleId
   };
+  logger.info({
+    message: "idTokenHandler customJWTPayload",
+    value: customJWTPayload
+  });
 
   const customJWT = jwt.sign(
     customJWTPayload,
@@ -82,6 +107,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       expiresIn: "1h"
     }
   );
+  logger.info({ message: "idTokenHandler customJWT", value: customJWT });
 
   if (!customJWT) {
     return res.status(500).json({ error: "Error signing a new customJWT" });
@@ -102,6 +128,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     email: userEmail,
     picture: userPicture
   };
+  logger.info({ message: "idTokenHandler userCookie", value: userCookie });
 
   res.cookie("user", userCookie, {
     httpOnly: false,

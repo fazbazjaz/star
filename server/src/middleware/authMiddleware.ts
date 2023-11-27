@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { Secret } from "jsonwebtoken";
 import { CustomJWTPayload } from "../types/types";
+import { logger } from "../logger";
 
 // Add a new key to the Express Request interface
 declare module "express" {
@@ -14,14 +15,17 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  // Every time the client makes a Request
-  // It will come with the customJWT in an HTTP-Only Cookie
-
   const cookies = req.cookies;
-  // console.log("authMiddleware cookies:", cookies);
+  logger.info({
+    message: "authMiddleware cookies",
+    value: cookies
+  });
 
   const customJWT = cookies.customJWT;
-  // console.log("authMiddleware customJWT:", customJWT);
+  logger.info({
+    message: "authMiddleware customJWT",
+    value: customJWT
+  });
 
   if (!customJWT || typeof customJWT === "undefined") {
     return res
@@ -30,18 +34,21 @@ export const authMiddleware = (
   }
 
   try {
-    // Verify the customJWT against our JWT_SECRET
     const verifiedCustomJWT = jwt.verify(
       customJWT,
       process.env.JWT_SECRET as Secret
     );
-    // console.log("authMiddleware verifiedCustomJWT:", verifiedCustomJWT);
+    logger.info({
+      message: "authMiddleware verifiedCustomJWT",
+      value: customJWT
+    });
 
-    // Store the verfied Custom JWT Payload in a customJWTPayload Property on the Request Object
     req.customJWTPayload = verifiedCustomJWT as CustomJWTPayload;
-    // console.log("req.customJWTPayload:", req.customJWTPayload);
+    logger.info({
+      message: "authMiddleware req.customJWTPayload",
+      value: req.customJWTPayload
+    });
 
-    // All the checks have passed Authorize the Request
     next();
   } catch (error) {
     return res.status(401).json({ error: "Unauthorized - Invalid JWT" });
