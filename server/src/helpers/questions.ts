@@ -10,6 +10,7 @@ export const createQuestion = async (userId: number, question: string) => {
 };
 
 export const createAnswer = async (
+  userId: number,
   questionId: number,
   situation: string,
   task: string,
@@ -18,14 +19,18 @@ export const createAnswer = async (
 ) => {
   return await database
     .insert(answers)
-    .values({ questionId, situation, task, action, result })
+    .values({ userId, questionId, situation, task, action, result })
     .returning();
 };
 
-export const createComment = async (answerId: number, comment: string) => {
+export const createComment = async (
+  userId: number,
+  answerId: number,
+  comment: string
+) => {
   return await database
     .insert(comments)
-    .values({ answerId, comment })
+    .values({ userId, answerId, comment })
     .returning();
 };
 

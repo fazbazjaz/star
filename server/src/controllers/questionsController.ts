@@ -157,6 +157,22 @@ export const findOneQuestionHandler = async (req: Request, res: Response) => {
 };
 
 export const createAnswerHandler = async (req: Request, res: Response) => {
+  const user = req.customJWTPayload;
+  logger.info({
+    message: "createAnswerHandler user",
+    value: user
+  });
+
+  if (!user) {
+    return res.status(500).json({ error: "No User attached to the Request" });
+  }
+
+  const userId = user.id;
+  logger.info({
+    message: "createAnswerHandler userId",
+    value: userId
+  });
+
   const questionId = Number(req.params.id);
   logger.info({
     message: "createAnswerHandler questionId",
@@ -195,6 +211,7 @@ export const createAnswerHandler = async (req: Request, res: Response) => {
 
   try {
     const insertAnswerQuery = await createAnswer(
+      userId,
       questionId,
       situation,
       task,
@@ -220,6 +237,22 @@ export const createAnswerHandler = async (req: Request, res: Response) => {
 };
 
 export const createCommentHandler = async (req: Request, res: Response) => {
+  const user = req.customJWTPayload;
+  logger.info({
+    message: "createCommentHandler user",
+    value: user
+  });
+
+  if (!user) {
+    return res.status(500).json({ error: "No User attached to the Request" });
+  }
+
+  const userId = user.id;
+  logger.info({
+    message: "createCommentHandler userId",
+    value: userId
+  });
+
   const questionId = parseInt(req.params.id);
   logger.info({
     message: "createCommentHandler questionId",
@@ -261,7 +294,7 @@ export const createCommentHandler = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Answer not found" });
     }
 
-    const insertCommentQuery = await createComment(answerId, comment);
+    const insertCommentQuery = await createComment(userId, answerId, comment);
     logger.info({
       message: "createCommentHandler insertCommentQuery",
       value: insertCommentQuery
