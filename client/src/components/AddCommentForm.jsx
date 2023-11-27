@@ -19,9 +19,6 @@ import {
 } from "../themes/ConsistentStyles";
 
 const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
-  console.log("AddCommentForm questionId:", questionId);
-  console.log("AddCommentForm answerId:", answerId);
-
   const [comment, setComment] = useState({
     content: "",
     error: undefined,
@@ -155,12 +152,12 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
           )}
           <Box display={"flex"} gap={1} mt={2}>
             <Button
-              variant="contained"
+              variant={"contained"}
               onClick={() => setShowAddCommentForm((prev) => !prev)}>
               Cancel
             </Button>
             <Button
-              variant="contained"
+              variant={"contained"}
               type="submit"
               endIcon={<SendIcon />}
               disabled={status.submitting}>

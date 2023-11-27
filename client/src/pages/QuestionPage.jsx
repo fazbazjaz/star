@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Box, Typography } from "@mui/material";
+import Loading from "../components/Loading";
+import Error from "../components/Loading";
 import Question from "../components/Question";
 import AddAnswerForm from "../components/AddAnswerForm";
 import Answer from "../components/Answer";
@@ -8,26 +11,31 @@ import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const QuestionPage = () => {
   const { id } = useParams();
-  const [questionData, setQuestionData] = useState(null);
   const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
 
-  useEffect(() => {
-    const fetchQuestionData = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_SERVER_URL}/api/questions/${id}`,
-          { credentials: "include" }
-        );
-        // console.log("response:", response);
-        const data = await response.json();
-        // console.log("data:", data);
-        setQuestionData(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchQuestionData();
-  }, [id]);
+  const fetchQuestion = async (id) => {
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_URL}/api/questions/${id}`,
+      { credentials: "include" }
+    );
+    // console.log("fetchQuestionData response:", response);
+    if (!response.ok) {
+      throw new Error("fetchQuestion failed");
+    }
+    const data = await response.json();
+    // console.log("fetchQuestionData data:", data);
+    return data;
+  };
+
+  const {
+    isPending,
+    isError,
+    error,
+    data: questionData,
+  } = useQuery({
+    queryKey: ["question", id],
+    queryFn: () => fetchQuestion(id),
+  });
 
   return (
     <Box
@@ -40,6 +48,8 @@ const QuestionPage = () => {
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
       }}>
+      {isPending && <Loading />}
+      {isError && <Error message={error.message} />}
       {questionData && (
         <Box>
           <Typography variant={"pagetitle"}>
