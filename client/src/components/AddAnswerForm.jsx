@@ -18,20 +18,14 @@ import {
   consistentFormFieldBackgroundColor,
   consistentFormFieldBorder,
 } from "../themes/ConsistentStyles";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
   const [answer, setAnswer] = useState({
-    situation: { content: "", error: undefined },
-    task: { content: "", error: undefined },
-    action: { content: "", error: undefined },
-    result: { content: "", error: undefined },
-  });
-
-  const [status, setStatus] = useState({
-    submitting: false,
-    error: false,
-    success: false,
-    message: null,
+    situation: { content: "", isValid: undefined },
+    task: { content: "", isValid: undefined },
+    action: { content: "", isValid: undefined },
+    result: { content: "", isValid: undefined },
   });
 
   const changeHandler = (event) => {
@@ -40,86 +34,75 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
         ...prevAnswer,
         [event.target.id]: {
           content: event.target.value,
-          error:
+          isValid:
             event.target.value.length < 10 || event.target.value.length > 500
-              ? true
-              : false,
+              ? false
+              : true,
         },
       };
     });
   };
 
-  const validateAllTextareas = () => {
-    return Object.values(answer).every((answer) => answer.error === false);
+  const postAnswer = async () => {
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}/answers`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          situation: answer.situation.content,
+          task: answer.task.content,
+          action: answer.action.content,
+          result: answer.result.content,
+        }),
+      }
+    );
+    console.log("postAnswer response", response);
+    if (!response.ok) {
+      throw new Error(response);
+    }
+    const data = await response.json();
+    console.log("postAnswer data", data);
+    return data;
   };
 
-  const submitHandler = async (event) => {
-    event.preventDefault();
+  const queryClient = useQueryClient();
 
-    if (!validateAllTextareas()) {
-      setStatus({
-        submitting: false,
-        error: true,
-        success: false,
-        message: "There are problems in your Answer Form 🙁",
+  const addAnswerMutation = useMutation({
+    mutationFn: postAnswer,
+    // onMutate: () => {},
+    onSuccess: () => {
+      // Invalidate the Query Key
+      // queryClient.invalidateQueries({ queryKey: ["question", questionId] });
+      // Refetch the Query Key
+      queryClient.refetchQueries(["question", questionId]);
+      // Reset the Answer State
+      setAnswer({
+        situation: { content: "", isValid: undefined },
+        task: { content: "", isValid: undefined },
+        action: { content: "", isValid: undefined },
+        result: { content: "", isValid: undefined },
       });
+    },
+    // onError: () => {},
+    // onSettled: () => {},
+  });
+
+  const { isPending, isError, error, isSuccess } = addAnswerMutation;
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+    const isFormValid = Object.values(answer).every(
+      (answer) => answer.isValid === true
+    );
+    if (!isFormValid) {
       return;
     }
-
-    try {
-      setStatus({
-        submitting: true,
-        error: false,
-        success: false,
-        message: null,
-      });
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_SERVER_URL
-        }/api/questions/${questionId}/answers`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // attach the HTTP-Only Cookie with customJWT
-          body: JSON.stringify({
-            situation: answer.situation.content,
-            task: answer.task.content,
-            action: answer.action.content,
-            result: answer.result.content,
-          }),
-        }
-      );
-      // console.log("AddAnswer response:", response);
-
-      if (!response.ok) {
-        throw response;
-      }
-
-      // const data = await response.json();
-      // console.log("AddAnswer postAnswer data:", data);
-
-      setStatus({
-        submitting: false,
-        error: false,
-        success: true,
-        message: "Your Answer was successfully added!😁 Thank you ⭐",
-      });
-
-      setAnswer({
-        situation: { content: "", error: undefined },
-        task: { content: "", error: undefined },
-        action: { content: "", error: undefined },
-        result: { content: "", error: undefined },
-      });
-    } catch (error) {
-      setStatus({
-        submitting: false,
-        error: true,
-        success: false,
-        message: "There was an error sending the Answer to the Server 😭",
-      });
+    if (isFormValid) {
+      addAnswerMutation.mutate();
     }
   };
 
@@ -160,7 +143,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                answer.situation.error ? "red" : consistentFormFieldBorder
+                answer.situation.isValid ? consistentFormFieldBorder : "red"
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -168,7 +151,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               resize: "none",
             }}
           />
-          {answer.situation.error && (
+          {answer.situation.isValid === false && (
             <Typography color="error">
               Your Situation needs to be between 10-500 Characters
             </Typography>
@@ -188,7 +171,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                answer.task.error ? "red" : consistentFormFieldBorder
+                answer.task.isValid ? consistentFormFieldBorder : "red"
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -196,7 +179,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               resize: "none",
             }}
           />
-          {answer.task.error && (
+          {answer.task.isValid === false && (
             <Typography color="error">
               Your Task needs to be between 10-500 Characters
             </Typography>
@@ -216,7 +199,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                answer.action.error ? "red" : consistentFormFieldBorder
+                answer.action.isValid ? consistentFormFieldBorder : "red"
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -224,7 +207,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               resize: "none",
             }}
           />
-          {answer.action.error && (
+          {answer.action.isValid === false && (
             <Typography color="error">
               Your Action needs to be between 10-500 Characters
             </Typography>
@@ -244,7 +227,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                answer.result.error ? "red" : consistentFormFieldBorder
+                answer.result.isValid ? consistentFormFieldBorder : "red"
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -252,7 +235,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               resize: "none",
             }}
           />
-          {answer.result.error && (
+          {answer.result.isValid === false && (
             <Typography color="error">
               Your Result must be between 10-500 Characters
             </Typography>
@@ -267,24 +250,39 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               variant="contained"
               type="submit"
               endIcon={<SendIcon />}
-              disabled={status.submitting}>
+              disabled={isPending}>
               Add Answer
             </Button>
           </Box>
           <Box>
-            {status.submitting && (
-              <Typography color={"info"} mt={2} px={1}>
+            {isPending && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
                 Submitting...
               </Typography>
             )}
-            {status.success && (
-              <Typography color={"success.main"} mt={2} px={1}>
-                Success: {status.message}
+            {isSuccess && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
+                ✅ Your Answer was successfully added! Thank you
               </Typography>
             )}
-            {status.error && (
-              <Typography color={"error"} mt={2} px={1}>
-                Error: {status.message}
+            {isError && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
+                ❌ Error: {error.toString()}
               </Typography>
             )}
           </Box>
