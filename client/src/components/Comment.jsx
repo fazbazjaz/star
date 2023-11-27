@@ -31,7 +31,7 @@ const Comment = ({ commentData }) => {
             </Typography>
             <Typography variant={"body2"}>(id: {commentData.id})</Typography>
             <Typography variant={"body2"}>
-              by [⚠️get the userId of the Comment]
+              by userId: {commentData.userId}
             </Typography>
           </Box>
           <Box>

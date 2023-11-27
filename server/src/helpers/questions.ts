@@ -81,7 +81,7 @@ export const getAnswer = async (questionId: number, answerId: number) => {
     .select()
     .from(questions)
     .innerJoin(answers, eq(questions.id, answers.questionId))
-    .where(and(eq(answers.id, answerId), eq(answers.id, answerId)));
+    .where(and(eq(questions.id, questionId), eq(answers.id, answerId)));
 };
 
 export const deleteQuestion = async (questionId: number) => {
