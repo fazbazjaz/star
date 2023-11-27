@@ -76,11 +76,11 @@ jobs:
         with:
           path: ~/.npm
           key: server-node-modules-${{ hashFiles('./server/package-lock.json') }}
-      - name: create env file
+      - name: Create .env
         run: |
           touch .env
-          echo DATABASE_HOST=localhost >> .env.test    
-          echo DATABASE_PORT=5432 >> .env.test    
+          echo DATABASE_HOST=${{ secrets.DATABASE_HOST }} >> .env.test    
+          echo DATABASE_PORT=${{ vars.DATABASE_PORT }} >> .env.test    
           echo DATABASE_USER=${{ secrets.DATABASE_USER }} >> .env.test    
           echo DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} >> .env.test    
           echo DATABASE_NAME=${{ secrets.DATABASE_NAME }} >> .env.test
@@ -90,7 +90,7 @@ jobs:
         run: npm run prettier
       - name: Lint Code
         run: npm run lint:fix
-      - name: Test Code
+      - name: Database Migration
         run: NODE_ENV=TEST npm run database:migration
       - name: Test Code
         run: npm run test
