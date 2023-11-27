@@ -3,6 +3,7 @@ import { database } from "./connection";
 
 async function applyMigration() {
   try {
+    console.log(`Database: ${process.env.DATABASE_NAME}`);
     console.log("➡️ Applying Migration...");
     const start = Date.now();
     // we call the migrate function from drizzle and have to pass in:

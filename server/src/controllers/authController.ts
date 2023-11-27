@@ -74,7 +74,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
 
   try {
     user = await findUserByGoogleId(userGoogleId);
-    if (!user) {
+    if (!user || user.length === 0) {
       user = await createUser({
         google_id: userGoogleId,
         firstname: userFirstname,
@@ -86,6 +86,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(500).json({ error: "Server Error" });
   }
+
   logger.info({ message: "idTokenHandler user", value: user });
 
   const userId = user[0].id;

@@ -8,8 +8,9 @@ import {
   Typography,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
-const AddQuestion = () => {
+const AddQuestionPage = () => {
   const [question, setQuestion] = useState("");
   const [validationError, setValidationError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -68,15 +69,12 @@ const AddQuestion = () => {
     }
   };
 
-  const addQuestionBackground = "/images/background-001.jpg";
-
   return (
     <Box
-      minHeight={"50vh"}
       p={3}
       color="white"
       sx={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${addQuestionBackground})`,
+        backgroundImage: consistentPageBackgroundImage,
         backgroundSize: "cover",
         backgroundPosition: "center center",
         backgroundRepeat: "no-repeat",
@@ -128,4 +126,4 @@ const AddQuestion = () => {
   );
 };
 
-export default AddQuestion;
+export default AddQuestionPage;

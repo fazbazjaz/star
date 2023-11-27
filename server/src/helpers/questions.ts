@@ -21,10 +21,25 @@ export const getOneQuestion = async (questionId: number) => {
     .where(eq(questions.id, questionId));
 };
 
-export const getQuestionAndAllAnswers = async (questionId: number) => {
+export const getOneQuestionWithAnswers = async (questionId: number) => {
   return await database.query.questions.findMany({
     with: {
       answers: true
+    },
+    where: eq(questions.id, questionId)
+  });
+};
+
+export const getOneQuestionWithAnswersAndComments = async (
+  questionId: number
+) => {
+  return await database.query.questions.findMany({
+    with: {
+      answers: {
+        with: {
+          comments: true
+        }
+      }
     },
     where: eq(questions.id, questionId)
   });

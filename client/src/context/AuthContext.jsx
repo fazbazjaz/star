@@ -10,7 +10,7 @@ import { getCookieValue } from "../utils/getCookieValue";
 
 export const AuthContext = createContext();
 
-const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }) => {
   // From "index.html" <script src="https://accounts.google.com/gsi/client" async defer></script>
   // Declare the Global Google Object
   /* global google */
@@ -131,6 +131,10 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     // On Page Load
 
+    // Remove the "g_state" Cookie Google Sign In Creates
+    document.cookie =
+      "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
     // Try to retrieve the "user" Cookie from the Browser
     const existingUserCookie = getUserCookieFromBrowser();
     // console.log("useEffect existingUserCookie:", existingUserCookie);
@@ -139,18 +143,15 @@ const AuthProvider = ({ children }) => {
     if (existingUserCookie) {
       // set the "user" Cookie into React State
       setUserCookie(existingUserCookie);
-
-      // Navigate to the Profile Page
-      // navigate("/profile");
-    } else if (!existingUserCookie) {
-      // Initialize the Google Sign In Client
-      initializeGoogleSignIn();
+      // and return
+      return;
     }
+
+    // Initialize the Google Sign In Client
+    initializeGoogleSignIn();
   }, [getUserCookieFromBrowser, initializeGoogleSignIn, navigate]);
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
-
-export default AuthProvider;

@@ -1,32 +1,29 @@
-import { Outlet } from "react-router-dom";
+import { AuthProvider } from "../context/AuthContext";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "../themes/Theme";
 import CssBaseline from "@mui/material/CssBaseline";
-import "@fontsource/roboto/300.css";
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
-import AuthProvider from "../context/AuthContext";
-import AuthState from "../components/AuthState";
-import Header from "../components/Header";
-import Navigation from "../components/Navigation";
-import Footer from "../components/Footer";
 import { Box } from "@mui/material";
+import Header from "../components/Header";
+// import AuthState from "../components/AuthState";
+import { Outlet } from "react-router-dom";
+import Footer from "../components/Footer";
 
 const RootLayout = () => {
   return (
     <>
       <AuthProvider>
-        <CssBaseline />
-        <Box
-          minHeight={"100vh"}
-          display={"grid"}
-          gridTemplateRows={"auto auto auto 1fr auto"}
-          border={4}>
-          <Header />
-          <Navigation />
-          <AuthState />
-          <Outlet />
-          <Footer />
-        </Box>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Box
+            minHeight={"100vh"}
+            display={"grid"}
+            gridTemplateRows={"auto 1fr auto"}>
+            <Header />
+            {/* <AuthState /> */}
+            <Outlet />
+            <Footer />
+          </Box>
+        </ThemeProvider>
       </AuthProvider>
     </>
   );
