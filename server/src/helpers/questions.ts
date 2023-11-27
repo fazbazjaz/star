@@ -1,17 +1,36 @@
 import { database } from "../database/connection";
-import { questions } from "../database/schema";
-import { eq } from "drizzle-orm";
+import { questions, answers, comments } from "../database/schema";
+import { eq, and } from "drizzle-orm";
 
 export const createQuestion = async (userId: number, question: string) => {
-  return database.insert(questions).values({ userId, question }).returning();
+  return await database
+    .insert(questions)
+    .values({ userId, question })
+    .returning();
+};
+
+export const createAnswer = async (
+  questionId: number,
+  situation: string,
+  task: string,
+  action: string,
+  result: string
+) => {
+  return await database
+    .insert(answers)
+    .values({ questionId, situation, task, action, result })
+    .returning();
+};
+
+export const createComment = async (answerId: number, comment: string) => {
+  return await database
+    .insert(comments)
+    .values({ answerId, comment })
+    .returning();
 };
 
 export const getAllQuestions = async () => {
   return await database.select().from(questions);
-};
-
-export const deleteQuestions = async (questionIdNumber: number) => {
-  await database.delete(questions).where(eq(questions.id, questionIdNumber));
 };
 
 export const getOneQuestion = async (questionId: number) => {
@@ -43,4 +62,26 @@ export const getOneQuestionWithAnswersAndComments = async (
     },
     where: eq(questions.id, questionId)
   });
+};
+
+export const getAllQuestionsByUser = async (userId: number) => {
+  return await database
+    .select()
+    .from(questions)
+    .where(eq(questions.userId, userId));
+};
+
+export const getAnswer = async (questionId: number, answerId: number) => {
+  return await database
+    .select()
+    .from(questions)
+    .innerJoin(answers, eq(questions.id, answers.questionId))
+    .where(and(eq(answers.id, answerId), eq(answers.id, answerId)));
+};
+
+export const deleteQuestion = async (questionId: number) => {
+  return await database
+    .delete(questions)
+    .where(eq(questions.id, questionId))
+    .returning();
 };

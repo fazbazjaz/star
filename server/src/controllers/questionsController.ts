@@ -1,35 +1,44 @@
-import { database } from "../database/connection";
-import { questions, answers, comments } from "../database/schema";
-import { eq, and } from "drizzle-orm";
 import { Request, Response } from "express";
 import {
   createQuestion,
-  deleteQuestions,
-  getOneQuestionWithAnswersAndComments
+  getAllQuestions,
+  deleteQuestion,
+  getAllQuestionsByUser,
+  getOneQuestionWithAnswersAndComments,
+  getOneQuestion,
+  createAnswer,
+  createComment,
+  getAnswer
 } from "../helpers/questions";
 import { logger } from "../logger";
 
-export const addQuestion = async (req: Request, res: Response) => {
+export const createQuestionHandler = async (req: Request, res: Response) => {
   try {
     const user = req.customJWTPayload;
-    logger.info({ message: "addQuestion user", value: user });
+    logger.info({ message: "createQuestionHandler user", value: user });
 
     if (!user) {
       return res.status(500).json({ error: "No User attached to the Request" });
     }
 
     const question = req.body.question;
-    logger.info({ message: "addQuestion question ", value: question });
+    logger.info({
+      message: "createQuestionHandler question ",
+      value: question
+    });
 
     if (!question) {
       return res.status(400).json({ error: "No Question on the Request Body" });
     }
 
     const userId = user.id;
-    logger.info({ message: "addQuestion userId", value: userId });
+    logger.info({ message: "createQuestionHandler userId", value: userId });
 
     const queryQuestion = await createQuestion(userId, question);
-    logger.info({ message: "addQuestion queryQuestion", value: queryQuestion });
+    logger.info({
+      message: "createQuestionHandler queryQuestion",
+      value: queryQuestion
+    });
 
     res.status(200).json(queryQuestion);
   } catch (error) {
@@ -38,14 +47,14 @@ export const addQuestion = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllQuestions = async (req: Request, res: Response) => {
+export const getAllQuestionsHandler = async (req: Request, res: Response) => {
   try {
-    const query = await database.select().from(questions);
-    logger.info("getAllQuestions query", query);
+    const query = await getAllQuestions();
+    logger.info("getAllQuestionsHandler query", query);
 
     const data = query;
     logger.info({
-      message: "getAllQuestions data",
+      message: "getAllQuestionsHandler data",
       value: data
     });
 
@@ -56,11 +65,11 @@ export const getAllQuestions = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteQuestion = async (req: Request, res: Response) => {
+export const deleteQuestionHandler = async (req: Request, res: Response) => {
   try {
-    const questionId = Number(req.params.id);
+    const questionId = parseInt(req.params.id);
     logger.info({
-      message: "deleteQuestion questionId",
+      message: "deleteQuestionHandler questionId",
       value: questionId
     });
 
@@ -72,35 +81,39 @@ export const deleteQuestion = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid questionId format" });
     }
 
-    await deleteQuestions(questionId);
+    const deleteQuery = await deleteQuestion(questionId);
+    logger.info({
+      message: "deleteQuestionHandler deleteQuery",
+      value: deleteQuery
+    });
 
-    res.status(204).end();
+    res.status(200).json(deleteQuery);
   } catch (error) {
     logger.error(error);
     res.status(500).json({ error: "Server Error" });
   }
 };
 
-export const findAllQuestionsByUser = async (req: Request, res: Response) => {
+export const findAllQuestionsByUserHandler = async (
+  req: Request,
+  res: Response
+) => {
   const userId = parseInt(req.params.id);
   logger.info({
-    message: "findAllQuestionsByUser userId",
+    message: "findAllQuestionsByUserHandler userId",
     value: userId
   });
 
   try {
-    const query = await database
-      .select()
-      .from(questions)
-      .where(eq(questions.userId, userId));
+    const query = await getAllQuestionsByUser(userId);
     logger.info({
-      message: "findAllQuestionsByUser query",
+      message: "findAllQuestionsByUserHandler query",
       value: query
     });
 
     const data = query;
     logger.info({
-      message: "findAllQuestionsByUser data",
+      message: "findAllQuestionsByUserHandler data",
       value: data
     });
 
@@ -111,17 +124,17 @@ export const findAllQuestionsByUser = async (req: Request, res: Response) => {
   }
 };
 
-export const findOneQuestion = async (req: Request, res: Response) => {
+export const findOneQuestionHandler = async (req: Request, res: Response) => {
   const questionId = parseInt(req.params.id);
   logger.info({
-    message: "findOneQuestion questionId",
+    message: "findOneQuestionHandler questionId",
     value: questionId
   });
 
   try {
     const query = await getOneQuestionWithAnswersAndComments(questionId);
     logger.info({
-      message: "findOneQuestion query",
+      message: "findOneQuestionHandler query",
       value: query
     });
 
@@ -132,7 +145,7 @@ export const findOneQuestion = async (req: Request, res: Response) => {
 
     const data = query[0];
     logger.info({
-      message: "findOneQuestion data",
+      message: "findOneQuestionHandler data",
       value: data
     });
 
@@ -143,10 +156,10 @@ export const findOneQuestion = async (req: Request, res: Response) => {
   }
 };
 
-export const createAnswer = async (req: Request, res: Response) => {
+export const createAnswerHandler = async (req: Request, res: Response) => {
   const questionId = Number(req.params.id);
   logger.info({
-    message: "createAnswer questionId",
+    message: "createAnswerHandler questionId",
     value: questionId
   });
 
@@ -156,7 +169,7 @@ export const createAnswer = async (req: Request, res: Response) => {
 
   const { situation, task, action, result } = req.body;
   logger.info({
-    message: "createAnswer req.body",
+    message: "createAnswerHandler req.body",
     value: req.body
   });
 
@@ -165,12 +178,9 @@ export const createAnswer = async (req: Request, res: Response) => {
   }
 
   try {
-    const questionIdQuery = await database
-      .select()
-      .from(questions)
-      .where(eq(questions.id, questionId));
+    const questionIdQuery = await getOneQuestion(questionId);
     logger.info({
-      message: "createAnswer questionIdQuery",
+      message: "createAnswerHandler questionIdQuery",
       value: questionIdQuery
     });
 
@@ -184,18 +194,21 @@ export const createAnswer = async (req: Request, res: Response) => {
   }
 
   try {
-    const insertAnswerQuery = await database
-      .insert(answers)
-      .values({ questionId, situation, task, action, result })
-      .returning();
+    const insertAnswerQuery = await createAnswer(
+      questionId,
+      situation,
+      task,
+      action,
+      result
+    );
     logger.info({
-      message: "createAnswer insertAnswerQuery",
+      message: "createAnswerHandler insertAnswerQuery",
       value: insertAnswerQuery
     });
 
     const data = insertAnswerQuery[0];
     logger.info({
-      message: "createAnswer data",
+      message: "createAnswerHandler data",
       value: data
     });
 
@@ -206,10 +219,10 @@ export const createAnswer = async (req: Request, res: Response) => {
   }
 };
 
-export const createComment = async (req: Request, res: Response) => {
-  const questionId = Number(req.params.id);
+export const createCommentHandler = async (req: Request, res: Response) => {
+  const questionId = parseInt(req.params.id);
   logger.info({
-    message: "createComment questionId",
+    message: "createCommentHandler questionId",
     value: questionId
   });
 
@@ -217,9 +230,9 @@ export const createComment = async (req: Request, res: Response) => {
     return res.status(400).json({ error: `Invalid Question ID Provided` });
   }
 
-  const answerId = Number(req.params.answerId);
+  const answerId = parseInt(req.params.answerId);
   logger.info({
-    message: "createComment answerId",
+    message: "createCommentHandler answerId",
     value: answerId
   });
 
@@ -229,7 +242,7 @@ export const createComment = async (req: Request, res: Response) => {
 
   const comment = req.body.comment;
   logger.info({
-    message: "createComment comment",
+    message: "createCommentHandler comment",
     value: comment
   });
 
@@ -238,13 +251,9 @@ export const createComment = async (req: Request, res: Response) => {
   }
 
   try {
-    const answerQuery = await database
-      .select()
-      .from(questions)
-      .innerJoin(answers, eq(questions.id, answers.questionId))
-      .where(and(eq(answers.id, answerId), eq(answers.id, answerId)));
+    const answerQuery = await getAnswer(questionId, answerId);
     logger.info({
-      message: "createComment answerQuery",
+      message: "createCommentHandler answerQuery",
       value: answerQuery
     });
 
@@ -252,21 +261,15 @@ export const createComment = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Answer not found" });
     }
 
-    const insertCommentQuery = await database
-      .insert(comments)
-      .values({
-        answerId,
-        comment
-      })
-      .returning();
+    const insertCommentQuery = await createComment(answerId, comment);
     logger.info({
-      message: "createComment insertCommentQuery",
+      message: "createCommentHandler insertCommentQuery",
       value: insertCommentQuery
     });
 
     const data = insertCommentQuery[0];
     logger.info({
-      message: "createComment data",
+      message: "createCommentHandler data",
       value: data
     });
 
