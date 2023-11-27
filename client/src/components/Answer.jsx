@@ -4,7 +4,7 @@ import PsychologyAltRoundedIcon from "@mui/icons-material/PsychologyAltRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import SmsOutlinedIcon from "@mui/icons-material/SmsOutlined";
 import AddCommentForm from "./AddCommentForm";
-import BazComment from "./Comment";
+import Comment from "./Comment";
 import { formatDate } from "../utils/formatDate";
 import {
   consistentBorder,
@@ -138,11 +138,9 @@ const Answer = ({ answerData }) => {
             </Typography>
           </Box>
           {answerData.comments &&
-            answerData.comments.map((commentData) => {
-              return (
-                <BazComment key={commentData.id} commentData={commentData} />
-              );
-            })}
+            answerData.comments.map((commentData) => (
+              <Comment key={commentData.id} commentData={commentData} />
+            ))}
           <Box mt={1.5}>
             <Button
               variant="outlined"
