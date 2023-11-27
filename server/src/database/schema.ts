@@ -26,7 +26,9 @@ export const users = pgTable("users", {
 
 // Relation for Users Table
 export const usersRelations = relations(users, ({ many }) => ({
-  questions: many(questions)
+  questions: many(questions),
+  answers: many(answers),
+  comments: many(comments)
 }));
 
 // Questions Table
@@ -55,6 +57,9 @@ export const questionsRelations = relations(questions, ({ one, many }) => ({
 // Answers Table
 export const answers = pgTable("answers", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
   questionId: integer("question_id")
     .references(() => questions.id, { onDelete: "cascade" })
     .notNull(),
@@ -68,6 +73,10 @@ export const answers = pgTable("answers", {
 
 // Relations for Answers Table
 export const answersRelations = relations(answers, ({ one, many }) => ({
+  user: one(users, {
+    fields: [answers.userId],
+    references: [users.id]
+  }),
   question: one(questions, {
     fields: [answers.questionId],
     references: [questions.id]
@@ -78,6 +87,11 @@ export const answersRelations = relations(answers, ({ one, many }) => ({
 // Comments Table
 export const comments = pgTable("comments", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .references(() => users.id, {
+      onDelete: "cascade"
+    })
+    .notNull(),
   answerId: integer("answer_id")
     .references(() => answers.id, { onDelete: "cascade" })
     .notNull(),
@@ -88,6 +102,10 @@ export const comments = pgTable("comments", {
 
 // Relations for Comments Table
 export const commentsRelations = relations(comments, ({ one }) => ({
+  user: one(users, {
+    fields: [comments.userId],
+    references: [users.id]
+  }),
   answer: one(answers, {
     fields: [comments.answerId],
     references: [answers.id]

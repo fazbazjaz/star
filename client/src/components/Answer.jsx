@@ -39,7 +39,7 @@ const Answer = ({ answerData }) => {
             </Typography>
             <Typography variant={"body2"}>(id: {answerData.id})</Typography>
             <Typography variant={"body2"}>
-              by [⚠️get the userId of the Answer]
+              by userId: {answerData.userId}
             </Typography>
           </Box>
           <Box display={"grid"} gap={1} mt={1}>
