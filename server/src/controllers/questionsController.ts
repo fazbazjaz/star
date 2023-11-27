@@ -12,28 +12,31 @@ import {
 } from "../helpers/questions";
 import { logger } from "../logger";
 
-export const addQuestionHandler = async (req: Request, res: Response) => {
+export const createQuestionHandler = async (req: Request, res: Response) => {
   try {
     const user = req.customJWTPayload;
-    logger.info({ message: "addQuestionHandler user", value: user });
+    logger.info({ message: "createQuestionHandler user", value: user });
 
     if (!user) {
       return res.status(500).json({ error: "No User attached to the Request" });
     }
 
     const question = req.body.question;
-    logger.info({ message: "addQuestionHandler question ", value: question });
+    logger.info({
+      message: "createQuestionHandler question ",
+      value: question
+    });
 
     if (!question) {
       return res.status(400).json({ error: "No Question on the Request Body" });
     }
 
     const userId = user.id;
-    logger.info({ message: "addQuestionHandler userId", value: userId });
+    logger.info({ message: "createQuestionHandler userId", value: userId });
 
     const queryQuestion = await createQuestion(userId, question);
     logger.info({
-      message: "addQuestionHandler queryQuestion",
+      message: "createQuestionHandler queryQuestion",
       value: queryQuestion
     });
 
