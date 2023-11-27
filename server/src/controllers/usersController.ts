@@ -7,10 +7,10 @@ import { logger } from "../logger";
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const query = await database.select().from(users);
-    logger.info("getAllUsers query:", query);
+    logger.info({ message: "getAllUsers query", value: query });
 
     const data = query;
-    logger.info("getAllUsers data:", data);
+    logger.info({ message: "getAllUsers data", value: data });
 
     res.json(data);
   } catch (error) {
@@ -22,16 +22,19 @@ export const getAllUsers = async (req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
   try {
     const requestedUserId = Number(req.params.id);
-    // console.log("getUserById requestedUserId:", requestedUserId);
+    logger.info({
+      message: "getUserById requestedUserId",
+      requestedUserId
+    });
 
     const query = await database
       .select()
       .from(users)
       .where(eq(users.id, requestedUserId));
-    // console.log("getUserById query:", query);
+    logger.info({ message: "getUserById query", value: query });
 
     const data = query[0];
-    logger.info("getUserById data:", data);
+    logger.info({ message: "getUserById data", value: data });
 
     res.status(200).json(data);
   } catch (error) {
