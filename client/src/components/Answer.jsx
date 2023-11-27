@@ -138,9 +138,9 @@ const Answer = ({ answerData }) => {
             </Typography>
           </Box>
           {answerData.comments &&
-            answerData.comments.map((commentData) => {
-              return <Comment key={commentData.id} commentData={commentData} />;
-            })}
+            answerData.comments.map((commentData) => (
+              <Comment key={commentData.id} commentData={commentData} />
+            ))}
           <Box mt={1.5}>
             <Button
               variant="outlined"
