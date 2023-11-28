@@ -6,54 +6,51 @@ import {
   TextareaAutosize,
   Typography,
 } from "@mui/material";
-import SmsIcon from "@mui/icons-material/Sms";
-import SendIcon from "@mui/icons-material/Send";
+import SaveAsRoundedIcon from "@mui/icons-material/SaveAsRounded";
 import {
+  consistentBackdropFilter,
+  consistentBgColor,
   consistentBorder,
   consistentBorderRadius,
-  consistentBgColor,
   consistentBoxShadow,
-  consistentBackdropFilter,
   consistentFormFieldBackgroundColor,
   consistentFormFieldBorder,
 } from "../themes/ConsistentStyles";
 
-const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
-
-  const [comment, setComment] = useState({
-    content: "",
-    error: undefined,
-  });
-
+const EditQuestionForm = ({ questionData, setIsEditing }) => {
   const [status, setStatus] = useState({
     submitting: false,
     error: false,
     success: false,
     message: null,
   });
+  const [question, setQuestion] = useState({
+    content: questionData.question,
+    error: undefined,
+  });
 
   const changeHandler = (event) => {
     const { value } = event.target;
 
-    setComment((prevComment) => {
+    setQuestion((prevQuestion) => {
       return {
-        ...prevComment,
-        content: event.target.value,
+        ...prevQuestion,
+        content: value,
         error:
-          value.trim().length < 10 || value.trim().length > 500 ? true : false,
+          !value.trim || value.trim().length < 10 || value.trim().length > 500,
       };
     });
   };
 
-  const submitHandler = async (event) => {
+  const handleSubmit = async (event, questionId) => {
     event.preventDefault();
 
-    if (comment.error || comment.error === undefined) {
+    if (question.error || question.error === undefined) {
       setStatus({
         submitting: false,
         error: true,
         success: false,
-        message: "Your Comment needs to be between 10-500 Characters",
+        message: "Your Question needs to be between 10-500 Characters",
       });
       return;
     }
@@ -65,46 +62,43 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
         success: false,
         message: null,
       });
+      const questionContent = question.content;
       const response = await fetch(
-        `${
-          import.meta.env.VITE_SERVER_URL
-        }/api/questions/${questionId}/answers/${answerId}/comments`,
+        `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}/edit`,
         {
-          method: "POST",
+          method: "PUT",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include", // attach the HTTP-Only Cookie with customJWT
-          body: JSON.stringify({ comment: comment.content }),
+          body: JSON.stringify({ questionContent }),
         }
       );
-      // console.log("AddComment response:", response);
-
+      // console.log("Edit response:", response);
       if (!response.ok) {
-        throw response;
+        throw new Error("Failed to Edit question");
       }
-
       // const data = await response.json();
-      // console.log("AddComment postAnswer data:", data);
-
+      // console.log("Edit data:", data);
+      setIsEditing(false);
       setStatus({
         submitting: false,
         error: false,
         success: true,
-        message: "Your Comment was successfully added!",
+        message: "Your Question was successfully Edited!",
       });
-
-      setComment({
+      setQuestion({
         content: "",
         error: undefined,
       });
-      setShowAddCommentForm((prev) => !prev);
     } catch (error) {
+      console.error(error);
       setStatus({
         submitting: false,
         error: true,
         success: false,
-        message: "There was an error sending your Comment to the Server",
+        message:
+          "There was an error sending your Edited Question to the Server",
       });
     }
   };
@@ -120,26 +114,17 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
       sx={{
         backdropFilter: consistentBackdropFilter,
       }}>
-      <form onSubmit={submitHandler}>
+      <form onSubmit={() => handleSubmit(event, questionData.id)}>
         <FormControl sx={{ width: "100%" }}>
-          <Box display={"flex"} alignItems={"center"} gap={0.5} mb={1}>
-            <SmsIcon fontSize="medium" color="primary" />
-            <Typography variant={"commentformtitle"} color={"primary"}>
-              Add your Comment
-            </Typography>
-          </Box>
           <TextareaAutosize
-            id="situation"
-            aria-label="Add your Comment"
-            minRows={2}
-            placeholder="Please carefully type out your Comment"
-            value={comment.content}
-            onChange={changeHandler}
+            aria-label="Edit your question"
+            value={question.content}
+            onChange={() => changeHandler(event)}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                comment.error ? "red" : consistentFormFieldBorder
+                question.error ? "red" : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -147,18 +132,15 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
               resize: "none",
             }}
           />
-          <Box display={"flex"} gap={1} mt={2}>
-            <Button
-              variant="contained"
-              onClick={() => setShowAddCommentForm((prev) => !prev)}>
+          <Box display={"flex"} gap={1} mt={1}>
+            <Button variant="contained" onClick={() => setIsEditing(false)}>
               Cancel
             </Button>
             <Button
               variant="contained"
               type="submit"
-              endIcon={<SendIcon />}
               disabled={status.submitting}>
-              Add Comment
+              Save <SaveAsRoundedIcon />
             </Button>
           </Box>
           <Box>
@@ -184,4 +166,4 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
   );
 };
 
-export default AddCommentForm;
+export default EditQuestionForm;

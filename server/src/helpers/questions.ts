@@ -90,3 +90,11 @@ export const deleteQuestion = async (questionId: number) => {
     .where(eq(questions.id, questionId))
     .returning();
 };
+
+export const editQuestion = async (questionId: number, question: string) => {
+  return await database
+    .update(questions)
+    .set({ question })
+    .where(eq(questions.id, questionId))
+    .returning();
+};
