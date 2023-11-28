@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Box,
   Button,
@@ -21,14 +22,7 @@ import {
 const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
   const [comment, setComment] = useState({
     content: "",
-    error: undefined,
-  });
-
-  const [status, setStatus] = useState({
-    submitting: false,
-    error: false,
-    success: false,
-    message: null,
+    isValid: undefined,
   });
 
   const changeHandler = (event) => {
@@ -36,74 +30,66 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
       return {
         ...prevComment,
         content: event.target.value,
-        error:
+        isValid:
           event.target.value.length < 10 || event.target.value.length > 500
-            ? true
-            : false,
+            ? false
+            : true,
       };
     });
   };
 
+  const postComment = async () => {
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_SERVER_URL
+      }/api/questions/${questionId}/answers/${answerId}/comments`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ comment: comment.content }),
+      }
+    );
+    // console.log("postComment response", response);
+    if (!response.ok) {
+      throw new Error(response);
+    }
+    const data = await response.json();
+    // console.log("postComment data", data);
+    return data;
+  };
+
+  const queryClient = useQueryClient();
+
+  const addCommentMutation = useMutation({
+    mutationFn: postComment,
+    // onMutate: () => {},
+    onSuccess: () => {
+      // Invalidate the Query Key
+      // queryClient.invalidateQueries({ queryKey: ["question", questionId] });
+      // Refetch the Query Key
+      queryClient.refetchQueries(["question", questionId]);
+      // Reset the Comment State
+      setComment({
+        comment: "",
+        isValid: undefined,
+      });
+    },
+    // onError: () => {},
+    // onSettled: () => {},
+  });
+
+  const { isPending, isError, error, isSuccess } = addCommentMutation;
+
   const submitHandler = async (event) => {
     event.preventDefault();
-
-    if (comment.error) {
-      setStatus({
-        submitting: false,
-        error: true,
-        success: false,
-        message: "There are problems with your Comment",
-      });
+    if (!comment.isValid) {
       return;
     }
-
-    try {
-      setStatus({
-        submitting: true,
-        error: false,
-        success: false,
-        message: null,
-      });
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_SERVER_URL
-        }/api/questions/${questionId}/answers/${answerId}/comments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // attach the HTTP-Only Cookie with customJWT
-          body: JSON.stringify({ comment: comment.content }),
-        }
-      );
-      // console.log("AddComment response:", response);
-
-      if (!response.ok) {
-        throw response;
-      }
-
-      // const data = await response.json();
-      // console.log("AddComment postAnswer data:", data);
-
-      setStatus({
-        submitting: false,
-        error: false,
-        success: true,
-        message: "Your Comment was successfully added!",
-      });
-
-      setComment({
-        content: "",
-        error: undefined,
-      });
-    } catch (error) {
-      setStatus({
-        submitting: false,
-        error: true,
-        success: false,
-        message: "There was an error sending your Comment to the Server",
-      });
+    if (comment.isValid) {
+      addCommentMutation.mutate();
     }
   };
 
@@ -145,7 +131,7 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
               resize: "none",
             }}
           />
-          {comment.error && (
+          {comment.isValid === false && (
             <Typography color="error">
               Your Comment needs to be between 10-500 Characters
             </Typography>
@@ -160,24 +146,39 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
               variant={"contained"}
               type="submit"
               endIcon={<SendIcon />}
-              disabled={status.submitting}>
+              disabled={isPending}>
               Add Comment
             </Button>
           </Box>
           <Box>
-            {status.submitting && (
-              <Typography color={"info"} mt={2} px={1}>
+            {isPending && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
                 Submitting...
               </Typography>
             )}
-            {status.success && (
-              <Typography color={"success.main"} mt={2} px={1}>
-                Success: {status.message}
+            {isSuccess && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
+                ✅ Your Comment was successfully added! Thank you
               </Typography>
             )}
-            {status.error && (
-              <Typography color={"error"} mt={2} px={1}>
-                Error: {status.message}
+            {isError && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
+                ❌ Error: {error.toString()}
               </Typography>
             )}
           </Box>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Box,
   Button,
@@ -18,7 +19,6 @@ import {
   consistentFormFieldBackgroundColor,
   consistentFormFieldBorder,
 } from "../themes/ConsistentStyles";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
   const [answer, setAnswer] = useState({
@@ -60,12 +60,12 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
         }),
       }
     );
-    console.log("postAnswer response", response);
+    // console.log("postAnswer response", response);
     if (!response.ok) {
       throw new Error(response);
     }
     const data = await response.json();
-    console.log("postAnswer data", data);
+    // console.log("postAnswer data", data);
     return data;
   };
 
