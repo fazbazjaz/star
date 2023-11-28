@@ -8,7 +8,8 @@ import {
   getOneQuestion,
   createAnswer,
   createComment,
-  getAnswer
+  getAnswer,
+  deleteAnswer
 } from "../helpers/questions";
 import { logger } from "../logger";
 
@@ -311,5 +312,65 @@ export const createCommentHandler = async (req: Request, res: Response) => {
     return res
       .status(500)
       .json({ error: "Error Adding Your Comment to the Database" });
+  }
+};
+
+export const deleteAnswerHandler = async (req: Request, res: Response) => {
+  try {
+    const user = req.customJWTPayload;
+    logger.info({
+      message: "deleteAnswerHandler user",
+      value: user
+    });
+
+    if (!user) {
+      return res.status(500).json({ error: "No User attached to the Request" });
+    }
+
+    const answerId = parseInt(req.params.answerId);
+    logger.info({
+      message: "deleteAnswerHandler answerId",
+      value: answerId
+    });
+
+    if (!answerId) {
+      return res.status(400).json({ error: "Invalid Answer ID Provided" });
+    }
+
+    const questionId = parseInt(req.params.id);
+    logger.info({
+      message: "deleteAnswerHandler questionId",
+      value: questionId
+    });
+
+    if (!questionId) {
+      return res.status(400).json({ error: "Invalid Question ID Provided" });
+    }
+
+    const answer = await getAnswer(questionId, answerId);
+    if (!answer || answer.length === 0) {
+      return res.status(404).json({ error: "Answer not found" });
+    }
+
+    const answerAuthorId = answer[0].userId;
+
+    const currentUserId = user.id;
+
+    if (currentUserId !== answerAuthorId) {
+      return res
+        .status(403)
+        .json({ error: "You do not have permission to delete this answer" });
+    }
+
+    const deleteAnswerQuery = await deleteAnswer(questionId, answerId);
+    logger.info({
+      message: "deleteAnswerHandler deleteAnswerQuery",
+      value: deleteAnswerQuery
+    });
+
+    res.status(200).json(deleteAnswerQuery);
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ error: "Server Error" });
   }
 };

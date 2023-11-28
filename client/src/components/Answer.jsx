@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { Box, Typography, Button, IconButton } from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import PsychologyAltRoundedIcon from "@mui/icons-material/PsychologyAltRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import SmsOutlinedIcon from "@mui/icons-material/SmsOutlined";
@@ -14,8 +16,20 @@ import {
   consistentBackdropFilter,
 } from "../themes/ConsistentStyles";
 
-const Answer = ({ answerData }) => {
+const Answer = ({ answerData, questionData, userCookie, answerDelete }) => {
+  const {
+    userCookie: { id: userId },
+  } = useContext(AuthContext);
   const [showAddCommentForm, setShowAddCommentForm] = useState(false);
+
+  const handleDelete = async (questionId, answerId) => {
+    console.log(
+      "Delete answer with questionId:",
+      questionId,
+      "and answerId:",
+      answerId
+    );
+  };
 
   return (
     <>
@@ -41,89 +55,101 @@ const Answer = ({ answerData }) => {
             <Typography variant={"body2"}>
               by userId: {answerData.userId}
             </Typography>
-          </Box>
-          <Box display={"grid"} gap={1} mt={1}>
-            <Box
-              p={2}
-              border={consistentBorder}
-              borderRadius={consistentBorderRadius}
-              bgcolor={consistentBgColor}
-              boxShadow={consistentBoxShadow}
-              sx={{
-                backdropFilter: consistentBackdropFilter,
-              }}>
-              <Box display="flex" alignItems={"center"} gap={0.5}>
-                <ArrowForwardIosRoundedIcon
-                  fontSize={"small"}
-                  color={"primary"}
-                />
-                <Typography>Situation</Typography>
-              </Box>
-              <Typography mt={1.5} variant={"answerbody"}>
-                {answerData.situation}
-              </Typography>
-            </Box>
-            <Box
-              p={2}
-              border={consistentBorder}
-              borderRadius={consistentBorderRadius}
-              bgcolor={consistentBgColor}
-              boxShadow={consistentBoxShadow}
-              sx={{
-                backdropFilter: consistentBackdropFilter,
-              }}>
-              <Box display="flex" alignItems={"center"} gap={0.5}>
-                <ArrowForwardIosRoundedIcon
-                  fontSize={"small"}
-                  color={"primary"}
-                />
-                <Typography>Task</Typography>
-              </Box>
-              <Typography mt={1.5} variant={"answerbody"}>
-                {answerData.task}
-              </Typography>
-            </Box>
-            <Box
-              p={2}
-              border={consistentBorder}
-              borderRadius={consistentBorderRadius}
-              bgcolor={consistentBgColor}
-              boxShadow={consistentBoxShadow}
-              sx={{
-                backdropFilter: consistentBackdropFilter,
-              }}>
-              <Box display="flex" alignItems={"center"} gap={0.5}>
-                <ArrowForwardIosRoundedIcon
-                  fontSize={"small"}
-                  color={"primary"}
-                />
-                <Typography>Action</Typography>
-              </Box>
-              <Typography mt={1.5} variant={"answerbody"}>
-                {answerData.action}
-              </Typography>
-            </Box>
-            <Box
-              p={2}
-              border={consistentBorder}
-              borderRadius={consistentBorderRadius}
-              bgcolor={consistentBgColor}
-              boxShadow={consistentBoxShadow}
-              sx={{
-                backdropFilter: consistentBackdropFilter,
-              }}>
-              <Box display="flex" alignItems={"center"} gap={0.5}>
-                <ArrowForwardIosRoundedIcon
-                  fontSize={"small"}
-                  color={"primary"}
-                />
-                <Typography fontSize={18}>Result</Typography>
-              </Box>
-              <Typography mt={1.5} variant={"answerbody"}>
-                {answerData.result}
-              </Typography>
+            <Box marginLeft={"auto"}>
+              {answerData.userId === userId && (
+                <IconButton
+                  onClick={() =>
+                    handleDelete(answerData.questionId, answerData.id)
+                  }
+                  color="primary"
+                  sx={{ marginLeft: "auto" }}>
+                  <DeleteOutlineIcon />
+                </IconButton>
+              )}
             </Box>
           </Box>
+
+          {/* Situation Box */}
+          <Box
+            p={2}
+            border={consistentBorder}
+            borderRadius={consistentBorderRadius}
+            bgcolor={consistentBgColor}
+            boxShadow={consistentBoxShadow}
+            sx={{ backdropFilter: consistentBackdropFilter }}>
+            <Box display="flex" alignItems={"center"} gap={0.5}>
+              <ArrowForwardIosRoundedIcon
+                fontSize={"small"}
+                color={"primary"}
+              />
+              <Typography>Situation</Typography>
+            </Box>
+            <Typography mt={1.5} variant={"answerbody"}>
+              {answerData.situation}
+            </Typography>
+          </Box>
+
+          {/* Task Box */}
+          <Box
+            p={2}
+            border={consistentBorder}
+            borderRadius={consistentBorderRadius}
+            bgcolor={consistentBgColor}
+            boxShadow={consistentBoxShadow}
+            sx={{ backdropFilter: consistentBackdropFilter }}>
+            <Box display="flex" alignItems={"center"} gap={0.5}>
+              <ArrowForwardIosRoundedIcon
+                fontSize={"small"}
+                color={"primary"}
+              />
+              <Typography>Task</Typography>
+            </Box>
+            <Typography mt={1.5} variant={"answerbody"}>
+              {answerData.task}
+            </Typography>
+          </Box>
+
+          {/* Action Box */}
+          <Box
+            p={2}
+            border={consistentBorder}
+            borderRadius={consistentBorderRadius}
+            bgcolor={consistentBgColor}
+            boxShadow={consistentBoxShadow}
+            sx={{ backdropFilter: consistentBackdropFilter }}>
+            <Box display="flex" alignItems={"center"} gap={0.5}>
+              <ArrowForwardIosRoundedIcon
+                fontSize={"small"}
+                color={"primary"}
+              />
+              <Typography>Action</Typography>
+            </Box>
+            <Typography mt={1.5} variant={"answerbody"}>
+              {answerData.action}
+            </Typography>
+          </Box>
+
+          {/* Result Box */}
+          <Box
+            p={2}
+            border={consistentBorder}
+            borderRadius={consistentBorderRadius}
+            bgcolor={consistentBgColor}
+            boxShadow={consistentBoxShadow}
+            sx={{ backdropFilter: consistentBackdropFilter }}>
+            <Box display="flex" alignItems={"center"} gap={0.5}>
+              <ArrowForwardIosRoundedIcon
+                fontSize={"small"}
+                color={"primary"}
+              />
+              <Typography fontSize={18}>Result</Typography>
+            </Box>
+            <Typography mt={1.5} variant={"answerbody"}>
+              {answerData.result}
+            </Typography>
+          </Box>
+
+          {/* Updated and Created Info */}
           <Box
             display={"flex"}
             flexDirection={"column"}
@@ -137,10 +163,14 @@ const Answer = ({ answerData }) => {
               created {formatDate(answerData.createdAt)}
             </Typography>
           </Box>
+
+          {/* Comments */}
           {answerData.comments &&
             answerData.comments.map((commentData) => (
               <Comment key={commentData.id} commentData={commentData} />
             ))}
+
+          {/* Action Buttons */}
           <Box mt={1.5}>
             <Button
               variant="outlined"
@@ -156,6 +186,14 @@ const Answer = ({ answerData }) => {
                 answerId={answerData.id}
                 setShowAddCommentForm={setShowAddCommentForm}
               />
+            )}
+            {questionData.userId === userCookie.id && (
+              <IconButton
+                onClick={() => answerDelete(answerData.id)}
+                color="primary"
+                sx={{ marginLeft: "auto" }}>
+                <DeleteOutlineIcon />
+              </IconButton>
             )}
           </Box>
         </Box>
