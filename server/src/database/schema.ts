@@ -15,7 +15,7 @@ export type InsertUserType = InferInsertModel<typeof users>;
 // Users Table
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  google_id: varchar("google_id").unique(),
+  google_id: varchar("google_id").unique().notNull(),
   firstname: varchar("firstname"),
   lastname: varchar("lastname"),
   email: varchar("email").unique(),
@@ -43,9 +43,6 @@ export const questions = pgTable("questions", {
 });
 
 // Relations for Questions Table
-// This is the connection between the Questions Table and Users Table
-// Each Question can only have one User
-// We make a Relation and a Foreign Key Constraint
 export const questionsRelations = relations(questions, ({ one, many }) => ({
   user: one(users, {
     fields: [questions.userId],
