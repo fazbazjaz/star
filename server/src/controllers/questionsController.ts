@@ -8,7 +8,8 @@ import {
   getOneQuestion,
   createAnswer,
   createComment,
-  getAnswer
+  getAnswer,
+  editQuestion
 } from "../helpers/questions";
 import { logger } from "../logger";
 
@@ -311,5 +312,31 @@ export const createCommentHandler = async (req: Request, res: Response) => {
     return res
       .status(500)
       .json({ error: "Error Adding Your Comment to the Database" });
+  }
+};
+
+export const editQuestionHandler = async (req: Request, res: Response) => {
+  const questionId = Number(req.params.id);
+
+  if (!questionId) {
+    res.status(400).json({ error: "Question Id was not provided" });
+  }
+
+  const question = req.body.questionContent;
+
+  if (!question) {
+    res.status(400).json({ error: "Question was not provided" });
+  }
+
+  try {
+    const updateQuestionQuery = await editQuestion(questionId, question);
+    logger.info({
+      message: "updateQuestionQuery data",
+      value: updateQuestionQuery
+    });
+    const data = updateQuestionQuery[0];
+    res.status(200).json({ message: "success", data: data });
+  } catch (error) {
+    res.status(500).json({ error: "Error Editing Your Question" });
   }
 };
