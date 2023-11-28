@@ -27,7 +27,7 @@ const User = ({ userData }) => {
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
         <Typography>google_id:</Typography>
-        <Typography>{userData.google_id}</Typography>
+        <Typography>~{userData.google_id.slice(-8)}</Typography>
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
         <Typography>firstname:</Typography>

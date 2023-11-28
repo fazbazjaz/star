@@ -24,6 +24,7 @@ const EditQuestionForm = ({ questionData, setIsEditing }) => {
     success: false,
     message: null,
   });
+
   const [question, setQuestion] = useState({
     content: questionData.question,
     error: undefined,

@@ -13,7 +13,7 @@ const NotFoundPage = () => {
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
       }}>
-      <Typography variant="h2">Page Not Found</Typography>
+      <Typography variant={"pagetitle"}>Page Not Found</Typography>
     </Box>
   );
 };

@@ -58,8 +58,6 @@ const Question = ({
       {questionData && (
         <Box
           display={"grid"}
-          gridTemplateColumns={"auto"}
-          gridTemplateRows={"auto"}
           p={2}
           border={consistentBorder}
           borderRadius={consistentBorderRadius}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Box,
   Button,
@@ -19,93 +20,75 @@ import {
 } from "../themes/ConsistentStyles";
 
 const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
-
-  const [comment, setComment] = useState({
-    content: "",
-    error: undefined,
-  });
-
-  const [status, setStatus] = useState({
-    submitting: false,
-    error: false,
-    success: false,
-    message: null,
-  });
+  const [comment, setComment] = useState("");
+  const [commentValidation, setCommentValidation] = useState(undefined);
 
   const changeHandler = (event) => {
-    const { value } = event.target;
-
-    setComment((prevComment) => {
-      return {
-        ...prevComment,
-        content: event.target.value,
-        error:
-          value.trim().length < 10 || value.trim().length > 500 ? true : false,
-      };
-    });
+    setComment(event.target.value);
+    setCommentValidation(
+      event.target.value.trim().length > 10 &&
+        event.target.value.trim().length < 500
+    );
   };
+
+  const postComment = async () => {
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_SERVER_URL
+      }/api/questions/${questionId}/answers/${answerId}/comments`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ comment: comment.content }),
+      }
+    );
+    // console.log("postComment response", response);
+    if (!response.ok) {
+      throw new Error(
+        `${response.status} ${response.statusText} : postComment failed`
+      );
+    }
+    const data = await response.json();
+    // console.log("postComment data", data);
+    return data;
+  };
+
+  const queryClient = useQueryClient();
+
+  const addCommentMutation = useMutation({
+    mutationFn: postComment,
+    // onMutate: () => {},
+    onSuccess: () => {
+      // Invalidate the Query Key
+      // queryClient.invalidateQueries({ queryKey: ["question", questionId] });
+      // Refetch the Query Key
+      queryClient.refetchQueries(["question", questionId]);
+      // Reset the Comment State
+      setComment("");
+      setCommentValidation(undefined);
+      // setTimeout(() => {
+      //   setShowAddAnswerForm((prev) => !prev);
+      // }, 1500);
+    },
+    // onError: () => {},
+    // onSettled: () => {},
+  });
+
+  const { isPending, isError, error, isSuccess } = addCommentMutation;
 
   const submitHandler = async (event) => {
     event.preventDefault();
-
-    if (comment.error || comment.error === undefined) {
-      setStatus({
-        submitting: false,
-        error: true,
-        success: false,
-        message: "Your Comment needs to be between 10-500 Characters",
-      });
+    if (commentValidation === undefined) {
+      setCommentValidation(false);
+    }
+    if (!commentValidation) {
       return;
     }
-
-    try {
-      setStatus({
-        submitting: true,
-        error: false,
-        success: false,
-        message: null,
-      });
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_SERVER_URL
-        }/api/questions/${questionId}/answers/${answerId}/comments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // attach the HTTP-Only Cookie with customJWT
-          body: JSON.stringify({ comment: comment.content }),
-        }
-      );
-      // console.log("AddComment response:", response);
-
-      if (!response.ok) {
-        throw response;
-      }
-
-      // const data = await response.json();
-      // console.log("AddComment postAnswer data:", data);
-
-      setStatus({
-        submitting: false,
-        error: false,
-        success: true,
-        message: "Your Comment was successfully added!",
-      });
-
-      setComment({
-        content: "",
-        error: undefined,
-      });
-      setShowAddCommentForm((prev) => !prev);
-    } catch (error) {
-      setStatus({
-        submitting: false,
-        error: true,
-        success: false,
-        message: "There was an error sending your Comment to the Server",
-      });
+    if (commentValidation) {
+      addCommentMutation.mutate();
     }
   };
 
@@ -120,8 +103,12 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
       sx={{
         backdropFilter: consistentBackdropFilter,
       }}>
-      <form onSubmit={submitHandler}>
-        <FormControl sx={{ width: "100%" }}>
+      <form
+        onSubmit={submitHandler}
+        style={{
+          display: "grid",
+        }}>
+        <FormControl>
           <Box display={"flex"} alignItems={"center"} gap={0.5} mb={1}>
             <SmsIcon fontSize="medium" color="primary" />
             <Typography variant={"commentformtitle"} color={"primary"}>
@@ -133,13 +120,13 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
             aria-label="Add your Comment"
             minRows={2}
             placeholder="Please carefully type out your Comment"
-            value={comment.content}
+            value={comment}
             onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                comment.error ? "red" : consistentFormFieldBorder
+                commentValidation === false ? "red" : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -147,34 +134,54 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
               resize: "none",
             }}
           />
-          <Box display={"flex"} gap={1} mt={2}>
+          {commentValidation === false && (
+            <Typography color="error">
+              Your Comment needs to be between 10-500 Characters
+            </Typography>
+          )}
+          <Box display={"flex"} alignItems={"center"} gap={1} mt={1.5}>
             <Button
-              variant="contained"
+              variant={"contained"}
               onClick={() => setShowAddCommentForm((prev) => !prev)}>
               Cancel
             </Button>
             <Button
-              variant="contained"
-              type="submit"
+              variant={"contained"}
+              type={"submit"}
               endIcon={<SendIcon />}
-              disabled={status.submitting}>
+              disabled={isPending || !commentValidation}>
               Add Comment
             </Button>
           </Box>
           <Box>
-            {status.submitting && (
-              <Typography color={"info"} mt={2} px={1}>
+            {isPending && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
                 Submitting...
               </Typography>
             )}
-            {status.success && (
-              <Typography color={"success.main"} mt={2} px={1}>
-                Success: {status.message}
+            {isSuccess && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
+                ✅ Your Comment was successfully added! Thank you
               </Typography>
             )}
-            {status.error && (
-              <Typography color={"error"} mt={2} px={1}>
-                Error: {status.message}
+            {isError && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
+                ❌ Error: {error.message}
               </Typography>
             )}
           </Box>

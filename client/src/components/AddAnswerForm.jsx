@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Box,
   Button,
@@ -19,107 +20,108 @@ import {
   consistentFormFieldBorder,
 } from "../themes/ConsistentStyles";
 
-const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
+const AddAnswerForm = ({ questionId, setShowAddAnswerForm }) => {
   const [answer, setAnswer] = useState({
-    situation: { content: "", error: undefined },
-    task: { content: "", error: undefined },
-    action: { content: "", error: undefined },
-    result: { content: "", error: undefined },
+    situation: "",
+    task: "",
+    action: "",
+    result: "",
   });
 
-  const [status, setStatus] = useState({
-    submitting: false,
-    error: false,
-    success: false,
-    message: null,
+  const [answerValidation, setAnswerValidation] = useState({
+    situation: undefined,
+    task: undefined,
+    action: undefined,
+    result: undefined,
   });
 
   const changeHandler = (event) => {
     setAnswer((prevAnswer) => {
+      return { ...prevAnswer, [event.target.id]: event.target.value };
+    });
+    setAnswerValidation((prevAnswerValidation) => {
       return {
-        ...prevAnswer,
-        [event.target.id]: {
-          content: event.target.value,
-          error:
-            event.target.value.length < 10 || event.target.value.length > 500
-              ? true
-              : false,
-        },
+        ...prevAnswerValidation,
+        [event.target.id]:
+          event.target.value.trim().length > 10 &&
+          event.target.value.trim().length < 500,
       };
     });
   };
 
-  const validateAllTextareas = () => {
-    return Object.values(answer).every((answer) => answer.error === false);
+  const postAnswer = async () => {
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}/answers`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(answer),
+      }
+    );
+    // console.log("postAnswer response", response);
+    if (!response.ok) {
+      throw new Error(
+        `${response.status} ${response.statusText} : postAnswer failed`
+      );
+    }
+    const data = await response.json();
+    // console.log("postAnswer data", data);
+    return data;
   };
 
-  const submitHandler = async (event) => {
-    event.preventDefault();
+  const queryClient = useQueryClient();
 
-    if (!validateAllTextareas()) {
-      setStatus({
-        submitting: false,
-        error: true,
-        success: false,
-        message: "There are problems in your Answer Form 🙁",
+  const addAnswerMutation = useMutation({
+    mutationFn: postAnswer,
+    // onMutate: () => {},
+    onSuccess: () => {
+      // Invalidate the Query Key
+      // queryClient.invalidateQueries({ queryKey: ["question", questionId] });
+      // Refetch the Query Key
+      queryClient.refetchQueries(["question", questionId]);
+      // Reset the Answer State
+      setAnswer({
+        situation: "",
+        task: "",
+        action: "",
+        result: "",
       });
+      setAnswerValidation({
+        situation: undefined,
+        task: undefined,
+        action: undefined,
+        result: undefined,
+      });
+      // setTimeout(() => {
+      //   setShowAddAnswerForm((prev) => !prev);
+      // }, 1500);
+    },
+    // onError: () => {},
+    // onSettled: () => {},
+  });
+
+  const { isPending, isError, error, isSuccess } = addAnswerMutation;
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+    Object.keys(answerValidation).forEach((key) => {
+      if (answerValidation[key] === undefined) {
+        setAnswerValidation((prevAnswerValidation) => {
+          return { ...prevAnswerValidation, [key]: false };
+        });
+      }
+    });
+    const isFormValid = Object.values(answerValidation).every(
+      (value) => value === true
+    );
+    if (!isFormValid) {
       return;
     }
-
-    try {
-      setStatus({
-        submitting: true,
-        error: false,
-        success: false,
-        message: null,
-      });
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_SERVER_URL
-        }/api/questions/${questionId}/answers`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // attach the HTTP-Only Cookie with customJWT
-          body: JSON.stringify({
-            situation: answer.situation.content,
-            task: answer.task.content,
-            action: answer.action.content,
-            result: answer.result.content,
-          }),
-        }
-      );
-      // console.log("AddAnswer response:", response);
-
-      if (!response.ok) {
-        throw response;
-      }
-
-      // const data = await response.json();
-      // console.log("AddAnswer postAnswer data:", data);
-
-      setStatus({
-        submitting: false,
-        error: false,
-        success: true,
-        message: "Your Answer was successfully added!😁 Thank you ⭐",
-      });
-
-      setAnswer({
-        situation: { content: "", error: undefined },
-        task: { content: "", error: undefined },
-        action: { content: "", error: undefined },
-        result: { content: "", error: undefined },
-      });
-    } catch (error) {
-      setStatus({
-        submitting: false,
-        error: true,
-        success: false,
-        message: "There was an error sending the Answer to the Server 😭",
-      });
+    if (isFormValid) {
+      addAnswerMutation.mutate();
     }
   };
 
@@ -154,13 +156,15 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
             aria-label="Add your Situation"
             minRows={4}
             placeholder="Please carefully type out the Situation"
-            value={answer.situation.content}
+            value={answer.situation}
             onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                answer.situation.error ? "red" : consistentFormFieldBorder
+                answerValidation.situation === false
+                  ? "red"
+                  : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -168,7 +172,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               resize: "none",
             }}
           />
-          {answer.situation.error && (
+          {answerValidation.situation === false && (
             <Typography color="error">
               Your Situation needs to be between 10-500 Characters
             </Typography>
@@ -182,13 +186,15 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
             aria-label="Add your Task"
             minRows={4}
             placeholder="Please carefully type out the Task"
-            value={answer.task.content}
+            value={answer.task}
             onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                answer.task.error ? "red" : consistentFormFieldBorder
+                answerValidation.task === false
+                  ? "red"
+                  : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -196,7 +202,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               resize: "none",
             }}
           />
-          {answer.task.error && (
+          {answerValidation.task === false && (
             <Typography color="error">
               Your Task needs to be between 10-500 Characters
             </Typography>
@@ -210,13 +216,15 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
             aria-label="Add your Action"
             minRows={4}
             placeholder="Please carefully type out the Action"
-            value={answer.action.content}
+            value={answer.action}
             onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                answer.action.error ? "red" : consistentFormFieldBorder
+                answerValidation.action === false
+                  ? "red"
+                  : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -224,7 +232,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               resize: "none",
             }}
           />
-          {answer.action.error && (
+          {answerValidation.action === false && (
             <Typography color="error">
               Your Action needs to be between 10-500 Characters
             </Typography>
@@ -238,13 +246,15 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
             aria-label="Add your Result"
             minRows={4}
             placeholder="Please carefully type out the Result"
-            value={answer.result.content}
+            value={answer.result}
             onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                answer.result.error ? "red" : consistentFormFieldBorder
+                answerValidation.result === false
+                  ? "red"
+                  : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -252,39 +262,57 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               resize: "none",
             }}
           />
-          {answer.result.error && (
+          {answerValidation.result === false && (
             <Typography color="error">
               Your Result must be between 10-500 Characters
             </Typography>
           )}
           <Box display={"flex"} gap={1} mt={2}>
             <Button
-              variant="contained"
-              onClick={() => setShowAnswerForm((prev) => !prev)}>
+              variant={"contained"}
+              onClick={() => setShowAddAnswerForm((prev) => !prev)}>
               Cancel
             </Button>
             <Button
-              variant="contained"
-              type="submit"
+              variant={"contained"}
+              type={"submit"}
               endIcon={<SendIcon />}
-              disabled={status.submitting}>
+              disabled={
+                isPending ||
+                Object.values(answerValidation).some((value) => !value)
+              }>
               Add Answer
             </Button>
           </Box>
           <Box>
-            {status.submitting && (
-              <Typography color={"info"} mt={2} px={1}>
+            {isPending && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
                 Submitting...
               </Typography>
             )}
-            {status.success && (
-              <Typography color={"success.main"} mt={2} px={1}>
-                Success: {status.message}
+            {isSuccess && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
+                ✅ Your Answer was successfully added! Thank you
               </Typography>
             )}
-            {status.error && (
-              <Typography color={"error"} mt={2} px={1}>
-                Error: {status.message}
+            {isError && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
+                ❌ Error : {error.message}
               </Typography>
             )}
           </Box>

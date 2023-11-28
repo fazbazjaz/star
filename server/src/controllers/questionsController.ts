@@ -165,7 +165,7 @@ export const createAnswerHandler = async (req: Request, res: Response) => {
   });
 
   if (!user) {
-    return res.status(500).json({ error: "No User attached to the Request" });
+    return res.status(401).json({ error: "No User attached to the Request" });
   }
 
   const userId = user.id;
@@ -174,14 +174,14 @@ export const createAnswerHandler = async (req: Request, res: Response) => {
     value: userId
   });
 
-  const questionId = Number(req.params.id);
+  const questionId = parseInt(req.params.id);
   logger.info({
     message: "createAnswerHandler questionId",
     value: questionId
   });
 
   if (!questionId) {
-    return res.status(401).json({ error: "You did not include a Question ID" });
+    return res.status(400).json({ error: "You did not include a Question ID" });
   }
 
   const { situation, task, action, result } = req.body;
@@ -191,7 +191,7 @@ export const createAnswerHandler = async (req: Request, res: Response) => {
   });
 
   if (!situation || !task || !action || !result) {
-    return res.status(401).json({ error: "Your Answer was not Complete" });
+    return res.status(400).json({ error: "Your Answer was not Complete" });
   }
 
   try {
@@ -203,7 +203,7 @@ export const createAnswerHandler = async (req: Request, res: Response) => {
 
     if (!questionIdQuery || questionIdQuery.length === 0) {
       return res
-        .status(401)
+        .status(404)
         .json({ error: `There is no Question with ID ${questionId}` });
     }
   } catch (error) {
@@ -230,7 +230,7 @@ export const createAnswerHandler = async (req: Request, res: Response) => {
       value: data
     });
 
-    res.status(200).json(data);
+    res.status(201).json(data);
   } catch (error) {
     logger.error(error);
     res.status(500).json({ error: "Error Adding Your Answer to the Database" });

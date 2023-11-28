@@ -1,34 +1,34 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Box, Typography } from "@mui/material";
+import Loading from "../components/Loading";
+import Error from "../components/Loading";
 import User from "../components/User";
 import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const UsersPage = () => {
-  // define state to store the Users Data
-  const [usersData, setUsersData] = useState(null);
+  const fetchAllUsers = async () => {
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_URL}/api/users/all`,
+      { credentials: "include" }
+    );
+    // console.log("fetchAllUsers response:", response);
+    if (!response.ok) {
+      throw new Error("fetchAllUsers failed");
+    }
+    const data = await response.json();
+    // console.log("fetchAllUsers data:", data);
+    return data;
+  };
 
-  useEffect(() => {
-    // fetch the Users Data from the backend
-    const fetchAllUsers = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_SERVER_URL}/api/users`,
-          { credentials: "include" } // include HTTP-Only Cookie with customJWT
-        );
-        // console.log("fetchAllUsers response:", response);
-        if (!response.ok) {
-          throw response;
-        }
-        const data = await response.json();
-        // console.log("fetchAllUsers data:", data);
-        // store the Users Data in state
-        setUsersData(data);
-      } catch (error) {
-        console.error("fetchAllUsers error:", error);
-      }
-    };
-    fetchAllUsers();
-  }, []);
+  const {
+    isPending,
+    isError,
+    error,
+    data: usersData,
+  } = useQuery({
+    queryKey: ["users"],
+    queryFn: fetchAllUsers,
+  });
 
   return (
     <Box
@@ -41,11 +41,13 @@ const UsersPage = () => {
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
       }}>
-      <Box>
-        <Box>
-          <Typography variant={"pagetitle"}>Users Page</Typography>
-        </Box>
-        {usersData && (
+      {isPending && <Loading />}
+      {isError && <Error message={error.message} />}
+      {usersData && (
+        <>
+          <Box>
+            <Typography variant={"pagetitle"}>Users Page</Typography>
+          </Box>
           <Box mt={1}>
             <Box>
               <Typography variant={"body"}>
@@ -60,8 +62,8 @@ const UsersPage = () => {
                 })}
             </Box>
           </Box>
-        )}
-      </Box>
+        </>
+      )}
     </Box>
   );
 };
