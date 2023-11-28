@@ -12,7 +12,7 @@ const UsersPage = () => {
     const fetchAllUsers = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_SERVER_URL}/api/users/all`,
+          `${import.meta.env.VITE_SERVER_URL}/api/users`,
           { credentials: "include" } // include HTTP-Only Cookie with customJWT
         );
         // console.log("fetchAllUsers response:", response);
