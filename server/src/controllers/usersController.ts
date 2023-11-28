@@ -1,12 +1,10 @@
-import { database } from "../database/connection";
-import { users } from "../database/schema";
-import { eq } from "drizzle-orm";
 import { Request, Response } from "express";
+import { getAllUsers, getUserById } from "../helpers/users";
 import { logger } from "../logger";
 
-export const getAllUsers = async (req: Request, res: Response) => {
+export const getAllUsersHandler = async (req: Request, res: Response) => {
   try {
-    const query = await database.select().from(users);
+    const query = await getAllUsers();
     logger.info({ message: "getAllUsers query", value: query });
 
     const data = query;
@@ -19,18 +17,15 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserById = async (req: Request, res: Response) => {
+export const getUserByIdHandler = async (req: Request, res: Response) => {
   try {
-    const requestedUserId = Number(req.params.id);
+    const userId = Number(req.params.id);
     logger.info({
-      message: "getUserById requestedUserId",
-      requestedUserId
+      message: "getUserById userId",
+      userId
     });
 
-    const query = await database
-      .select()
-      .from(users)
-      .where(eq(users.id, requestedUserId));
+    const query = await getUserById(userId);
     logger.info({ message: "getUserById query", value: query });
 
     const data = query[0];
