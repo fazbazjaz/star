@@ -19,8 +19,8 @@ import {
 } from "../themes/ConsistentStyles";
 
 const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
-  console.log("AddCommentForm questionId:", questionId);
-  console.log("AddCommentForm answerId:", answerId);
+  // console.log("AddCommentForm questionId:", questionId);
+  // console.log("AddCommentForm answerId:", answerId);
 
   const [comment, setComment] = useState({
     content: "",
@@ -35,14 +35,14 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
   });
 
   const changeHandler = (event) => {
+    const { value } = event.target;
+
     setComment((prevComment) => {
       return {
         ...prevComment,
         content: event.target.value,
         error:
-          event.target.value.length < 10 || event.target.value.length > 500
-            ? true
-            : false,
+          value.trim().length < 10 || value.trim().length > 500 ? true : false,
       };
     });
   };
@@ -50,12 +50,12 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
   const submitHandler = async (event) => {
     event.preventDefault();
 
-    if (comment.error) {
+    if (comment.error || comment.error === undefined) {
       setStatus({
         submitting: false,
         error: true,
         success: false,
-        message: "There are problems with your Comment",
+        message: "Your Comment needs to be between 10-500 Characters",
       });
       return;
     }
@@ -100,6 +100,7 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
         content: "",
         error: undefined,
       });
+      setShowAddCommentForm((prev) => !prev);
     } catch (error) {
       setStatus({
         submitting: false,
@@ -148,11 +149,6 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
               resize: "none",
             }}
           />
-          {comment.error && (
-            <Typography color="error">
-              Your Comment needs to be between 10-500 Characters
-            </Typography>
-          )}
           <Box display={"flex"} gap={1} mt={2}>
             <Button
               variant="contained"
