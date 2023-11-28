@@ -1,8 +1,9 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Box, Typography, Button, Link, IconButton } from "@mui/material";
 import QuestionMarkRoundedIcon from "@mui/icons-material/QuestionMarkRounded";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { AuthContext } from "../context/AuthContext";
 import { formatDate } from "../utils/formatDate";
@@ -14,6 +15,7 @@ import {
   consistentBackdropFilter,
   consistentLinkColor,
 } from "../themes/ConsistentStyles";
+import EditQuestionForm from "./EditQuestionForm";
 
 const Question = ({
   questionData,
@@ -23,6 +25,11 @@ const Question = ({
 }) => {
   // get the userCookie from AuthContext
   const { userCookie } = useContext(AuthContext);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleEdit = async () => {
+    setIsEditing(true);
+  };
 
   const handleDelete = async (questionId) => {
     try {
@@ -51,8 +58,6 @@ const Question = ({
       {questionData && (
         <Box
           display={"grid"}
-          gridTemplateColumns={"auto"}
-          gridTemplateRows={"auto"}
           p={2}
           border={consistentBorder}
           borderRadius={consistentBorderRadius}
@@ -70,17 +75,30 @@ const Question = ({
             <Typography variant={"body2"}>
               by userId: {questionData.userId}
             </Typography>
-            {questionData.userId === userCookie.id && (
-              <IconButton
-                onClick={() => handleDelete(questionData.id)}
-                color="primary"
-                sx={{ marginLeft: "auto" }}>
-                <DeleteOutlineIcon />
-              </IconButton>
-            )}
+            <Box marginLeft={"auto"}>
+              {questionData.userId === userCookie.id && (
+                <IconButton
+                  onClick={() => handleEdit(questionData.id)}
+                  color="primary">
+                  <EditOutlinedIcon />
+                </IconButton>
+              )}
+              {questionData.userId === userCookie.id && (
+                <IconButton
+                  onClick={() => handleDelete(questionData.id)}
+                  color="primary">
+                  <DeleteOutlineIcon />
+                </IconButton>
+              )}
+            </Box>
           </Box>
           <Box mt={1}>
-            {questionAsLink ? (
+            {isEditing ? (
+              <EditQuestionForm
+                questionData={questionData}
+                setIsEditing={setIsEditing}
+              />
+            ) : questionAsLink ? (
               <Link
                 component={RouterLink}
                 to={`/questions/${questionData.id}`}

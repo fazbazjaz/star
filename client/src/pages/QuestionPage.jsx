@@ -64,7 +64,7 @@ const QuestionPage = () => {
             {showAddAnswerForm && (
               <AddAnswerForm
                 questionId={questionData.id}
-                setShowAnswerForm={setShowAddAnswerForm}
+                setShowAddAnswerForm={setShowAddAnswerForm}
               />
             )}
             <Box display={"grid"} gap={2}>

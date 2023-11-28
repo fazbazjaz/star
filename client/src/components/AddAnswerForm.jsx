@@ -20,25 +20,31 @@ import {
   consistentFormFieldBorder,
 } from "../themes/ConsistentStyles";
 
-const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
+const AddAnswerForm = ({ questionId, setShowAddAnswerForm }) => {
   const [answer, setAnswer] = useState({
-    situation: { content: "", isValid: undefined },
-    task: { content: "", isValid: undefined },
-    action: { content: "", isValid: undefined },
-    result: { content: "", isValid: undefined },
+    situation: "",
+    task: "",
+    action: "",
+    result: "",
+  });
+
+  const [answerValidation, setAnswerValidation] = useState({
+    situation: undefined,
+    task: undefined,
+    action: undefined,
+    result: undefined,
   });
 
   const changeHandler = (event) => {
     setAnswer((prevAnswer) => {
+      return { ...prevAnswer, [event.target.id]: event.target.value };
+    });
+    setAnswerValidation((prevAnswerValidation) => {
       return {
-        ...prevAnswer,
-        [event.target.id]: {
-          content: event.target.value,
-          isValid:
-            event.target.value.length < 10 || event.target.value.length > 500
-              ? false
-              : true,
-        },
+        ...prevAnswerValidation,
+        [event.target.id]:
+          event.target.value.trim().length > 10 &&
+          event.target.value.trim().length < 500,
       };
     });
   };
@@ -52,17 +58,14 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({
-          situation: answer.situation.content,
-          task: answer.task.content,
-          action: answer.action.content,
-          result: answer.result.content,
-        }),
+        body: JSON.stringify(answer),
       }
     );
     // console.log("postAnswer response", response);
     if (!response.ok) {
-      throw new Error(response);
+      throw new Error(
+        `${response.status} ${response.statusText} : postAnswer failed`
+      );
     }
     const data = await response.json();
     // console.log("postAnswer data", data);
@@ -81,11 +84,20 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
       queryClient.refetchQueries(["question", questionId]);
       // Reset the Answer State
       setAnswer({
-        situation: { content: "", isValid: undefined },
-        task: { content: "", isValid: undefined },
-        action: { content: "", isValid: undefined },
-        result: { content: "", isValid: undefined },
+        situation: "",
+        task: "",
+        action: "",
+        result: "",
       });
+      setAnswerValidation({
+        situation: undefined,
+        task: undefined,
+        action: undefined,
+        result: undefined,
+      });
+      // setTimeout(() => {
+      //   setShowAddAnswerForm((prev) => !prev);
+      // }, 1500);
     },
     // onError: () => {},
     // onSettled: () => {},
@@ -95,8 +107,15 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    const isFormValid = Object.values(answer).every(
-      (answer) => answer.isValid === true
+    Object.keys(answerValidation).forEach((key) => {
+      if (answerValidation[key] === undefined) {
+        setAnswerValidation((prevAnswerValidation) => {
+          return { ...prevAnswerValidation, [key]: false };
+        });
+      }
+    });
+    const isFormValid = Object.values(answerValidation).every(
+      (value) => value === true
     );
     if (!isFormValid) {
       return;
@@ -137,13 +156,15 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
             aria-label="Add your Situation"
             minRows={4}
             placeholder="Please carefully type out the Situation"
-            value={answer.situation.content}
+            value={answer.situation}
             onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                answer.situation.isValid ? consistentFormFieldBorder : "red"
+                answerValidation.situation === false
+                  ? "red"
+                  : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -151,7 +172,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               resize: "none",
             }}
           />
-          {answer.situation.isValid === false && (
+          {answerValidation.situation === false && (
             <Typography color="error">
               Your Situation needs to be between 10-500 Characters
             </Typography>
@@ -165,13 +186,15 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
             aria-label="Add your Task"
             minRows={4}
             placeholder="Please carefully type out the Task"
-            value={answer.task.content}
+            value={answer.task}
             onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                answer.task.isValid ? consistentFormFieldBorder : "red"
+                answerValidation.task === false
+                  ? "red"
+                  : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -179,7 +202,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               resize: "none",
             }}
           />
-          {answer.task.isValid === false && (
+          {answerValidation.task === false && (
             <Typography color="error">
               Your Task needs to be between 10-500 Characters
             </Typography>
@@ -193,13 +216,15 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
             aria-label="Add your Action"
             minRows={4}
             placeholder="Please carefully type out the Action"
-            value={answer.action.content}
+            value={answer.action}
             onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                answer.action.isValid ? consistentFormFieldBorder : "red"
+                answerValidation.action === false
+                  ? "red"
+                  : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -207,7 +232,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               resize: "none",
             }}
           />
-          {answer.action.isValid === false && (
+          {answerValidation.action === false && (
             <Typography color="error">
               Your Action needs to be between 10-500 Characters
             </Typography>
@@ -221,13 +246,15 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
             aria-label="Add your Result"
             minRows={4}
             placeholder="Please carefully type out the Result"
-            value={answer.result.content}
+            value={answer.result}
             onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                answer.result.isValid ? consistentFormFieldBorder : "red"
+                answerValidation.result === false
+                  ? "red"
+                  : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -235,22 +262,25 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
               resize: "none",
             }}
           />
-          {answer.result.isValid === false && (
+          {answerValidation.result === false && (
             <Typography color="error">
               Your Result must be between 10-500 Characters
             </Typography>
           )}
           <Box display={"flex"} gap={1} mt={2}>
             <Button
-              variant="contained"
-              onClick={() => setShowAnswerForm((prev) => !prev)}>
+              variant={"contained"}
+              onClick={() => setShowAddAnswerForm((prev) => !prev)}>
               Cancel
             </Button>
             <Button
-              variant="contained"
-              type="submit"
+              variant={"contained"}
+              type={"submit"}
               endIcon={<SendIcon />}
-              disabled={isPending}>
+              disabled={
+                isPending ||
+                Object.values(answerValidation).some((value) => !value)
+              }>
               Add Answer
             </Button>
           </Box>
@@ -282,7 +312,7 @@ const AddAnswerForm = ({ questionId, setShowAnswerForm }) => {
                 border={consistentBorder}
                 borderRadius={consistentBorderRadius}
                 bgcolor={consistentBgColor}>
-                ❌ Error: {error.toString()}
+                ❌ Error : {error.message}
               </Typography>
             )}
           </Box>

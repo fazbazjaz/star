@@ -7,7 +7,8 @@ import {
   findAllQuestionsByUserHandler,
   findOneQuestionHandler,
   createAnswerHandler,
-  createCommentHandler
+  createCommentHandler,
+  editQuestionHandler
 } from "../controllers/questionsController";
 
 export const questionsRouter = express.Router();
@@ -17,7 +18,7 @@ questionsRouter.post("/add", authMiddleware, createQuestionHandler);
 questionsRouter.delete("/:id", authMiddleware, deleteQuestionHandler);
 questionsRouter.get("/user/:id", authMiddleware, findAllQuestionsByUserHandler);
 questionsRouter.get("/:id", authMiddleware, findOneQuestionHandler);
-
+questionsRouter.put("/:id/edit", authMiddleware, editQuestionHandler);
 questionsRouter.post("/:id/answers", authMiddleware, createAnswerHandler);
 
 questionsRouter.post(

@@ -20,22 +20,15 @@ import {
 } from "../themes/ConsistentStyles";
 
 const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
-  const [comment, setComment] = useState({
-    content: "",
-    isValid: undefined,
-  });
+  const [comment, setComment] = useState("");
+  const [commentValidation, setCommentValidation] = useState(undefined);
 
   const changeHandler = (event) => {
-    setComment((prevComment) => {
-      return {
-        ...prevComment,
-        content: event.target.value,
-        isValid:
-          event.target.value.length < 10 || event.target.value.length > 500
-            ? false
-            : true,
-      };
-    });
+    setComment(event.target.value);
+    setCommentValidation(
+      event.target.value.trim().length > 10 &&
+        event.target.value.trim().length < 500
+    );
   };
 
   const postComment = async () => {
@@ -54,7 +47,9 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
     );
     // console.log("postComment response", response);
     if (!response.ok) {
-      throw new Error(response);
+      throw new Error(
+        `${response.status} ${response.statusText} : postComment failed`
+      );
     }
     const data = await response.json();
     // console.log("postComment data", data);
@@ -72,10 +67,11 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
       // Refetch the Query Key
       queryClient.refetchQueries(["question", questionId]);
       // Reset the Comment State
-      setComment({
-        comment: "",
-        isValid: undefined,
-      });
+      setComment("");
+      setCommentValidation(undefined);
+      // setTimeout(() => {
+      //   setShowAddAnswerForm((prev) => !prev);
+      // }, 1500);
     },
     // onError: () => {},
     // onSettled: () => {},
@@ -85,10 +81,13 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
 
   const submitHandler = async (event) => {
     event.preventDefault();
-    if (!comment.isValid) {
+    if (commentValidation === undefined) {
+      setCommentValidation(false);
+    }
+    if (!commentValidation) {
       return;
     }
-    if (comment.isValid) {
+    if (commentValidation) {
       addCommentMutation.mutate();
     }
   };
@@ -104,8 +103,12 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
       sx={{
         backdropFilter: consistentBackdropFilter,
       }}>
-      <form onSubmit={submitHandler}>
-        <FormControl sx={{ width: "100%" }}>
+      <form
+        onSubmit={submitHandler}
+        style={{
+          display: "grid",
+        }}>
+        <FormControl>
           <Box display={"flex"} alignItems={"center"} gap={0.5} mb={1}>
             <SmsIcon fontSize="medium" color="primary" />
             <Typography variant={"commentformtitle"} color={"primary"}>
@@ -117,13 +120,13 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
             aria-label="Add your Comment"
             minRows={2}
             placeholder="Please carefully type out your Comment"
-            value={comment.content}
+            value={comment}
             onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                comment.error ? "red" : consistentFormFieldBorder
+                commentValidation === false ? "red" : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -131,12 +134,12 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
               resize: "none",
             }}
           />
-          {comment.isValid === false && (
+          {commentValidation === false && (
             <Typography color="error">
               Your Comment needs to be between 10-500 Characters
             </Typography>
           )}
-          <Box display={"flex"} gap={1} mt={2}>
+          <Box display={"flex"} alignItems={"center"} gap={1} mt={1.5}>
             <Button
               variant={"contained"}
               onClick={() => setShowAddCommentForm((prev) => !prev)}>
@@ -144,9 +147,9 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
             </Button>
             <Button
               variant={"contained"}
-              type="submit"
+              type={"submit"}
               endIcon={<SendIcon />}
-              disabled={isPending}>
+              disabled={isPending || !commentValidation}>
               Add Comment
             </Button>
           </Box>
@@ -178,7 +181,7 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
                 border={consistentBorder}
                 borderRadius={consistentBorderRadius}
                 bgcolor={consistentBgColor}>
-                ❌ Error: {error.toString()}
+                ❌ Error: {error.message}
               </Typography>
             )}
           </Box>
