@@ -316,27 +316,41 @@ export const createCommentHandler = async (req: Request, res: Response) => {
 };
 
 export const editQuestionHandler = async (req: Request, res: Response) => {
-  const questionId = Number(req.params.id);
+  const questionId = parseInt(req.params.id);
+  logger.info({
+    message: "editQuestionHandler questionId",
+    value: questionId
+  });
 
   if (!questionId) {
-    res.status(400).json({ error: "Question Id was not provided" });
+    res.status(400).json({ error: "Invalid Question ID Provided" });
   }
 
   const question = req.body.questionContent;
+  logger.info({
+    message: "editQuestionHandler question",
+    value: question
+  });
 
   if (!question) {
-    res.status(400).json({ error: "Question was not provided" });
+    res.status(400).json({ error: "No Question on the Request Body" });
   }
 
   try {
     const updateQuestionQuery = await editQuestion(questionId, question);
     logger.info({
-      message: "updateQuestionQuery data",
+      message: "editQuestionHandler updateQuestionQuery",
       value: updateQuestionQuery
     });
+
     const data = updateQuestionQuery[0];
-    res.status(200).json({ message: "success", data: data });
+    logger.info({
+      message: "editQuestionHandler data",
+      value: data
+    });
+
+    res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ error: "Error Editing Your Question" });
+    res.status(500).json({ error: "Server Error" });
   }
 };

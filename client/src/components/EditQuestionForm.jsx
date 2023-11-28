@@ -85,7 +85,7 @@ const EditQuestionForm = ({ questionData, setIsEditing }) => {
         submitting: false,
         error: false,
         success: true,
-        message: "Your Edit successfully saved!",
+        message: "Your Question was successfully Edited!",
       });
       setQuestion({
         content: "",
@@ -98,7 +98,7 @@ const EditQuestionForm = ({ questionData, setIsEditing }) => {
         error: true,
         success: false,
         message:
-          "There was an error to send your Editing Question to the Server",
+          "There was an error sending your Edited Question to the Server",
       });
     }
   };

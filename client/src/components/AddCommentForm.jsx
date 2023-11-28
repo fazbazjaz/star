@@ -19,8 +19,6 @@ import {
 } from "../themes/ConsistentStyles";
 
 const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
-  // console.log("AddCommentForm questionId:", questionId);
-  // console.log("AddCommentForm answerId:", answerId);
 
   const [comment, setComment] = useState({
     content: "",
