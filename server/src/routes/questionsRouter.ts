@@ -1,4 +1,3 @@
-// version baz code changes
 import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware";
 import {
@@ -34,7 +33,7 @@ questionsRouter.delete(
   deleteAnswerHandler
 );
 
-// version my code
+// version1 my code
 // import express from "express";
 // import { authMiddleware } from "../middleware/authMiddleware";
 // import {
