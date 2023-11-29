@@ -45,7 +45,6 @@ const QuestionPage = () => {
           <Box display={"grid"} gap={2}>
             <Question
               questionData={questionData}
-              currentPage={"questionPage"}
               showAddAnswerForm={showAddAnswerForm}
               setShowAddAnswerForm={setShowAddAnswerForm}
             />

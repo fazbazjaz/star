@@ -54,11 +54,7 @@ const QuestionsPage = () => {
           )}
           <Box display={"grid"} gap={2} mt={1}>
             {allQuestionsData.map((questionData) => (
-              <Question
-                key={questionData.id}
-                questionData={questionData}
-                currentPage={"questionsPage"}
-              />
+              <Question key={questionData.id} questionData={questionData} />
             ))}
           </Box>
         </Box>

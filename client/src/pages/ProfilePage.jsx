@@ -96,7 +96,6 @@ const ProfilePage = () => {
                   <Question
                     key={userQuestionData.id}
                     questionData={userQuestionData}
-                    currentPage={"profilePage"}
                   />
                 );
               })}
