@@ -8,7 +8,7 @@ import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 const UsersPage = () => {
   const fetchAllUsers = async () => {
     const response = await fetch(
-      `${import.meta.env.VITE_SERVER_URL}/api/users/all`,
+      `${import.meta.env.VITE_SERVER_URL}/api/users`,
       { credentials: "include" }
     );
     // console.log("fetchAllUsers response:", response);
