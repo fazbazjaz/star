@@ -10,6 +10,7 @@ import {
 import RateReviewRoundedIcon from "@mui/icons-material/RateReviewRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import SendIcon from "@mui/icons-material/Send";
+import postAnswer from "../api/postAnswer";
 import {
   consistentBorder,
   consistentBorderRadius,
@@ -27,7 +28,6 @@ const AddAnswerForm = ({ questionId, setShowAddAnswerForm }) => {
     action: "",
     result: "",
   });
-
   const [answerValidation, setAnswerValidation] = useState({
     situation: undefined,
     task: undefined,
@@ -49,40 +49,12 @@ const AddAnswerForm = ({ questionId, setShowAddAnswerForm }) => {
     });
   };
 
-  const postAnswer = async () => {
-    const response = await fetch(
-      `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}/answers`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(answer),
-      }
-    );
-    // console.log("postAnswer response", response);
-    if (!response.ok) {
-      throw new Error(
-        `${response.status} ${response.statusText} : postAnswer failed`
-      );
-    }
-    const data = await response.json();
-    // console.log("postAnswer data", data);
-    return data;
-  };
-
   const queryClient = useQueryClient();
 
   const addAnswerMutation = useMutation({
-    mutationFn: postAnswer,
-    // onMutate: () => {},
+    mutationFn: () => postAnswer(questionId, answer),
     onSuccess: () => {
-      // Invalidate the Query Key
-      // queryClient.invalidateQueries({ queryKey: ["question", questionId] });
-      // Refetch the Query Key
       queryClient.refetchQueries(["question", questionId]);
-      // Reset the Answer State
       setAnswer({
         situation: "",
         task: "",
@@ -95,12 +67,10 @@ const AddAnswerForm = ({ questionId, setShowAddAnswerForm }) => {
         action: undefined,
         result: undefined,
       });
-      // setTimeout(() => {
-      //   setShowAddAnswerForm((prev) => !prev);
-      // }, 1500);
+      setTimeout(() => {
+        setShowAddAnswerForm((prev) => !prev);
+      }, 1000);
     },
-    // onError: () => {},
-    // onSettled: () => {},
   });
 
   const { isPending, isError, error, isSuccess } = addAnswerMutation;

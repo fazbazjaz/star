@@ -5,7 +5,7 @@ import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRound
 import SmsOutlinedIcon from "@mui/icons-material/SmsOutlined";
 import AddCommentForm from "./AddCommentForm";
 import Comment from "./Comment";
-import { formatDate } from "../utils/formatDate";
+import formatDate from "../utils/formatDate";
 import {
   consistentBorder,
   consistentBorderRadius,

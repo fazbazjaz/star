@@ -5,6 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import Question from "../components/Question";
+import getAllQuestionsByUserId from "../api/getAllQuestionsByUserId";
 import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const ProfilePage = () => {
@@ -13,20 +14,6 @@ const ProfilePage = () => {
 
   const userId = userCookie.id;
 
-  const fetchUserQuestions = async (id) => {
-    const response = await fetch(
-      `${import.meta.env.VITE_SERVER_URL}/api/questions/user/${id}`,
-      { credentials: "include" }
-    );
-    // console.log("fetchUserQuestions response:", response);
-    if (!response.ok) {
-      throw new Error("fetchUserQuestions failed");
-    }
-    const data = await response.json();
-    // console.log("fetchUserQuestions data:", data);
-    return data;
-  };
-
   const {
     isPending,
     isError,
@@ -34,7 +21,7 @@ const ProfilePage = () => {
     data: userQuestionsData,
   } = useQuery({
     queryKey: ["questions", "user", userId],
-    queryFn: () => fetchUserQuestions(userId),
+    queryFn: () => getAllQuestionsByUserId(userId),
   });
 
   return (
@@ -109,7 +96,6 @@ const ProfilePage = () => {
                   <Question
                     key={userQuestionData.id}
                     questionData={userQuestionData}
-                    questionAsLink={true}
                   />
                 );
               })}

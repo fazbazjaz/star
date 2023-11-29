@@ -7,25 +7,12 @@ import Error from "../components/Loading";
 import Question from "../components/Question";
 import AddAnswerForm from "../components/AddAnswerForm";
 import Answer from "../components/Answer";
+import getQuestionById from "../api/getQuestionById";
 import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const QuestionPage = () => {
   const { id } = useParams();
   const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
-
-  const fetchQuestion = async (id) => {
-    const response = await fetch(
-      `${import.meta.env.VITE_SERVER_URL}/api/questions/${id}`,
-      { credentials: "include" }
-    );
-    // console.log("fetchQuestionData response:", response);
-    if (!response.ok) {
-      throw new Error("fetchQuestion failed");
-    }
-    const data = await response.json();
-    // console.log("fetchQuestionData data:", data);
-    return data;
-  };
 
   const {
     isPending,
@@ -34,7 +21,7 @@ const QuestionPage = () => {
     data: questionData,
   } = useQuery({
     queryKey: ["question", id],
-    queryFn: () => fetchQuestion(id),
+    queryFn: () => getQuestionById(id),
   });
 
   return (
