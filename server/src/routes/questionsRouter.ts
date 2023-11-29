@@ -18,7 +18,7 @@ questionsRouter.post("/add", authMiddleware, createQuestionHandler);
 questionsRouter.delete("/:id", authMiddleware, deleteQuestionHandler);
 questionsRouter.get("/user/:id", authMiddleware, findAllQuestionsByUserHandler);
 questionsRouter.get("/:id", authMiddleware, findOneQuestionHandler);
-questionsRouter.put("/:id/edit", authMiddleware, editQuestionHandler);
+questionsRouter.put("/:id", authMiddleware, editQuestionHandler);
 questionsRouter.post("/:id/answers", authMiddleware, createAnswerHandler);
 
 questionsRouter.post(

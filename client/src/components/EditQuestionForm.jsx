@@ -18,14 +18,14 @@ import {
   consistentFormFieldBorder,
 } from "../themes/ConsistentStyles";
 
-const EditQuestionForm = ({ questionId, oldQuestion, setIsEditing }) => {
-  const [editingQuestion, setEditingQuestion] = useState(oldQuestion);
-  const [editingQuestionValidation, setEditingQuestionValidation] =
+const EditQuestionForm = ({ questionId, originalQuestion, setIsEditing }) => {
+  const [editedQuestion, setEditedQuestion] = useState(originalQuestion);
+  const [editedQuestionValidation, setEditedQuestionValidation] =
     useState(undefined);
 
   const changeHandler = (event) => {
-    setEditingQuestion(event.target.value);
-    setEditingQuestionValidation(
+    setEditedQuestion(event.target.value);
+    setEditedQuestionValidation(
       event.target.value.trim().length > 10 &&
         event.target.value.trim().length < 500
     );
@@ -33,24 +33,24 @@ const EditQuestionForm = ({ questionId, oldQuestion, setIsEditing }) => {
 
   const putQuestion = async () => {
     const response = await fetch(
-      `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}/edit`,
+      `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}`,
       {
         method: "PUT",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ question: editingQuestion }),
+        body: JSON.stringify({ question: editedQuestion }),
       }
     );
-    // console.log("Edit response:", response);
+    // console.log("putQuestion response:", response);
     if (!response.ok) {
       throw new Error(
-        `${response.status} ${response.statusText} : editingQuestion failed`
+        `${response.status} ${response.statusText} : editedQuestion failed`
       );
     }
     const data = await response.json();
-    // console.log("Edit data:", data);
+    // console.log("putQuestion data:", data);
     return data;
   };
 
@@ -60,7 +60,7 @@ const EditQuestionForm = ({ questionId, oldQuestion, setIsEditing }) => {
     mutationFn: putQuestion,
     onSuccess: () => {
       queryClient.refetchQueries(["question", questionId]);
-      setEditingQuestionValidation(undefined);
+      setEditedQuestionValidation(undefined);
       setTimeout(() => {
         setIsEditing(false);
       }, 1500);
@@ -71,14 +71,13 @@ const EditQuestionForm = ({ questionId, oldQuestion, setIsEditing }) => {
 
   const submitHandler = async (event) => {
     event.preventDefault();
-    console.log(editingQuestionValidation);
-    if (editingQuestionValidation === undefined) {
-      setEditingQuestionValidation(false);
+    if (editedQuestionValidation === undefined) {
+      setEditedQuestionValidation(false);
     }
-    if (!editingQuestionValidation) {
+    if (!editedQuestionValidation) {
       return;
     }
-    if (editingQuestionValidation) {
+    if (editedQuestionValidation) {
       editQuestionMutation.mutate();
     }
   };
@@ -103,13 +102,13 @@ const EditQuestionForm = ({ questionId, oldQuestion, setIsEditing }) => {
           <TextareaAutosize
             aria-label="Edit your question"
             minRows={2}
-            value={editingQuestion}
+            value={editedQuestion}
             onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                editingQuestionValidation === false
+                editedQuestionValidation === false
                   ? "red"
                   : consistentFormFieldBorder
               }`,
@@ -119,7 +118,7 @@ const EditQuestionForm = ({ questionId, oldQuestion, setIsEditing }) => {
               resize: "none",
             }}
           />
-          {editingQuestionValidation === false && (
+          {editedQuestionValidation === false && (
             <Typography color="error">
               Your Question needs to be between 10-500 Characters
             </Typography>
@@ -131,7 +130,7 @@ const EditQuestionForm = ({ questionId, oldQuestion, setIsEditing }) => {
             <Button
               variant="contained"
               type="submit"
-              disabled={isPending || !editingQuestionValidation}>
+              disabled={isPending || !editedQuestionValidation}>
               Save <SaveAsRoundedIcon />
             </Button>
           </Box>
