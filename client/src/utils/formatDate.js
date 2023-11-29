@@ -1,4 +1,4 @@
-export const formatDate = (date) => {
+const formatDate = (date) => {
   date = new Date(date);
   const now = new Date();
   const difference = now - date;
