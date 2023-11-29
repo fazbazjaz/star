@@ -1,33 +1,28 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Box, Typography } from "@mui/material";
+import Loading from "../components/Loading";
+import Error from "../components/Loading";
 import Question from "../components/Question";
 import AddAnswerForm from "../components/AddAnswerForm";
 import Answer from "../components/Answer";
+import getQuestionById from "../api/getQuestionById";
 import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const QuestionPage = () => {
   const { id } = useParams();
-  const [questionData, setQuestionData] = useState(null);
   const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
 
-  useEffect(() => {
-    const fetchQuestionData = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_SERVER_URL}/api/questions/${id}`,
-          { credentials: "include" }
-        );
-        // console.log("response:", response);
-        const data = await response.json();
-        // console.log("data:", data);
-        setQuestionData(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchQuestionData();
-  }, [id]);
+  const {
+    isPending,
+    isError,
+    error,
+    data: questionData,
+  } = useQuery({
+    queryKey: ["question", id],
+    queryFn: () => getQuestionById(id),
+  });
 
   return (
     <Box
@@ -40,6 +35,8 @@ const QuestionPage = () => {
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
       }}>
+      {isPending && <Loading />}
+      {isError && <Error message={error.message} />}
       {questionData && (
         <Box>
           <Typography variant={"pagetitle"}>
@@ -54,7 +51,7 @@ const QuestionPage = () => {
             {showAddAnswerForm && (
               <AddAnswerForm
                 questionId={questionData.id}
-                setShowAnswerForm={setShowAddAnswerForm}
+                setShowAddAnswerForm={setShowAddAnswerForm}
               />
             )}
             <Box display={"grid"} gap={2}>

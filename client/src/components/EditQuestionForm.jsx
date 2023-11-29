@@ -7,26 +7,26 @@ import {
   TextareaAutosize,
   Typography,
 } from "@mui/material";
-import SmsIcon from "@mui/icons-material/Sms";
-import SendIcon from "@mui/icons-material/Send";
-import postComment from "../api/postComment";
+import SaveAsRoundedIcon from "@mui/icons-material/SaveAsRounded";
+import putQuestion from "../api/putQuestion";
 import {
+  consistentBackdropFilter,
+  consistentBgColor,
   consistentBorder,
   consistentBorderRadius,
-  consistentBgColor,
   consistentBoxShadow,
-  consistentBackdropFilter,
   consistentFormFieldBackgroundColor,
   consistentFormFieldBorder,
 } from "../themes/ConsistentStyles";
 
-const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
-  const [comment, setComment] = useState("");
-  const [commentValidation, setCommentValidation] = useState(undefined);
+const EditQuestionForm = ({ questionId, originalQuestion, setIsEditing }) => {
+  const [editedQuestion, setEditedQuestion] = useState(originalQuestion);
+  const [editedQuestionValidation, setEditedQuestionValidation] =
+    useState(undefined);
 
   const changeHandler = (event) => {
-    setComment(event.target.value);
-    setCommentValidation(
+    setEditedQuestion(event.target.value);
+    setEditedQuestionValidation(
       event.target.value.trim().length > 10 &&
         event.target.value.trim().length < 500
     );
@@ -34,30 +34,29 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
 
   const queryClient = useQueryClient();
 
-  const addCommentMutation = useMutation({
-    mutationFn: () => postComment(questionId, answerId, comment),
+  const editQuestionMutation = useMutation({
+    mutationFn: () => putQuestion(questionId, editedQuestion),
     onSuccess: () => {
       queryClient.refetchQueries(["question", questionId]);
-      setComment("");
-      setCommentValidation(undefined);
-      // setTimeout(() => {
-      //   setShowAddCommentForm((prev) => !prev);
-      // }, 1000);
+      setEditedQuestionValidation(undefined);
+      setTimeout(() => {
+        setIsEditing(false);
+      }, 1500);
     },
   });
 
-  const { isPending, isError, error, isSuccess } = addCommentMutation;
+  const { isPending, isError, error, isSuccess } = editQuestionMutation;
 
   const submitHandler = async (event) => {
     event.preventDefault();
-    if (commentValidation === undefined) {
-      setCommentValidation(false);
+    if (editedQuestionValidation === undefined) {
+      setEditedQuestionValidation(false);
     }
-    if (!commentValidation) {
+    if (!editedQuestionValidation) {
       return;
     }
-    if (commentValidation) {
-      addCommentMutation.mutate();
+    if (editedQuestionValidation) {
+      editQuestionMutation.mutate();
     }
   };
 
@@ -78,24 +77,18 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
           display: "grid",
         }}>
         <FormControl>
-          <Box display={"flex"} alignItems={"center"} gap={0.5} mb={1}>
-            <SmsIcon fontSize="medium" color="primary" />
-            <Typography variant={"commentformtitle"} color={"primary"}>
-              Add your Comment
-            </Typography>
-          </Box>
           <TextareaAutosize
-            id="situation"
-            aria-label="Add your Comment"
+            aria-label="Edit your question"
             minRows={2}
-            placeholder="Please carefully type out your Comment"
-            value={comment}
+            value={editedQuestion}
             onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                commentValidation === false ? "red" : consistentFormFieldBorder
+                editedQuestionValidation === false
+                  ? "red"
+                  : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -103,23 +96,20 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
               resize: "none",
             }}
           />
-          {commentValidation === false && (
+          {editedQuestionValidation === false && (
             <Typography color="error">
-              Your Comment needs to be between 10-500 Characters
+              Your Question needs to be between 10-500 Characters
             </Typography>
           )}
-          <Box display={"flex"} alignItems={"center"} gap={1} mt={1.5}>
-            <Button
-              variant={"contained"}
-              onClick={() => setShowAddCommentForm((prev) => !prev)}>
+          <Box display={"flex"} alignItems={"center"} gap={1} mt={1}>
+            <Button variant="contained" onClick={() => setIsEditing(false)}>
               Cancel
             </Button>
             <Button
-              variant={"contained"}
-              type={"submit"}
-              endIcon={<SendIcon />}
-              disabled={isPending || !commentValidation}>
-              Add Comment
+              variant="contained"
+              type="submit"
+              disabled={isPending || !editedQuestionValidation}>
+              Save <SaveAsRoundedIcon />
             </Button>
           </Box>
           <Box>
@@ -140,7 +130,7 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
                 border={consistentBorder}
                 borderRadius={consistentBorderRadius}
                 bgcolor={consistentBgColor}>
-                ✅ Your Comment was successfully added! Thank you
+                ✅ Your Question was successfully updated! Thank you
               </Typography>
             )}
             {isError && (
@@ -160,4 +150,4 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
   );
 };
 
-export default AddCommentForm;
+export default EditQuestionForm;

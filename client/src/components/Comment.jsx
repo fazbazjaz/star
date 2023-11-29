@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import MessageRoundedIcon from "@mui/icons-material/MessageRounded";
-import { formatDate } from "../utils/formatDate";
+import formatDate from "../utils/formatDate";
 import {
   consistentBorder,
   consistentBorderRadius,

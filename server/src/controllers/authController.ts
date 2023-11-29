@@ -2,7 +2,7 @@ import { OAuth2Client } from "google-auth-library";
 import jwt, { Secret } from "jsonwebtoken";
 import { Request, Response } from "express";
 import { CustomJWTPayload, UserCookie } from "../types/types";
-import { createUser, findUserByGoogleId } from "../helpers/users";
+import { createUser, getUserByGoogleId } from "../helpers/users";
 import { logger } from "../logger";
 
 export const idTokenHandler = async (req: Request, res: Response) => {
@@ -73,7 +73,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   let user;
 
   try {
-    user = await findUserByGoogleId(userGoogleId);
+    user = await getUserByGoogleId(userGoogleId);
     if (!user || user.length === 0) {
       user = await createUser({
         google_id: userGoogleId,

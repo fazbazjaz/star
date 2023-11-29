@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -11,9 +12,10 @@ import Protected from "./components/Protected";
 import ProfilePage from "./pages/ProfilePage";
 import UsersPage from "./pages/UsersPage";
 import QuestionsPage from "./pages/QuestionsPage";
-import AddQuestionPage from "./pages/AddQuestionPage";
 import QuestionPage from "./pages/QuestionPage";
 import NotFoundPage from "./pages/NotFoundPage";
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -45,14 +47,6 @@ const router = createBrowserRouter(
         }
       />
       <Route
-        path="questions/add"
-        element={
-          <Protected>
-            <AddQuestionPage />
-          </Protected>
-        }
-      />
-      <Route
         path="questions/:id"
         element={
           <Protected>
@@ -66,7 +60,11 @@ const router = createBrowserRouter(
 );
 
 const App = () => {
-  return <RouterProvider router={router}></RouterProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router}></RouterProvider>
+    </QueryClientProvider>
+  );
 };
 
 export default App;

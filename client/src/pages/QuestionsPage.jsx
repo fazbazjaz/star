@@ -1,34 +1,25 @@
-import { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Box, Typography, Button } from "@mui/material";
+import Loading from "../components/Loading";
+import Error from "../components/Loading";
 import Question from "../components/Question";
+import AddQuestionForm from "../components/AddQuestionForm";
+import getAllQuestions from "../api/getAllQuestions";
 import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const QuestionsPage = () => {
-  const [allQuestionsData, setAllQuestionsData] = useState(null);
+  const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
 
-  useEffect(() => {
-    const fetchAllQuestionsData = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_SERVER_URL}/api/questions`,
-          {
-            credentials: "include",
-          }
-        );
-        // console.log("response:", response);
-        if (!response.ok) {
-          throw response;
-        }
-        const data = await response.json();
-        // console.log("data:", data);
-        setAllQuestionsData(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchAllQuestionsData();
-  }, []);
+  const {
+    isPending,
+    isError,
+    error,
+    data: allQuestionsData,
+  } = useQuery({
+    queryKey: ["questions"],
+    queryFn: getAllQuestions,
+  });
 
   return (
     <Box
@@ -41,26 +32,29 @@ const QuestionsPage = () => {
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
       }}>
+      {isPending && <Loading />}
+      {isError && <Error message={error.message} />}
       {allQuestionsData && (
         <Box>
-          <Box display={"flex"} justifyContent={"space-between"} mb={1}>
+          <Box display={"flex"} justifyContent={"space-between"}>
             <Typography variant={"pagetitle"}>
               All Questions ({allQuestionsData.length})
             </Typography>
             <Button
-              variant={"contained"}
-              component={NavLink}
-              to="/questions/add">
+              variant="outlined"
+              color="primary"
+              onClick={() => setShowAddQuestionForm((prev) => !prev)}
+              disabled={showAddQuestionForm}
+              sx={{ display: "flex", gap: 0.5 }}>
               Add a Question
             </Button>
           </Box>
-          <Box display={"grid"} gap={2}>
+          {showAddQuestionForm && (
+            <AddQuestionForm setShowAddQuestionForm={setShowAddQuestionForm} />
+          )}
+          <Box display={"grid"} gap={2} mt={1}>
             {allQuestionsData.map((questionData) => (
-              <Question
-                key={questionData.id}
-                questionData={questionData}
-                questionAsLink={true}
-              />
+              <Question key={questionData.id} questionData={questionData} />
             ))}
           </Box>
         </Box>

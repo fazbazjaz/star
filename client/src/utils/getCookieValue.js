@@ -1,4 +1,4 @@
-export const getCookieValue = (cookieName) => {
+const getCookieValue = (cookieName) => {
   const cookieString = document.cookie;
   // console.log("cookieString:", cookieString);
 
@@ -37,3 +37,5 @@ export const getCookieValue = (cookieName) => {
 
   return null;
 };
+
+export default getCookieValue;

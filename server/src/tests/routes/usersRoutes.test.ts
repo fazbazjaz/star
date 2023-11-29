@@ -19,20 +19,8 @@ describe("User Routes", () => {
   });
 
   describe("/api/users GET", () => {
-    it("returns 200 JSON response with message", async () => {
-      const response = await request.get("/api/users");
-
-      expect(response.statusCode).toBe(200);
-      expect(response.type).toBe("application/json");
-      expect(response.body).toEqual({
-        message: "STAR Server /api/users/ Users Route"
-      });
-    });
-  });
-
-  describe("/api/users/all GET", () => {
     it("returns 401 error when no JWT is provided from an HTTP-Only Cookie", async () => {
-      const response = await request.get("/api/users/all");
+      const response = await request.get("/api/users");
 
       expect(response.statusCode).toBe(401);
       expect(response.type).toBe("application/json");
@@ -77,7 +65,7 @@ describe("User Routes", () => {
       );
 
       const response = await request
-        .get("/api/users/all")
+        .get("/api/users")
         .set("Cookie", `customJWT=${customJWT}`);
 
       expect(response.statusCode).toBe(200);
@@ -116,7 +104,7 @@ describe("User Routes", () => {
 
   describe("/api/users/:id GET", () => {
     it("returns 401 error when no JWT is provided from an HTTP-Only Cookie", async () => {
-      const response = await request.get("/api/users/id/1");
+      const response = await request.get("/api/users/1");
 
       expect(response.statusCode).toBe(401);
       expect(response.type).toBe("application/json");
@@ -125,65 +113,65 @@ describe("User Routes", () => {
       });
     });
 
-    // it("returns 200 JSON Response with a Single User when a Valid JWT is provided", async () => {
-    //   const user = await createUser({
-    //     google_id: "0123456789",
-    //     firstname: "Bob",
-    //     lastname: "Smith",
-    //     email: "bob@gmail.com",
-    //     picture: "test.com/bob.png"
-    //   });
-    //
-    //   const createdUserId = user[0].id;
-    //
-    //   const customJWTPayload: CustomJWTPayload = {
-    //     id: createdUserId,
-    //     google_id: "0123456789"
-    //   };
-    //
-    //   const customJWT = jwt.sign(
-    //     customJWTPayload,
-    //     process.env.JWT_SECRET as Secret,
-    //     {
-    //       expiresIn: "1h"
-    //     }
-    //   );
-    //
-    //   const response = await request
-    //     .get(`/api/users/${createdUserId}`)
-    //     .set("Cookie", `customJWT=${customJWT}`);
-    //
-    //   expect(response.statusCode).toBe(200);
-    //   expect(response.type).toBe("application/json");
-    //   expect(response.body).toBeInstanceOf(Object);
-    //
-    //   if (response.body) {
-    //     const user = response.body;
-    //
-    //     expect(user.id).toBeDefined();
-    //     expect(typeof user.id).toBe("number");
-    //
-    //     expect(user.google_id).toBeDefined();
-    //     expect(typeof user.google_id).toBe("string");
-    //
-    //     expect(user.firstname).toBeDefined();
-    //     expect(typeof user.firstname).toBe("string");
-    //
-    //     expect(user.lastname).toBeDefined();
-    //     expect(typeof user.lastname).toBe("string");
-    //
-    //     expect(user.email).toBeDefined();
-    //     expect(typeof user.email).toBe("string");
-    //
-    //     expect(user.picture).toBeDefined();
-    //     expect(typeof user.picture).toBe("string");
-    //
-    //     expect(user.created_at).toBeDefined();
-    //     expect(typeof user.created_at).toBe("string");
-    //
-    //     expect(user.updated_at).toBeDefined();
-    //     expect(typeof user.updated_at).toBe("string");
-    //   }
-    // });
+    it("returns 200 JSON Response with a Single User when a Valid JWT is provided", async () => {
+      const user = await createUser({
+        google_id: "0123456789",
+        firstname: "Bob",
+        lastname: "Smith",
+        email: "bob@gmail.com",
+        picture: "test.com/bob.png"
+      });
+
+      const createdUserId = user[0].id;
+
+      const customJWTPayload: CustomJWTPayload = {
+        id: createdUserId,
+        google_id: "0123456789"
+      };
+
+      const customJWT = jwt.sign(
+        customJWTPayload,
+        process.env.JWT_SECRET as Secret,
+        {
+          expiresIn: "1h"
+        }
+      );
+
+      const response = await request
+        .get(`/api/users/${createdUserId}`)
+        .set("Cookie", `customJWT=${customJWT}`);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.type).toBe("application/json");
+      expect(response.body).toBeInstanceOf(Object);
+
+      if (response.body) {
+        const user = response.body;
+
+        expect(user.id).toBeDefined();
+        expect(typeof user.id).toBe("number");
+
+        expect(user.google_id).toBeDefined();
+        expect(typeof user.google_id).toBe("string");
+
+        expect(user.firstname).toBeDefined();
+        expect(typeof user.firstname).toBe("string");
+
+        expect(user.lastname).toBeDefined();
+        expect(typeof user.lastname).toBe("string");
+
+        expect(user.email).toBeDefined();
+        expect(typeof user.email).toBe("string");
+
+        expect(user.picture).toBeDefined();
+        expect(typeof user.picture).toBe("string");
+
+        expect(user.created_at).toBeDefined();
+        expect(typeof user.created_at).toBe("string");
+
+        expect(user.updated_at).toBeDefined();
+        expect(typeof user.updated_at).toBe("string");
+      }
+    });
   });
 });

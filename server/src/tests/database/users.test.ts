@@ -1,5 +1,5 @@
 import { disconnectFromDatabase } from "../../helpers/database";
-import { getAllUsers, createUser, findUserById } from "../../helpers/users";
+import { getAllUsers, createUser, getUserById } from "../../helpers/users";
 import { cleanAll } from "../helpers/dbCleaner";
 
 describe("Users", () => {
@@ -24,13 +24,13 @@ describe("Users", () => {
     expect((await getAllUsers()).length).toBe(1);
   });
 
-  test("Should receive one record with findUserById", async () => {
-    const result = await findUserById(userId);
+  test("Should receive one record with getUserById", async () => {
+    const result = await getUserById(userId);
     expect(result.length).toBe(1);
   });
 
-  test("The userId should be same as the id from findUserById", async () => {
-    expect((await findUserById(userId))[0].id).toStrictEqual(userId);
+  test("The userId should be same as the id from getUserById", async () => {
+    expect((await getUserById(userId))[0].id).toStrictEqual(userId);
   });
 
   test("The userId should be same as the id from getAllUsers", async () => {
