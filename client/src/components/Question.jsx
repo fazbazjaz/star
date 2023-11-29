@@ -95,7 +95,8 @@ const Question = ({
           <Box mt={1}>
             {isEditing ? (
               <EditQuestionForm
-                questionData={questionData}
+                questionId={questionData.id}
+                oldQuestion={questionData.question}
                 setIsEditing={setIsEditing}
               />
             ) : questionAsLink ? (

@@ -326,7 +326,7 @@ export const editQuestionHandler = async (req: Request, res: Response) => {
     res.status(400).json({ error: "Invalid Question ID Provided" });
   }
 
-  const question = req.body.questionContent;
+  const { question } = req.body;
   logger.info({
     message: "editQuestionHandler question",
     value: question
