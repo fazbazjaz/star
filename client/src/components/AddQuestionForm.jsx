@@ -43,14 +43,14 @@ const AddQuestionForm = ({ setShowAddQuestionForm }) => {
         body: JSON.stringify({ question }),
       }
     );
-    console.log("postQuestion response", response);
+    // console.log("postQuestion response", response);
     if (!response.ok) {
       throw new Error(
         `${response.status} ${response.statusText} : postQuestion failed`
       );
     }
     const data = await response.json();
-    console.log("postQuestion data", data);
+    // console.log("postQuestion data", data);
     return data;
   };
 
