@@ -35,3 +35,5 @@ export const formatDate = (date) => {
     }${minutes}${ampm}`;
   }
 };
+
+export default formatDate;

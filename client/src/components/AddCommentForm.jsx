@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import SmsIcon from "@mui/icons-material/Sms";
 import SendIcon from "@mui/icons-material/Send";
+import postComment from "../api/postComment";
 import {
   consistentBorder,
   consistentBorderRadius,
@@ -31,50 +32,18 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
     );
   };
 
-  const postComment = async () => {
-    const response = await fetch(
-      `${
-        import.meta.env.VITE_SERVER_URL
-      }/api/questions/${questionId}/answers/${answerId}/comments`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ comment }),
-      }
-    );
-    // console.log("postComment response", response);
-    if (!response.ok) {
-      throw new Error(
-        `${response.status} ${response.statusText} : postComment failed`
-      );
-    }
-    const data = await response.json();
-    // console.log("postComment data", data);
-    return data;
-  };
-
   const queryClient = useQueryClient();
 
   const addCommentMutation = useMutation({
-    mutationFn: postComment,
-    // onMutate: () => {},
+    mutationFn: () => postComment(questionId, answerId, comment),
     onSuccess: () => {
-      // Invalidate the Query Key
-      // queryClient.invalidateQueries({ queryKey: ["question", questionId] });
-      // Refetch the Query Key
       queryClient.refetchQueries(["question", questionId]);
-      // Reset the Comment State
       setComment("");
       setCommentValidation(undefined);
       // setTimeout(() => {
-      //   setShowAddAnswerForm((prev) => !prev);
-      // }, 1500);
+      //   setShowAddCommentForm((prev) => !prev);
+      // }, 1000);
     },
-    // onError: () => {},
-    // onSettled: () => {},
   });
 
   const { isPending, isError, error, isSuccess } = addCommentMutation;

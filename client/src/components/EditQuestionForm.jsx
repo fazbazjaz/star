@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import SaveAsRoundedIcon from "@mui/icons-material/SaveAsRounded";
+import putQuestion from "../api/putQuestion";
 import {
   consistentBackdropFilter,
   consistentBgColor,
@@ -31,33 +32,10 @@ const EditQuestionForm = ({ questionId, originalQuestion, setIsEditing }) => {
     );
   };
 
-  const putQuestion = async () => {
-    const response = await fetch(
-      `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}`,
-      {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ question: editedQuestion }),
-      }
-    );
-    // console.log("putQuestion response:", response);
-    if (!response.ok) {
-      throw new Error(
-        `${response.status} ${response.statusText} : editedQuestion failed`
-      );
-    }
-    const data = await response.json();
-    // console.log("putQuestion data:", data);
-    return data;
-  };
-
   const queryClient = useQueryClient();
 
   const editQuestionMutation = useMutation({
-    mutationFn: putQuestion,
+    mutationFn: () => putQuestion(questionId, editedQuestion),
     onSuccess: () => {
       queryClient.refetchQueries(["question", questionId]);
       setEditedQuestionValidation(undefined);

@@ -6,7 +6,7 @@ import {
   useMemo,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCookieValue } from "../utils/getCookieValue";
+import getCookieValue from "../utils/getCookieValue";
 
 export const AuthContext = createContext();
 

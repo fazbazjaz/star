@@ -1,12 +1,15 @@
 import { useContext, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation, useNavigate, Link as RouterLink } from "react-router-dom";
 import { Box, Typography, Button, Link, IconButton } from "@mui/material";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { AuthContext } from "../context/AuthContext";
-import { formatDate } from "../utils/formatDate";
+import EditQuestionForm from "./EditQuestionForm";
+import deleteQuestion from "../api/deleteQuestion";
+import formatDate from "../utils/formatDate";
 import {
   consistentBorder,
   consistentBorderRadius,
@@ -15,43 +18,57 @@ import {
   consistentBackdropFilter,
   consistentLinkColor,
 } from "../themes/ConsistentStyles";
-import EditQuestionForm from "./EditQuestionForm";
 
 const Question = ({
   questionData,
-  questionAsLink,
   showAddAnswerForm,
   setShowAddAnswerForm,
 }) => {
-  // get the userCookie from AuthContext
+  console.log("Question questionData:", questionData);
+
   const { userCookie } = useContext(AuthContext);
+
   const [isEditing, setIsEditing] = useState(false);
 
   const handleEdit = async () => {
     setIsEditing(true);
   };
 
-  // TO DO: Convert this to use TanStack Query Mutations
-  const handleDelete = async (questionId) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
-      // console.log("handleDelete response:", response);
-      if (!response.ok) {
-        throw new Error("Failed to delete question");
-      }
-      const data = await response.json();
-      console.log("handleDelete data:", data);
+  const location = useLocation();
 
-      // TO DO: We need to Synchronise State HERE!
-    } catch (error) {
-      console.error("Error deleting question:", error.message);
-    }
+  let currentPage;
+  if (location.pathname.includes("/questions/")) {
+    currentPage = "individualQuestionPage";
+  } else if (location.pathname.includes("/questions")) {
+    currentPage = "allQuestionsPage";
+  } else if (location.pathname.includes("/profile")) {
+    currentPage = "profilePage";
+  }
+
+  const questionId = questionData.id;
+
+  const queryClient = useQueryClient();
+
+  const navigate = useNavigate();
+
+  const deleteQuestionMutation = useMutation({
+    mutationFn: () => deleteQuestion(questionId),
+    onError: (error) => {
+      console.log("deleteQuestionMutation onError");
+      console.error(error);
+    },
+    onSuccess: () => {
+      if (currentPage === "allQuestionsPage" || currentPage === "profilePage") {
+        queryClient.refetchQueries(["questions"]);
+      } else if (currentPage === "individualQuestionPage") {
+        queryClient.removeQueries(["question", questionId]);
+        navigate("/questions");
+      }
+    },
+  });
+
+  const handleDelete = async () => {
+    deleteQuestionMutation.mutate();
   };
 
   return (
@@ -72,9 +89,23 @@ const Question = ({
             <Typography variant={"questiontitle"} color="primary">
               Question
             </Typography>
-            <Typography variant={"body2"}>(id: {questionData.id})</Typography>
+            <Typography variant={"body2"}>| id: {questionData.id}</Typography>
             <Typography variant={"body2"}>
-              by userId: {questionData.userId}
+              | by userId: {questionData.userId}
+            </Typography>
+            <Typography variant={"body2"}>
+              | Answers (
+              {questionData?.answers?.length
+                ? questionData.answers.length
+                : "x"}
+              )
+            </Typography>
+            <Typography variant={"body2"}>
+              | Comments (
+              {questionData?.answers?.comments?.length
+                ? questionData?.answers?.comments?.length
+                : "x"}
+              )
             </Typography>
             <Box marginLeft={"auto"}>
               {questionData.userId === userCookie.id && (
@@ -94,24 +125,28 @@ const Question = ({
             </Box>
           </Box>
           <Box mt={1}>
-            {isEditing ? (
+            {!isEditing &&
+              (currentPage === "allQuestionsPage" ||
+                currentPage === "profilePage") && (
+                <Link
+                  component={RouterLink}
+                  to={`/questions/${questionData.id}`}
+                  color={consistentLinkColor}
+                  variant="questionbody">
+                  {questionData.question}
+                </Link>
+              )}
+            {!isEditing && currentPage === "individualQuestionPage" && (
+              <Typography variant={"questionbody"}>
+                {questionData.question}
+              </Typography>
+            )}
+            {isEditing && (
               <EditQuestionForm
                 questionId={questionData.id}
                 originalQuestion={questionData.question}
                 setIsEditing={setIsEditing}
               />
-            ) : questionAsLink ? (
-              <Link
-                component={RouterLink}
-                to={`/questions/${questionData.id}`}
-                color={consistentLinkColor}
-                variant="questionbody">
-                {questionData.question}
-              </Link>
-            ) : (
-              <Typography variant={"questionbody"}>
-                {questionData.question}
-              </Typography>
             )}
           </Box>
           <Box
@@ -120,7 +155,7 @@ const Question = ({
             flexWrap={"wrap"}
             gap={1}>
             <Box>
-              {!questionAsLink && (
+              {currentPage === "individualQuestionPage" && (
                 <Box mt={1}>
                   <Button
                     variant="outlined"
