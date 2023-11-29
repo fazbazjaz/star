@@ -42,7 +42,7 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ comment: comment.content }),
+        body: JSON.stringify({ comment }),
       }
     );
     // console.log("postComment response", response);

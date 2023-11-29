@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Box,
   Button,
@@ -17,90 +18,67 @@ import {
   consistentFormFieldBorder,
 } from "../themes/ConsistentStyles";
 
-const EditQuestionForm = ({ questionData, setIsEditing }) => {
-  const [status, setStatus] = useState({
-    submitting: false,
-    error: false,
-    success: false,
-    message: null,
-  });
-
-  const [question, setQuestion] = useState({
-    content: questionData.question,
-    error: undefined,
-  });
+const EditQuestionForm = ({ questionId, originalQuestion, setIsEditing }) => {
+  const [editedQuestion, setEditedQuestion] = useState(originalQuestion);
+  const [editedQuestionValidation, setEditedQuestionValidation] =
+    useState(undefined);
 
   const changeHandler = (event) => {
-    const { value } = event.target;
-
-    setQuestion((prevQuestion) => {
-      return {
-        ...prevQuestion,
-        content: value,
-        error:
-          !value.trim || value.trim().length < 10 || value.trim().length > 500,
-      };
-    });
+    setEditedQuestion(event.target.value);
+    setEditedQuestionValidation(
+      event.target.value.trim().length > 10 &&
+        event.target.value.trim().length < 500
+    );
   };
 
-  const handleSubmit = async (event, questionId) => {
-    event.preventDefault();
+  const putQuestion = async () => {
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}`,
+      {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ question: editedQuestion }),
+      }
+    );
+    // console.log("putQuestion response:", response);
+    if (!response.ok) {
+      throw new Error(
+        `${response.status} ${response.statusText} : editedQuestion failed`
+      );
+    }
+    const data = await response.json();
+    // console.log("putQuestion data:", data);
+    return data;
+  };
 
-    if (question.error || question.error === undefined) {
-      setStatus({
-        submitting: false,
-        error: true,
-        success: false,
-        message: "Your Question needs to be between 10-500 Characters",
-      });
+  const queryClient = useQueryClient();
+
+  const editQuestionMutation = useMutation({
+    mutationFn: putQuestion,
+    onSuccess: () => {
+      queryClient.refetchQueries(["question", questionId]);
+      setEditedQuestionValidation(undefined);
+      setTimeout(() => {
+        setIsEditing(false);
+      }, 1500);
+    },
+  });
+
+  const { isPending, isError, error, isSuccess } = editQuestionMutation;
+
+  const submitHandler = async (event) => {
+    event.preventDefault();
+    if (editedQuestionValidation === undefined) {
+      setEditedQuestionValidation(false);
+    }
+    if (!editedQuestionValidation) {
       return;
     }
-
-    try {
-      setStatus({
-        submitting: true,
-        error: false,
-        success: false,
-        message: null,
-      });
-      const questionContent = question.content;
-      const response = await fetch(
-        `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}/edit`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ questionContent }),
-        }
-      );
-      // console.log("Edit response:", response);
-      if (!response.ok) {
-        throw new Error("Failed to Edit question");
-      }
-      // const data = await response.json();
-      // console.log("Edit data:", data);
-      setIsEditing(false);
-      setStatus({
-        submitting: false,
-        error: false,
-        success: true,
-        message: "Your Question was successfully Edited!",
-      });
-      setQuestion({
-        content: "",
-        error: undefined,
-      });
-    } catch (error) {
-      console.error(error);
-      setStatus({
-        submitting: false,
-        error: true,
-        success: false,
-        message:
-          "There was an error sending your Edited Question to the Server",
-      });
+    if (editedQuestionValidation) {
+      editQuestionMutation.mutate();
     }
   };
 
@@ -115,17 +93,24 @@ const EditQuestionForm = ({ questionData, setIsEditing }) => {
       sx={{
         backdropFilter: consistentBackdropFilter,
       }}>
-      <form onSubmit={() => handleSubmit(event, questionData.id)}>
-        <FormControl sx={{ width: "100%" }}>
+      <form
+        onSubmit={submitHandler}
+        style={{
+          display: "grid",
+        }}>
+        <FormControl>
           <TextareaAutosize
             aria-label="Edit your question"
-            value={question.content}
-            onChange={() => changeHandler(event)}
+            minRows={2}
+            value={editedQuestion}
+            onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                question.error ? "red" : consistentFormFieldBorder
+                editedQuestionValidation === false
+                  ? "red"
+                  : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -133,31 +118,51 @@ const EditQuestionForm = ({ questionData, setIsEditing }) => {
               resize: "none",
             }}
           />
-          <Box display={"flex"} gap={1} mt={1}>
+          {editedQuestionValidation === false && (
+            <Typography color="error">
+              Your Question needs to be between 10-500 Characters
+            </Typography>
+          )}
+          <Box display={"flex"} alignItems={"center"} gap={1} mt={1}>
             <Button variant="contained" onClick={() => setIsEditing(false)}>
               Cancel
             </Button>
             <Button
               variant="contained"
               type="submit"
-              disabled={status.submitting}>
+              disabled={isPending || !editedQuestionValidation}>
               Save <SaveAsRoundedIcon />
             </Button>
           </Box>
           <Box>
-            {status.submitting && (
-              <Typography color={"info"} mt={2} px={1}>
+            {isPending && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
                 Submitting...
               </Typography>
             )}
-            {status.success && (
-              <Typography color={"success.main"} mt={2} px={1}>
-                Success: {status.message}
+            {isSuccess && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
+                ✅ Your Question was successfully updated! Thank you
               </Typography>
             )}
-            {status.error && (
-              <Typography color={"error"} mt={2} px={1}>
-                Error: {status.message}
+            {isError && (
+              <Typography
+                mt={2}
+                p={2}
+                border={consistentBorder}
+                borderRadius={consistentBorderRadius}
+                bgcolor={consistentBgColor}>
+                ❌ Error: {error.message}
               </Typography>
             )}
           </Box>
