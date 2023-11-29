@@ -98,3 +98,10 @@ export const editQuestion = async (questionId: number, question: string) => {
     .where(eq(questions.id, questionId))
     .returning();
 };
+
+export const deleteAnswer = async (questionId: number, answerId: number) => {
+  return await database
+    .delete(answers)
+    .where(and(eq(answers.id, answerId), eq(answers.questionId, questionId)))
+    .returning();
+};

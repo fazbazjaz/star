@@ -1,10 +1,14 @@
-import { useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { useContext, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Box, Typography, Button, IconButton } from "@mui/material";
 import PsychologyAltRoundedIcon from "@mui/icons-material/PsychologyAltRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import SmsOutlinedIcon from "@mui/icons-material/SmsOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { AuthContext } from "../context/AuthContext";
 import AddCommentForm from "./AddCommentForm";
 import Comment from "./Comment";
+import deleteAnswer from "../api/deleteAnswer";
 import formatDate from "../utils/formatDate";
 import {
   consistentBorder,
@@ -15,7 +19,29 @@ import {
 } from "../themes/ConsistentStyles";
 
 const Answer = ({ answerData }) => {
+  const { userCookie } = useContext(AuthContext);
+
   const [showAddCommentForm, setShowAddCommentForm] = useState(false);
+
+  const questionId = answerData.questionId;
+  const answerId = answerData.id;
+
+  const queryClient = useQueryClient();
+
+  const deleteAnswerMutation = useMutation({
+    mutationFn: () => deleteAnswer(questionId, answerId),
+    onError: (error) => {
+      console.log("deleteAnswerMutation onError");
+      console.error(error);
+    },
+    onSuccess: () => {
+      queryClient.refetchQueries(["questions", questionId]);
+    },
+  });
+
+  const handleDelete = () => {
+    deleteAnswerMutation.mutate();
+  };
 
   return (
     <>
@@ -41,6 +67,15 @@ const Answer = ({ answerData }) => {
             <Typography variant={"body2"}>
               by userId: {answerData.userId}
             </Typography>
+            <Box marginLeft={"auto"}>
+              {answerData.userId === userCookie.id && (
+                <IconButton
+                  onClick={() => handleDelete(answerData.id)}
+                  color="primary">
+                  <DeleteOutlineIcon />
+                </IconButton>
+              )}
+            </Box>
           </Box>
           <Box display={"grid"} gap={1} mt={1}>
             <Box

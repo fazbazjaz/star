@@ -9,7 +9,8 @@ import {
   createAnswer,
   createComment,
   getAnswer,
-  editQuestion
+  editQuestion,
+  deleteAnswer
 } from "../helpers/questions";
 import { logger } from "../logger";
 
@@ -351,6 +352,84 @@ export const editQuestionHandler = async (req: Request, res: Response) => {
 
     res.status(200).json(data);
   } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const deleteAnswerHandler = async (req: Request, res: Response) => {
+  const user = req.customJWTPayload;
+  logger.info({
+    message: "deleteAnswerHandler user",
+    value: user
+  });
+
+  if (!user) {
+    return res.status(500).json({ error: "No User attached to the Request" });
+  }
+
+  const questionId = parseInt(req.params.id);
+  logger.info({
+    message: "deleteAnswerHandler questionId",
+    value: questionId
+  });
+
+  if (!questionId) {
+    return res.status(400).json({ error: "Invalid Question ID Provided" });
+  }
+
+  const answerId = parseInt(req.params.answerId);
+  logger.info({
+    message: "deleteAnswerHandler answerId",
+    value: answerId
+  });
+
+  if (!answerId) {
+    return res.status(400).json({ error: "Invalid Answer ID Provided" });
+  }
+
+  try {
+    const answerQuery = await getAnswer(questionId, answerId);
+
+    if (!answerQuery || answerQuery.length === 0) {
+      return res.status(404).json({
+        error: `No Answer ID ${answerId} found on Question ID ${questionId}`
+      });
+    }
+
+    const answerAuthorId = answerQuery[0].questions.userId;
+
+    logger.info({
+      message: "deleteAnswerHandler answerAuthorId",
+      value: answerId
+    });
+
+    const currentUserId = user.id;
+    logger.info({
+      message: "deleteAnswerHandler currentUserId",
+      value: answerId
+    });
+
+    if (currentUserId !== answerAuthorId) {
+      return res
+        .status(403)
+        .json({ error: "You do not have permission to delete this Answer" });
+    }
+
+    const deleteAnswerQuery = await deleteAnswer(questionId, answerId);
+    logger.info({
+      message: "deleteAnswerHandler deleteAnswerQuery",
+      value: deleteAnswerQuery
+    });
+
+    const data = deleteAnswerQuery[0];
+    logger.info({
+      message: "deleteAnswerHandler data",
+      value: data
+    });
+
+    res.status(200).json(data);
+  } catch (error) {
+    logger.error(error);
     res.status(500).json({ error: "Server Error" });
   }
 };

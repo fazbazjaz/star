@@ -8,7 +8,8 @@ import {
   findOneQuestionHandler,
   createAnswerHandler,
   createCommentHandler,
-  editQuestionHandler
+  editQuestionHandler,
+  deleteAnswerHandler
 } from "../controllers/questionsController";
 
 export const questionsRouter = express.Router();
@@ -24,6 +25,11 @@ questionsRouter.get("/user/:id", authMiddleware, findAllQuestionsByUserHandler);
 
 // Answers
 questionsRouter.post("/:id/answers", authMiddleware, createAnswerHandler);
+questionsRouter.delete(
+  "/:id/answers/:answerId",
+  authMiddleware,
+  deleteAnswerHandler
+);
 
 // Comments
 questionsRouter.post(
