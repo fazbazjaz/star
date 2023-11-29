@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Box, Typography, Button, Link, IconButton } from "@mui/material";
-import QuestionMarkRoundedIcon from "@mui/icons-material/QuestionMarkRounded";
+import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -31,6 +31,7 @@ const Question = ({
     setIsEditing(true);
   };
 
+  // TO DO: Convert this to use TanStack Query Mutations
   const handleDelete = async (questionId) => {
     try {
       const response = await fetch(
@@ -40,7 +41,7 @@ const Question = ({
           credentials: "include",
         }
       );
-      // console.log("handleDelete response:", response)
+      // console.log("handleDelete response:", response);
       if (!response.ok) {
         throw new Error("Failed to delete question");
       }
@@ -67,7 +68,7 @@ const Question = ({
             backdropFilter: consistentBackdropFilter,
           }}>
           <Box display={"flex"} alignItems={"center"} gap={0.5}>
-            <QuestionMarkRoundedIcon fontSize={"medium"} color="primary" />
+            <HelpOutlineOutlinedIcon fontSize={"medium"} color="primary" />
             <Typography variant={"questiontitle"} color="primary">
               Question
             </Typography>
@@ -123,10 +124,9 @@ const Question = ({
                 <Box mt={1}>
                   <Button
                     variant="outlined"
+                    startIcon={<RateReviewOutlinedIcon />}
                     onClick={() => setShowAddAnswerForm((prev) => !prev)}
-                    disabled={showAddAnswerForm}
-                    sx={{ display: "flex", gap: 0.5 }}>
-                    <RateReviewOutlinedIcon />
+                    disabled={showAddAnswerForm}>
                     Add an Answer
                   </Button>
                 </Box>
