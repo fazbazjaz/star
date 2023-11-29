@@ -12,7 +12,6 @@ import Protected from "./components/Protected";
 import ProfilePage from "./pages/ProfilePage";
 import UsersPage from "./pages/UsersPage";
 import QuestionsPage from "./pages/QuestionsPage";
-import AddQuestionPage from "./pages/AddQuestionPage";
 import QuestionPage from "./pages/QuestionPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
@@ -44,14 +43,6 @@ const router = createBrowserRouter(
         element={
           <Protected>
             <QuestionsPage />
-          </Protected>
-        }
-      />
-      <Route
-        path="questions/add"
-        element={
-          <Protected>
-            <AddQuestionPage />
           </Protected>
         }
       />

@@ -144,10 +144,9 @@ const Answer = ({ answerData }) => {
           <Box mt={1.5}>
             <Button
               variant="outlined"
-              sx={{ display: "flex", gap: 0.5 }}
+              startIcon={<SmsOutlinedIcon />}
               onClick={() => setShowAddCommentForm((prev) => !prev)}
               disabled={showAddCommentForm}>
-              <SmsOutlinedIcon />
               Add a Comment
             </Button>
             {showAddCommentForm && (
