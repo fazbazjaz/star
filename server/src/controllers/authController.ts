@@ -120,7 +120,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     maxAge: 3600000
   });
 
-  res.status(200).send();
+  res.sendStatus(200);
 };
 
 export const userHandler = async (req: Request, res: Response) => {
