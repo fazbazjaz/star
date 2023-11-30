@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { idTokenHandler } from "../controllers/authController";
+import { idTokenHandler, userHandler } from "../controllers/authController";
 
 export const authRouter = express.Router();
 
@@ -11,3 +11,4 @@ authRouter.get("/", (req: Request, res: Response) => {
 });
 
 authRouter.post("/google/idtoken", idTokenHandler);
+authRouter.get("/user", userHandler);

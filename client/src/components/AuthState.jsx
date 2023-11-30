@@ -1,23 +1,27 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Box, Typography } from "@mui/material";
+import {
+  consistentHeaderFooterBorder,
+  consistentPrimaryBackgroundColor,
+} from "../themes/ConsistentStyles";
 
 const AuthState = () => {
-  const { userCookie } = useContext(AuthContext);
+  const { authenticatedUser } = useContext(AuthContext);
 
   return (
     <Box
       display={"flex"}
       flexDirection={"column"}
       p={1}
-      // border={1}
-      backgroundColor={"#15164b"}
+      borderBottom={consistentHeaderFooterBorder}
+      backgroundColor={consistentPrimaryBackgroundColor}
       color={"white"}>
       <Typography fontSize={10} fontWeight={700}>
-        AuthProvider State &quot;userCookie&quot;
+        AuthProvider State &quot;user&quot;
       </Typography>
       <Box display={"flex"} flexWrap={"wrap"} flexShrink={1} gap={0.5}>
-        {!userCookie && (
+        {!authenticatedUser && (
           <Typography
             fontSize={10}
             border={1}
@@ -26,9 +30,9 @@ const AuthState = () => {
             null
           </Typography>
         )}
-        {userCookie && (
+        {authenticatedUser && (
           <>
-            {Object.entries(userCookie).map((entry) => {
+            {Object.entries(authenticatedUser).map((entry) => {
               return (
                 <Typography
                   key={entry}

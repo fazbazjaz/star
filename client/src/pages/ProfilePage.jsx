@@ -9,10 +9,9 @@ import getAllQuestionsByUserId from "../api/getAllQuestionsByUserId";
 import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const ProfilePage = () => {
-  // get the userCookie from AuthContext
-  const { userCookie } = useContext(AuthContext);
+  const { authenticatedUser } = useContext(AuthContext);
 
-  const userId = userCookie.id;
+  const userId = authenticatedUser.id;
 
   const {
     isPending,
@@ -49,7 +48,7 @@ const ProfilePage = () => {
             mt={1}>
             <CardMedia
               component={"img"}
-              image={userCookie.picture}
+              image={authenticatedUser.picture}
               sx={{
                 height: 48,
                 width: 48,
@@ -59,12 +58,14 @@ const ProfilePage = () => {
             />
             <Box>
               <Typography variant={"body2"}>User ID:</Typography>
-              <Typography fontWeight={"bold"}>{userCookie.id}</Typography>
+              <Typography fontWeight={"bold"}>
+                {authenticatedUser.id}
+              </Typography>
             </Box>
             <Box>
               <Typography variant={"body2"}>Name:</Typography>
               <Typography fontWeight={"bold"}>
-                {userCookie.firstname} {userCookie.lastname}
+                {authenticatedUser.firstname} {authenticatedUser.lastname}
               </Typography>
             </Box>
             <Box>

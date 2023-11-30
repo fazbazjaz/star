@@ -14,7 +14,7 @@ export const getUserByGoogleId = async (
   userGoogleId: SelectUserType["google_id"]
 ) => {
   return await database
-    .select({ id: users.id })
+    .select()
     .from(users)
     .where(eq(users.google_id, userGoogleId));
 };

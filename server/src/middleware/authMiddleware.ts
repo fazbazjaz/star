@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { Secret, JwtPayload } from "jsonwebtoken";
 import { CustomJWTPayload } from "../types/types";
-import { logger } from "../logger";
+// import { logger } from "../logger";
 
 // Add a new key to the Express Request interface
 declare module "express" {
@@ -16,16 +16,16 @@ export const authMiddleware = (
   next: NextFunction
 ) => {
   const cookies = req.cookies;
-  logger.info({
-    message: "authMiddleware cookies",
-    value: cookies
-  });
+  // logger.info({
+  //   message: "authMiddleware cookies",
+  //   value: cookies
+  // });
 
   const customJWT = cookies.customJWT;
-  logger.info({
-    message: "authMiddleware customJWT",
-    value: customJWT
-  });
+  // logger.info({
+  //   message: "authMiddleware customJWT",
+  //   value: customJWT
+  // });
 
   if (!customJWT || typeof customJWT === "undefined") {
     return res
@@ -37,17 +37,17 @@ export const authMiddleware = (
     const verifiedCustomJWT = jwt.verify(
       customJWT,
       process.env.JWT_SECRET as Secret
-    );
-    logger.info({
-      message: "authMiddleware verifiedCustomJWT",
-      value: customJWT
-    });
+    ) as JwtPayload;
+    // logger.info({
+    //   message: "authMiddleware verifiedCustomJWT",
+    //   value: customJWT
+    // });
 
     req.customJWTPayload = verifiedCustomJWT as CustomJWTPayload;
-    logger.info({
-      message: "authMiddleware req.customJWTPayload",
-      value: req.customJWTPayload
-    });
+    // logger.info({
+    //   message: "authMiddleware req.customJWTPayload",
+    //   value: req.customJWTPayload
+    // });
 
     next();
   } catch (error) {

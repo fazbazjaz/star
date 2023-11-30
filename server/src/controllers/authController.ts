@@ -1,7 +1,7 @@
 import { OAuth2Client } from "google-auth-library";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { Secret, JwtPayload } from "jsonwebtoken";
 import { Request, Response } from "express";
-import { CustomJWTPayload, UserCookie } from "../types/types";
+import { CustomJWTPayload } from "../types/types";
 import { createUser, getUserByGoogleId } from "../helpers/users";
 import { logger } from "../logger";
 
@@ -120,22 +120,89 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     maxAge: 3600000
   });
 
-  const userCookie: UserCookie = {
-    id: userId,
-    google_id: userGoogleId,
-    firstname: userFirstname,
-    lastname: userLastname,
-    email: userEmail,
-    picture: userPicture
-  };
-  logger.info({ message: "idTokenHandler userCookie", value: userCookie });
+  res.sendStatus(200);
+};
 
-  res.cookie("user", userCookie, {
-    httpOnly: false,
-    secure: true,
-    sameSite: "none",
-    maxAge: 3600000
+export const userHandler = async (req: Request, res: Response) => {
+  const cookies = req.cookies;
+  logger.info({
+    message: "userHandler cookies",
+    value: cookies
   });
 
-  res.status(200).send();
+  const customJWT = cookies.customJWT;
+  logger.info({
+    message: "userHandler customJWT",
+    value: customJWT
+  });
+
+  if (!customJWT || typeof customJWT === "undefined") {
+    return res
+      .status(401)
+      .json({ error: "Unauthorized - No Cookie with JWT Provided" });
+  }
+
+  try {
+    const verifiedCustomJWT = jwt.verify(
+      customJWT,
+      process.env.JWT_SECRET as Secret
+    ) as JwtPayload;
+    logger.info({
+      message: "userHandler verifiedCustomJWT",
+      value: verifiedCustomJWT
+    });
+
+    if (!verifiedCustomJWT) {
+      return res.status(401).json({ error: "Unauthorized - Invalid JWT" });
+    }
+
+    const userId = verifiedCustomJWT.id;
+    logger.info({
+      message: "userHandler userId",
+      value: userId
+    });
+
+    const userGoogleId = verifiedCustomJWT.google_id;
+    logger.info({
+      message: "userHandler userGoogleId",
+      value: userGoogleId
+    });
+
+    const userQuery = await getUserByGoogleId(userGoogleId);
+    logger.info({
+      message: "userHandler userQuery",
+      value: userQuery
+    });
+
+    if (!userQuery || userQuery.length === 0) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - User Does Not Exist" });
+    }
+
+    if (userId !== userQuery[0].id || userGoogleId !== userQuery[0].google_id) {
+      return res.status(401).json({
+        error:
+          "Unauthorized - Mismatch between User in CustomJWT and User in Database"
+      });
+    }
+
+    const user = {
+      ...userQuery[0],
+      issuedAtTime: verifiedCustomJWT.iat,
+      expirationTime: verifiedCustomJWT.exp
+    };
+    logger.info({
+      message: "userHandler user",
+      value: user
+    });
+
+    res.status(200).json(user);
+  } catch (error) {
+    logger.info({
+      message: "userHandler error",
+      value: error
+    });
+    res.status(500).json({ error: "Server Error" });
+  }
 };

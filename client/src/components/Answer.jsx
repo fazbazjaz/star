@@ -21,7 +21,8 @@ import {
 import AnswerForm from "./AnswerForm";
 
 const Answer = ({ answerData }) => {
-  const { userCookie } = useContext(AuthContext);
+  const { authenticatedUser } = useContext(AuthContext);
+
   const [isEditing, setIsEditing] = useState(false);
 
   const [showAddCommentForm, setShowAddCommentForm] = useState(false);
@@ -75,7 +76,7 @@ const Answer = ({ answerData }) => {
               by userId: {answerData.userId}
             </Typography>
             <Box marginLeft={"auto"}>
-              {answerData.userId === userCookie.id && (
+              {answerData.userId === authenticatedUser.id && (
                 <>
                   <IconButton
                     onClick={() => handleEdit(answerData.id)}
