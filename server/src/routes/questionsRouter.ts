@@ -23,9 +23,9 @@ questionsRouter
 
 questionsRouter
   .route("/:id")
+  .get(authMiddleware, findOneQuestionHandler)
   .put(authMiddleware, editQuestionHandler)
-  .delete(authMiddleware, deleteQuestionHandler)
-  .get(authMiddleware, findOneQuestionHandler);
+  .delete(authMiddleware, deleteQuestionHandler);
 
 questionsRouter
   .route("/user/:id")
@@ -36,8 +36,8 @@ questionsRouter.route("/:id/answers").post(authMiddleware, createAnswerHandler);
 
 questionsRouter
   .route("/:id/answers/:answerId")
-  .delete(authMiddleware, deleteAnswerHandler)
-  .put(authMiddleware, editAnswerHandler);
+  .put(authMiddleware, editAnswerHandler)
+  .delete(authMiddleware, deleteAnswerHandler);
 
 // Comments
 questionsRouter.post(

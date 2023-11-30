@@ -437,20 +437,20 @@ export const deleteAnswerHandler = async (req: Request, res: Response) => {
 
 export const editAnswerHandler = async (req: Request, res: Response) => {
   const questionId = parseInt(req.params.id);
-  const answerId = parseInt(req.params.answerId);
   logger.info({
-    message: "editAnswer questionId",
+    message: "editAnswerHandler questionId",
     value: questionId
-  });
-
-  logger.info({
-    message: "editAnswer answerId",
-    value: answerId
   });
 
   if (!questionId) {
     res.status(400).json({ error: "Invalid Question ID Provided" });
   }
+
+  const answerId = parseInt(req.params.answerId);
+  logger.info({
+    message: "editAnswerHandler answerId",
+    value: answerId
+  });
 
   if (!answerId) {
     res.status(400).json({ error: "Invalid Answer ID Provided" });
@@ -458,24 +458,27 @@ export const editAnswerHandler = async (req: Request, res: Response) => {
 
   const { situation, task, action, result } = req.body;
   logger.info({
-    message: "UpdateAnswerHandler req.body",
+    message: "editAnswerHandler req.body",
     value: req.body
   });
 
   if (!situation || !task || !action || !result) {
     return res.status(400).json({ error: "Your Answer was not Complete" });
   }
-  console.log("situation");
 
   try {
     const updateAnswerQuery = await editAnswer(
-      answerId,
       questionId,
+      answerId,
       situation,
       task,
       action,
       result
     );
+    logger.info({
+      message: "editAnswerHandler updateAnswerQuery",
+      value: updateAnswerQuery
+    });
 
     const data = updateAnswerQuery[0];
     logger.info({

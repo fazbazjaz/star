@@ -12,14 +12,14 @@ const putAnswer = async (questionId, answerId, answer) => {
       body: JSON.stringify(answer),
     }
   );
-  // console.log("putQuestion response:", response);
+  // console.log("putAnswer response:", response);
   if (!response.ok) {
     throw new Error(
       `${response.status} ${response.statusText} : editedQuestion failed`
     );
   }
   const data = await response.json();
-  // console.log("putQuestion data:", data);
+  // console.log("putAnswer data:", data);
   return data;
 };
 

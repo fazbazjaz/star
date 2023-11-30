@@ -107,8 +107,8 @@ export const deleteAnswer = async (questionId: number, answerId: number) => {
 };
 
 export const editAnswer = async (
-  answerId: number,
   questionId: number,
+  answerId: number,
   situation: string,
   task: string,
   action: string,
