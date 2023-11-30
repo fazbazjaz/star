@@ -68,9 +68,11 @@ const QuestionForm = ({
     if (!questionValidation) {
       return;
     }
-    if (questionValidation) {
-      questionMutation.mutate();
+    if (questionId && question === originalQuestion) {
+      setIsEditing(false);
+      return;
     }
+    questionMutation.mutate();
   };
 
   return (

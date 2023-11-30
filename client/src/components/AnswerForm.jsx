@@ -107,9 +107,18 @@ const AnswerForm = ({
     if (!isFormValid) {
       return;
     }
-    if (isFormValid) {
-      answerMutation.mutate();
+    if (answerId) {
+      if (
+        answer.situation === originalSituation &&
+        answer.task === originalTask &&
+        answer.action === originalAction &&
+        answer.result === originalResult
+      ) {
+        setIsEditing(false);
+        return;
+      }
     }
+    answerMutation.mutate();
   };
 
   return (
