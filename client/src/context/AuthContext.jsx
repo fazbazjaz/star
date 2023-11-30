@@ -141,24 +141,36 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Get "authenticatedUser" from LocalStorage
-    const authenticatedUserLocalStorage =
-      localStorage.getItem("authenticatedUser");
-    console.log(
-      "AuthProvider useEffect authenticatedUserLocalStorage:",
-      authenticatedUserLocalStorage
+    const authenticatedUserLocalStorage = JSON.parse(
+      localStorage.getItem("authenticatedUser")
     );
-
-    // If there is a "user"
-    if (authenticatedUserLocalStorage) {
-      // update the authenticatedUser React State with that user
-      setAuthenticatedUser(JSON.parse(authenticatedUserLocalStorage));
-      return;
-    }
 
     // If there is no "authenticatedUser"
     if (!authenticatedUserLocalStorage) {
       // Initialize the Google Sign In Client
       initializeGoogleSignIn();
+      return;
+    }
+
+    const now = Date.now();
+    const customJWTExpirationTime =
+      authenticatedUserLocalStorage.expirationTime * 1000;
+    const isCustomJWTExpired = customJWTExpirationTime > now;
+
+    // If there is an "authenticatedUser" but the CustomJWT has expired
+    if (authenticatedUserLocalStorage && isCustomJWTExpired) {
+      // Remove the "authenticatedUser" from Local Storage
+      localStorage.removeItem("authenticatedUser");
+      // Initialize the Google Sign In Client
+      initializeGoogleSignIn();
+      return;
+    }
+
+    // there is an "authenticatedUser" and the CustomJWT is still valid
+    if (authenticatedUserLocalStorage && !isCustomJWTExpired) {
+      // If there is an "authenticatedUser"
+      // Update the authenticatedUser React State with that user
+      setAuthenticatedUser(JSON.parse(authenticatedUserLocalStorage));
       return;
     }
   }, [initializeGoogleSignIn, navigate]);

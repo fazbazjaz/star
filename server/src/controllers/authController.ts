@@ -187,7 +187,11 @@ export const userHandler = async (req: Request, res: Response) => {
       });
     }
 
-    const user = userQuery[0];
+    const user = {
+      ...userQuery[0],
+      issuedAtTime: verifiedCustomJWT.iat,
+      expirationTime: verifiedCustomJWT.exp
+    };
     logger.info({
       message: "userHandler user",
       value: user
