@@ -140,7 +140,7 @@ const AnswerForm = ({
           <Box display={"flex"} alignItems={"center"} gap={0.5}>
             <RateReviewRoundedIcon fontSize="medium" color="primary" />
             <Typography variant={"answerformtitle"} color={"primary"}>
-              Add your Answer
+              {answerId ? "Edit your Answer" : "Add your Answer"}
             </Typography>
           </Box>
           <Box display="flex" alignItems={"center"} gap={0.5} mt={1.5}>

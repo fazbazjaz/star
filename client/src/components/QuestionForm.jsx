@@ -95,7 +95,7 @@ const QuestionForm = ({
           <Box display={"flex"} alignItems={"center"} gap={0.5} mb={1}>
             <HelpOutlinedIcon fontSize="medium" color="primary" />
             <Typography variant={"questionformtitle"} color={"primary"}>
-              Add your Question
+              {questionId ? "Edit your Question" : "Add your Question"}
             </Typography>
           </Box>
           <TextareaAutosize
