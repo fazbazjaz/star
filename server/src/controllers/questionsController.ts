@@ -527,7 +527,7 @@ export const deleteCommentHandler = async (req: Request, res: Response) => {
   try {
     console.log("SQL STARTS RUNNING HERE");
     const deleteCommentQuery = await deleteComment(
-      questionId,
+      // questionId,
       answerId,
       commentId
     );

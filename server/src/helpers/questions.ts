@@ -1,6 +1,6 @@
 import { database } from "../database/connection";
 import { questions, answers, comments } from "../database/schema";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 export const getAllQuestions = async () => {
   return await database.select().from(questions);
@@ -123,7 +123,7 @@ export const createComment = async (
 };
 
 export const deleteComment = async (
-  questionId: number,
+  // questionId: number,
   answerId: number,
   commentId: number
 ) => {
