@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -7,26 +7,33 @@ import {
   TextareaAutosize,
   Typography,
 } from "@mui/material";
-import SaveAsRoundedIcon from "@mui/icons-material/SaveAsRounded";
-import putQuestion from "../api/putQuestion";
+import HelpOutlinedIcon from "@mui/icons-material/HelpOutlined";
+import SendIcon from "@mui/icons-material/Send";
+import postQuestion from "../api/postQuestion";
 import {
-  consistentBackdropFilter,
-  consistentBgColor,
   consistentBorder,
   consistentBorderRadius,
+  consistentBgColor,
   consistentBoxShadow,
+  consistentBackdropFilter,
   consistentFormFieldBackgroundColor,
   consistentFormFieldBorder,
 } from "../themes/ConsistentStyles";
+import putQuestion from "../api/putQuestion";
 
-const EditQuestionForm = ({ questionId, originalQuestion, setIsEditing }) => {
-  const [editedQuestion, setEditedQuestion] = useState(originalQuestion);
-  const [editedQuestionValidation, setEditedQuestionValidation] =
-    useState(undefined);
+const QuestionForm = ({
+  setShowAddQuestionForm,
+  questionId,
+  originalQuestion,
+  setIsEditing,
+}) => {
+  const [question, setQuestion] = useState(questionId ? originalQuestion : "");
+
+  const [questionValidation, setQuestionValidation] = useState(undefined);
 
   const changeHandler = (event) => {
-    setEditedQuestion(event.target.value);
-    setEditedQuestionValidation(
+    setQuestion(event.target.value);
+    setQuestionValidation(
       event.target.value.trim().length > 10 &&
         event.target.value.trim().length < 500
     );
@@ -34,35 +41,41 @@ const EditQuestionForm = ({ questionId, originalQuestion, setIsEditing }) => {
 
   const queryClient = useQueryClient();
 
-  const editQuestionMutation = useMutation({
-    mutationFn: () => putQuestion(questionId, editedQuestion),
+  const questionMutation = useMutation({
+    mutationFn: () =>
+      questionId ? putQuestion(questionId, question) : postQuestion(question),
     onSuccess: () => {
-      queryClient.refetchQueries(["question", questionId]);
-      setEditedQuestionValidation(undefined);
+      queryClient.refetchQueries(["questions"]);
+      setQuestion("");
+      setQuestionValidation(undefined);
       setTimeout(() => {
-        setIsEditing(false);
-      }, 1500);
+        if (questionId) {
+          setIsEditing(false);
+        } else {
+          setShowAddQuestionForm((prev) => !prev);
+        }
+      }, 1000);
     },
   });
 
-  const { isPending, isError, error, isSuccess } = editQuestionMutation;
+  const { isPending, isError, error, isSuccess } = questionMutation;
 
   const submitHandler = async (event) => {
     event.preventDefault();
-    if (editedQuestionValidation === undefined) {
-      setEditedQuestionValidation(false);
+    if (questionValidation === undefined) {
+      setQuestion(false);
     }
-    if (!editedQuestionValidation) {
+    if (!questionValidation) {
       return;
     }
-    if (editedQuestionValidation) {
-      editQuestionMutation.mutate();
+    if (questionValidation) {
+      questionMutation.mutate();
     }
   };
 
   return (
     <Box
-      mt={1}
+      my={1}
       p={3}
       border={consistentBorder}
       borderRadius={consistentBorderRadius}
@@ -77,18 +90,24 @@ const EditQuestionForm = ({ questionId, originalQuestion, setIsEditing }) => {
           display: "grid",
         }}>
         <FormControl>
+          <Box display={"flex"} alignItems={"center"} gap={0.5} mb={1}>
+            <HelpOutlinedIcon fontSize="medium" color="primary" />
+            <Typography variant={"questionformtitle"} color={"primary"}>
+              Add your Question
+            </Typography>
+          </Box>
           <TextareaAutosize
-            aria-label="Edit your question"
+            id="situation"
+            aria-label="Add your Question"
             minRows={2}
-            value={editedQuestion}
+            placeholder="Please carefully type out your Question"
+            value={question}
             onChange={changeHandler}
             style={{
               padding: "0.5rem",
               backgroundColor: consistentFormFieldBackgroundColor,
               border: `1px solid ${
-                editedQuestionValidation === false
-                  ? "red"
-                  : consistentFormFieldBorder
+                questionValidation === false ? "red" : consistentFormFieldBorder
               }`,
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -96,20 +115,27 @@ const EditQuestionForm = ({ questionId, originalQuestion, setIsEditing }) => {
               resize: "none",
             }}
           />
-          {editedQuestionValidation === false && (
+          {questionValidation === false && (
             <Typography color="error">
-              Your Question needs to be between 10-500 Characters
+              Your Comment needs to be between 10-500 Characters
             </Typography>
           )}
-          <Box display={"flex"} alignItems={"center"} gap={1} mt={1}>
-            <Button variant="contained" onClick={() => setIsEditing(false)}>
+          <Box display={"flex"} alignItems={"center"} gap={1} mt={1.5}>
+            <Button
+              variant={"contained"}
+              onClick={() =>
+                questionId
+                  ? setIsEditing(false)
+                  : setShowAddQuestionForm((prev) => !prev)
+              }>
               Cancel
             </Button>
             <Button
-              variant="contained"
-              type="submit"
-              disabled={isPending || !editedQuestionValidation}>
-              Save <SaveAsRoundedIcon />
+              variant={"contained"}
+              type={"submit"}
+              endIcon={<SendIcon />}
+              disabled={isPending || !questionValidation}>
+              Add Question
             </Button>
           </Box>
           <Box>
@@ -130,7 +156,7 @@ const EditQuestionForm = ({ questionId, originalQuestion, setIsEditing }) => {
                 border={consistentBorder}
                 borderRadius={consistentBorderRadius}
                 bgcolor={consistentBgColor}>
-                ✅ Your Question was successfully updated! Thank you
+                ✅ Your Question was successfully added! Thank you
               </Typography>
             )}
             {isError && (
@@ -150,4 +176,4 @@ const EditQuestionForm = ({ questionId, originalQuestion, setIsEditing }) => {
   );
 };
 
-export default EditQuestionForm;
+export default QuestionForm;
