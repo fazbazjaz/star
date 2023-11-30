@@ -16,26 +16,28 @@ import {
 export const questionsRouter = express.Router();
 
 // Questions
-questionsRouter.get("/", authMiddleware, getAllQuestionsHandler);
-questionsRouter.post("/", authMiddleware, createQuestionHandler);
-questionsRouter.put("/:id", authMiddleware, editQuestionHandler);
-questionsRouter.delete("/:id", authMiddleware, deleteQuestionHandler);
+questionsRouter
+  .route("/")
+  .get(authMiddleware, getAllQuestionsHandler)
+  .post(authMiddleware, createQuestionHandler);
 
-questionsRouter.get("/:id", authMiddleware, findOneQuestionHandler);
-questionsRouter.get("/user/:id", authMiddleware, findAllQuestionsByUserHandler);
+questionsRouter
+  .route("/:id")
+  .put(authMiddleware, editQuestionHandler)
+  .delete(authMiddleware, deleteQuestionHandler)
+  .get(authMiddleware, findOneQuestionHandler);
+
+questionsRouter
+  .route("/user/:id")
+  .get(authMiddleware, findAllQuestionsByUserHandler);
 
 // Answers
-questionsRouter.post("/:id/answers", authMiddleware, createAnswerHandler);
-questionsRouter.delete(
-  "/:id/answers/:answerId",
-  authMiddleware,
-  deleteAnswerHandler
-);
-questionsRouter.put(
-  "/:id/answers/:answerId",
-  authMiddleware,
-  editAnswerHandler
-);
+questionsRouter.route("/:id/answers").post(authMiddleware, createAnswerHandler);
+
+questionsRouter
+  .route("/:id/answers/:answerId")
+  .delete(authMiddleware, deleteAnswerHandler)
+  .put(authMiddleware, editAnswerHandler);
 
 // Comments
 questionsRouter.post(
