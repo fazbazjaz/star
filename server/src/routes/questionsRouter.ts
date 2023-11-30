@@ -9,27 +9,35 @@ import {
   createAnswerHandler,
   createCommentHandler,
   editQuestionHandler,
-  deleteAnswerHandler
+  deleteAnswerHandler,
+  editAnswerHandler
 } from "../controllers/questionsController";
 
 export const questionsRouter = express.Router();
 
 // Questions
-questionsRouter.get("/", authMiddleware, getAllQuestionsHandler);
-questionsRouter.post("/", authMiddleware, createQuestionHandler);
-questionsRouter.put("/:id", authMiddleware, editQuestionHandler);
-questionsRouter.delete("/:id", authMiddleware, deleteQuestionHandler);
+questionsRouter
+  .route("/")
+  .get(authMiddleware, getAllQuestionsHandler)
+  .post(authMiddleware, createQuestionHandler);
 
-questionsRouter.get("/:id", authMiddleware, findOneQuestionHandler);
-questionsRouter.get("/user/:id", authMiddleware, findAllQuestionsByUserHandler);
+questionsRouter
+  .route("/:id")
+  .get(authMiddleware, findOneQuestionHandler)
+  .put(authMiddleware, editQuestionHandler)
+  .delete(authMiddleware, deleteQuestionHandler);
+
+questionsRouter
+  .route("/user/:id")
+  .get(authMiddleware, findAllQuestionsByUserHandler);
 
 // Answers
-questionsRouter.post("/:id/answers", authMiddleware, createAnswerHandler);
-questionsRouter.delete(
-  "/:id/answers/:answerId",
-  authMiddleware,
-  deleteAnswerHandler
-);
+questionsRouter.route("/:id/answers").post(authMiddleware, createAnswerHandler);
+
+questionsRouter
+  .route("/:id/answers/:answerId")
+  .put(authMiddleware, editAnswerHandler)
+  .delete(authMiddleware, deleteAnswerHandler);
 
 // Comments
 questionsRouter.post(
