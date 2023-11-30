@@ -9,7 +9,8 @@ import {
   createAnswerHandler,
   createCommentHandler,
   editQuestionHandler,
-  deleteAnswerHandler
+  deleteAnswerHandler,
+  editAnswerHandler
 } from "../controllers/questionsController";
 
 export const questionsRouter = express.Router();
@@ -29,6 +30,11 @@ questionsRouter.delete(
   "/:id/answers/:answerId",
   authMiddleware,
   deleteAnswerHandler
+);
+questionsRouter.put(
+  "/:id/answers/:answerId",
+  authMiddleware,
+  editAnswerHandler
 );
 
 // Comments
