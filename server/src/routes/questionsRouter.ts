@@ -10,6 +10,7 @@ import {
   createCommentHandler,
   editQuestionHandler,
   deleteAnswerHandler,
+  deleteCommentHandler,
   editAnswerHandler
 } from "../controllers/questionsController";
 
@@ -40,8 +41,10 @@ questionsRouter
   .delete(authMiddleware, deleteAnswerHandler);
 
 // Comments
-questionsRouter.post(
-  "/:id/answers/:answerId/comments",
-  authMiddleware,
-  createCommentHandler
-);
+questionsRouter
+  .route("/:id/answers/:answerId/comments")
+  .post(authMiddleware, createCommentHandler);
+
+questionsRouter
+  .route("/:id/answers/:answerId/comments/:commentId")
+  .delete(authMiddleware, deleteCommentHandler);

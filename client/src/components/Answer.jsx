@@ -202,7 +202,11 @@ const Answer = ({ answerData }) => {
           </Box>
           {answerData.comments &&
             answerData.comments.map((commentData) => (
-              <Comment key={commentData.id} commentData={commentData} />
+              <Comment
+                key={commentData.id}
+                questionId={answerData.questionId}
+                commentData={commentData}
+              />
             ))}
           <Box mt={1.5}>
             <Button
