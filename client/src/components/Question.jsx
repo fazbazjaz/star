@@ -24,9 +24,7 @@ const Question = ({
   showAddAnswerForm,
   setShowAddAnswerForm,
 }) => {
-  console.log("Question questionData:", questionData);
-
-  const { userCookie } = useContext(AuthContext);
+  const { authenticatedUser } = useContext(AuthContext);
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -108,14 +106,14 @@ const Question = ({
               )
             </Typography>
             <Box marginLeft={"auto"}>
-              {questionData.userId === userCookie.id && (
+              {questionData.userId === authenticatedUser.id && (
                 <IconButton
                   onClick={() => handleEdit(questionData.id)}
                   color="primary">
                   <EditOutlinedIcon />
                 </IconButton>
               )}
-              {questionData.userId === userCookie.id && (
+              {questionData.userId === authenticatedUser.id && (
                 <IconButton
                   onClick={() => handleDelete(questionData.id)}
                   color="primary">

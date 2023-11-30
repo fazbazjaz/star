@@ -6,7 +6,6 @@ import {
   useMemo,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import getCookieValue from "../utils/getCookieValue";
 
 export const AuthContext = createContext();
 
@@ -15,32 +14,14 @@ export const AuthProvider = ({ children }) => {
   // Declare the Global Google Object
   /* global google */
 
-  // Store the "user" Cookie in React State
-  const [userCookie, setUserCookie] = useState(null);
+  const [authenticatedUser, setAuthenticatedUser] = useState(null);
 
   const navigate = useNavigate();
 
-  const getUserCookieFromBrowser = useCallback(() => {
-    // Try to retrieve the "user" Cookie from the Browser
-    const userCookieFromBrowser = getCookieValue("user");
-
-    // If there is no "user" Cookie return null
-    if (
-      !userCookieFromBrowser ||
-      typeof userCookieFromBrowser === "undefined"
-    ) {
-      return null;
-    }
-
-    // Parse the Cookie into a JavaScript Object
-    const userDataFromUserCookie = JSON.parse(userCookieFromBrowser);
-
-    return userDataFromUserCookie;
-  }, []);
-
-  const fetchCookies = useCallback(async (googleIdToken) => {
+  const fetchCustomJWTCookie = useCallback(async (googleIdToken) => {
     try {
       // Send the Google ID Token to the backend in the Request Header
+      // and Receive back an HTTP-Only Cookie with a CustomJWT inside
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_URL}/api/auth/google/idtoken`,
         {
@@ -52,12 +33,38 @@ export const AuthProvider = ({ children }) => {
           credentials: "include",
         }
       );
-
+      // console.log("fetchCustomJWTCookie response:", response);
       if (!response.ok) {
-        throw response;
+        throw new Error(
+          `Error: ${response.status} ${response.statusText} : fetchCustomJWTCookie failed`
+        );
       }
     } catch (error) {
-      console.error("AuthContext fetchCookies error:", error);
+      console.error("AuthProvider fetchCookieWithCustomJWT error:", error);
+    }
+  }, []);
+
+  const fetchUser = useCallback(async () => {
+    try {
+      // Send a Request to the backend with the HTTP-Only Cookie (and CustomJWT inside) automatically included
+      // Receive back the User's Information
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/api/auth/user`,
+        {
+          credentials: "include",
+        }
+      );
+      // console.log("fetchUser response:", response);
+      if (!response.ok) {
+        throw new Error(
+          `Error: ${response.status} ${response.statusText} : fetchUser failed`
+        );
+      }
+      const data = await response.json();
+      // console.log("fetchUser data:", data);
+      return data;
+    } catch (error) {
+      console.error("AuthProvider fetchUser error:", error);
     }
   }, []);
 
@@ -66,34 +73,38 @@ export const AuthProvider = ({ children }) => {
       client_id: `${import.meta.env.VITE_GOOGLE_CLIENT_ID}`,
       callback: async (googleIdTokenResponse) => {
         try {
+          // Receive the Google ID Token from Google
           const googleIdToken = googleIdTokenResponse.credential;
 
-          // Send the Goole ID Token to our API, then receive back:
-          // [1] an HTTP Only Cookie "customJWT"
-          // [2] a Cookie "user"
-          await fetchCookies(googleIdToken);
+          // Send the Google ID Token to the backend in the Request Header
+          // Receive back an HTTP-Only Cookie with a CustomJWT inside
+          await fetchCustomJWTCookie(googleIdToken);
 
-          // Get the "user" Cookie from the Browser
-          const userCookie = getUserCookieFromBrowser();
+          // Send a GET Request to /api/auth/user including our CustomJWT
+          // Receive back a JSON body of User Information
+          const user = await fetchUser();
 
-          if (!userCookie) {
-            throw "No user Cookie found in the Browser";
+          if (!user) {
+            throw new Error("initializeGoogleSignIn callback error - No User");
           }
 
-          // Set the "user" Cookie into React State
-          setUserCookie(userCookie);
+          // Set "authenticatedUser" into LocalStorage
+          localStorage.setItem("authenticatedUser", JSON.stringify(user));
+
+          // Set the authenticatedUser React State
+          setAuthenticatedUser(user);
 
           // Navigate to the Profile Page
           navigate("/profile");
         } catch (error) {
           console.error(
-            "AuthContext initializeGoogleSignIn callback error",
+            "AuthProvider initializeGoogleSignIn callback error",
             error
           );
         }
       },
     });
-  }, [fetchCookies, getUserCookieFromBrowser, navigate]);
+  }, [fetchCustomJWTCookie, fetchUser, navigate]);
 
   const promptGoogleSignIn = useCallback(async () => {
     google.accounts.id.prompt();
@@ -105,15 +116,15 @@ export const AuthProvider = ({ children }) => {
   }, [promptGoogleSignIn]);
 
   const logout = useCallback(() => {
-    // Remove the "user" Cookie from the Browser
-    document.cookie = "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
-    // Remove the "g_state" Cookie Google Sign In Creates
+    // Remove the "g_state" Cookie that Google Sign In creates
     document.cookie =
       "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
-    // Clear the userCookie React State
-    setUserCookie(null);
+    // Clear the "authenticatedUser" from Local Storage
+    localStorage.removeItem("authenticatedUser");
+
+    // Clear the authenticatedUser React State
+    setAuthenticatedUser(null);
 
     // Navigate to the Home Page
     navigate("/");
@@ -123,33 +134,34 @@ export const AuthProvider = ({ children }) => {
     () => ({
       login,
       logout,
-      userCookie,
+      authenticatedUser,
     }),
-    [login, logout, userCookie]
+    [login, logout, authenticatedUser]
   );
 
   useEffect(() => {
-    // On Page Load
+    // Get "authenticatedUser" from LocalStorage
+    const authenticatedUserLocalStorage =
+      localStorage.getItem("authenticatedUser");
+    console.log(
+      "AuthProvider useEffect authenticatedUserLocalStorage:",
+      authenticatedUserLocalStorage
+    );
 
-    // Remove the "g_state" Cookie Google Sign In Creates
-    document.cookie =
-      "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
-    // Try to retrieve the "user" Cookie from the Browser
-    const existingUserCookie = getUserCookieFromBrowser();
-    // console.log("useEffect existingUserCookie:", existingUserCookie);
-
-    // If the "user" Cookie exists
-    if (existingUserCookie) {
-      // set the "user" Cookie into React State
-      setUserCookie(existingUserCookie);
-      // and return
+    // If there is a "user"
+    if (authenticatedUserLocalStorage) {
+      // update the authenticatedUser React State with that user
+      setAuthenticatedUser(JSON.parse(authenticatedUserLocalStorage));
       return;
     }
 
-    // Initialize the Google Sign In Client
-    initializeGoogleSignIn();
-  }, [getUserCookieFromBrowser, initializeGoogleSignIn, navigate]);
+    // If there is no "authenticatedUser"
+    if (!authenticatedUserLocalStorage) {
+      // Initialize the Google Sign In Client
+      initializeGoogleSignIn();
+      return;
+    }
+  }, [initializeGoogleSignIn, navigate]);
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

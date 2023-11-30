@@ -19,7 +19,7 @@ import {
 } from "../themes/ConsistentStyles";
 
 const Answer = ({ answerData }) => {
-  const { userCookie } = useContext(AuthContext);
+  const { authenticatedUser } = useContext(AuthContext);
 
   const [showAddCommentForm, setShowAddCommentForm] = useState(false);
 
@@ -68,7 +68,7 @@ const Answer = ({ answerData }) => {
               by userId: {answerData.userId}
             </Typography>
             <Box marginLeft={"auto"}>
-              {answerData.userId === userCookie.id && (
+              {answerData.userId === authenticatedUser.id && (
                 <IconButton
                   onClick={() => handleDelete(answerData.id)}
                   color="primary">

@@ -5,8 +5,7 @@ import LoginLogoutButton from "./LoginLogoutButton";
 import { AuthContext } from "../context/AuthContext";
 
 const Navigation = () => {
-  // get the userCookie from AuthContext
-  const { userCookie } = useContext(AuthContext);
+  const { authenticatedUser } = useContext(AuthContext);
 
   return (
     <Box display={"flex"} flexWrap={"wrap"} gap={1}>
@@ -16,7 +15,7 @@ const Navigation = () => {
       <Button component={NavLink} to={"/about"} variant="contained">
         About
       </Button>
-      {userCookie && (
+      {authenticatedUser && (
         <>
           <Button component={NavLink} to={"/profile"} variant="contained">
             Profile

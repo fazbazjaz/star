@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { Secret, JwtPayload } from "jsonwebtoken";
 import { CustomJWTPayload } from "../types/types";
 import { logger } from "../logger";
 
@@ -37,7 +37,7 @@ export const authMiddleware = (
     const verifiedCustomJWT = jwt.verify(
       customJWT,
       process.env.JWT_SECRET as Secret
-    );
+    ) as JwtPayload;
     logger.info({
       message: "authMiddleware verifiedCustomJWT",
       value: customJWT
