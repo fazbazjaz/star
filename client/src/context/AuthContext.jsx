@@ -155,7 +155,7 @@ export const AuthProvider = ({ children }) => {
     const now = Date.now();
     const customJWTExpirationTime =
       authenticatedUserLocalStorage.expirationTime * 1000;
-    const isCustomJWTExpired = customJWTExpirationTime > now;
+    const isCustomJWTExpired = customJWTExpirationTime <= now;
 
     // If there is an "authenticatedUser" but the CustomJWT has expired
     if (authenticatedUserLocalStorage && isCustomJWTExpired) {
@@ -170,7 +170,7 @@ export const AuthProvider = ({ children }) => {
     if (authenticatedUserLocalStorage && !isCustomJWTExpired) {
       // If there is an "authenticatedUser"
       // Update the authenticatedUser React State with that user
-      setAuthenticatedUser(JSON.parse(authenticatedUserLocalStorage));
+      setAuthenticatedUser(authenticatedUserLocalStorage);
       return;
     }
   }, [initializeGoogleSignIn, navigate]);
