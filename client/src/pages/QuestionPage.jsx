@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import Question from "../components/Question";
-import AddAnswerForm from "../components/AddAnswerForm";
+import AnswerForm from "../components/AnswerForm";
 import Answer from "../components/Answer";
 import getQuestionById from "../api/getQuestionById";
 import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
@@ -49,7 +49,7 @@ const QuestionPage = () => {
               setShowAddAnswerForm={setShowAddAnswerForm}
             />
             {showAddAnswerForm && (
-              <AddAnswerForm
+              <AnswerForm
                 questionId={questionData.id}
                 setShowAddAnswerForm={setShowAddAnswerForm}
               />

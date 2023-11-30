@@ -7,7 +7,6 @@ import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { AuthContext } from "../context/AuthContext";
-import EditQuestionForm from "./EditQuestionForm";
 import deleteQuestion from "../api/deleteQuestion";
 import formatDate from "../utils/formatDate";
 import {
@@ -18,14 +17,13 @@ import {
   consistentBackdropFilter,
   consistentLinkColor,
 } from "../themes/ConsistentStyles";
+import QuestionForm from "./QuestionForm";
 
 const Question = ({
   questionData,
   showAddAnswerForm,
   setShowAddAnswerForm,
 }) => {
-  console.log("Question questionData:", questionData);
-
   const { userCookie } = useContext(AuthContext);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -142,7 +140,7 @@ const Question = ({
               </Typography>
             )}
             {isEditing && (
-              <EditQuestionForm
+              <QuestionForm
                 questionId={questionData.id}
                 originalQuestion={questionData.question}
                 setIsEditing={setIsEditing}

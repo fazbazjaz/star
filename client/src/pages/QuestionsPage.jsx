@@ -4,7 +4,7 @@ import { Box, Typography, Button } from "@mui/material";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import Question from "../components/Question";
-import AddQuestionForm from "../components/AddQuestionForm";
+import QuestionForm from "../components/QuestionForm";
 import getAllQuestions from "../api/getAllQuestions";
 import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
@@ -50,7 +50,7 @@ const QuestionsPage = () => {
             </Button>
           </Box>
           {showAddQuestionForm && (
-            <AddQuestionForm setShowAddQuestionForm={setShowAddQuestionForm} />
+            <QuestionForm setShowAddQuestionForm={setShowAddQuestionForm} />
           )}
           <Box display={"grid"} gap={2} mt={1}>
             {allQuestionsData.map((questionData) => (

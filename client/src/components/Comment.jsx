@@ -1,9 +1,11 @@
-// version2 my code
-import { Box, Typography, Button } from "@mui/material";
-import MessageRoundedIcon from "@mui/icons-material/MessageRounded";
+import { useContext } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import formatDate from "../utils/formatDate";
+import { AuthContext } from "../context/AuthContext";
+import { Box, Typography, IconButton } from "@mui/material";
+import MessageRoundedIcon from "@mui/icons-material/MessageRounded";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import deleteComment from "../api/deleteComment";
+import formatDate from "../utils/formatDate";
 import {
   consistentBorder,
   consistentBorderRadius,
@@ -12,25 +14,32 @@ import {
   consistentBackdropFilter,
 } from "../themes/ConsistentStyles";
 
-const Comment = ({ commentData }) => {
+const Comment = ({ commentData, questionId }) => {
+  const { userCookie } = useContext(AuthContext);
+
+  console.log("questionId", questionId);
+
+  console.log("commentData:", commentData);
+  const answerId = commentData.answerId;
+  console.log("answerId", answerId);
+  const commentId = commentData.id;
+  console.log("commentId", commentId);
+
   const queryClient = useQueryClient();
 
-  const deleteCommentMutation = useMutation(deleteComment);
+  const deleteCommentMutation = useMutation({
+    mutationFn: () => deleteComment(questionId, answerId, commentId),
+    onError: (error) => {
+      console.log("deleteCommentMutation onError");
+      console.error(error);
+    },
+    onSuccess: () => {
+      queryClient.refetchQueries(["questions", questionId]);
+    },
+  });
 
-  const handleDeleteComment = async () => {
-    try {
-      await deleteCommentMutation.mutateAsync({
-        questionId: commentData.questionId,
-        answerId: commentData.answerId,
-        commentId: commentData.id,
-      });
-
-      // Invalidate and refetch data after deletion
-      queryClient.invalidateQueries(["questions", commentData.questionId]);
-    } catch (error) {
-      console.error("Error deleting comment:", error);
-      // Handle error, show a notification, etc.
-    }
+  const handleDelete = () => {
+    deleteCommentMutation.mutate();
   };
 
   return (
@@ -55,6 +64,17 @@ const Comment = ({ commentData }) => {
           <Typography variant={"body2"}>
             by userId: {commentData.userId}
           </Typography>
+          <Box marginLeft={"auto"}>
+            {commentData.userId === userCookie.id && (
+              <>
+                <IconButton
+                  onClick={() => handleDelete(commentData.id)}
+                  color="primary">
+                  <DeleteOutlineIcon />
+                </IconButton>
+              </>
+            )}
+          </Box>
         </Box>
         <Box>
           <Typography mt={0.5} variant={"commentbody"}>
@@ -73,164 +93,9 @@ const Comment = ({ commentData }) => {
             created {formatDate(commentData.createdAt)}
           </Typography>
         </Box>
-        <Button onClick={handleDeleteComment} variant="outlined" color="error">
-          Delete
-        </Button>
       </Box>
     </>
   );
 };
 
 export default Comment;
-
-// version1 my code
-// import { Box, Typography, Button } from "@mui/material";
-// import MessageRoundedIcon from "@mui/icons-material/MessageRounded";
-// import { useMutation, useQueryClient } from "@tanstack/react-query";
-// import formatDate from "../utils/formatDate";
-// import deleteComment from "../api/deleteComment"; // Import the deleteComment function
-// import {
-//   consistentBorder,
-//   consistentBorderRadius,
-//   consistentBgColor,
-//   consistentBoxShadow,
-//   consistentBackdropFilter,
-// } from "../themes/ConsistentStyles";
-
-// const Comment = ({ commentData }) => {
-//   const queryClient = useQueryClient();
-
-//   const deleteCommentMutation = useMutation(deleteComment);
-
-//   const handleDeleteComment = async () => {
-//     try {
-//       await deleteCommentMutation.mutateAsync({
-//         questionId: commentData.questionId,
-//         answerId: commentData.answerId,
-//         commentId: commentData.id,
-//       });
-
-//       // Invalidate and refetch data after deletion
-//       queryClient.invalidateQueries(["questions", commentData.questionId]);
-//     } catch (error) {
-//       console.error("Error deleting comment:", error);
-//       // Handle error, show a notification, etc.
-//     }
-//   };
-
-//   return (
-//     <>
-//       {commentData && (
-//         <Box
-//           mt={1}
-//           py={1}
-//           px={2}
-//           border={consistentBorder}
-//           borderRadius={consistentBorderRadius}
-//           bgcolor={consistentBgColor}
-//           boxShadow={consistentBoxShadow}
-//           sx={{
-//             backdropFilter: consistentBackdropFilter,
-//           }}>
-//           <Box display={"flex"} alignItems={"center"} gap={0.5}>
-//             <MessageRoundedIcon fontSize={"0.75rem"} color="primary" />
-//             <Typography variant={"commentitle"} color={"primary"}>
-//               Comment
-//             </Typography>
-//             <Typography variant={"body2"}>(id: {commentData.id})</Typography>
-//             <Typography variant={"body2"}>
-//               by userId: {commentData.userId}
-//             </Typography>
-//           </Box>
-//           <Box>
-//             <Typography mt={0.5} variant={"commentbody"}>
-//               {commentData.comment}
-//             </Typography>
-//           </Box>
-//           <Box
-//             display={"flex"}
-//             flexDirection={"column"}
-//             justifyContent={"flex-end"}
-//             alignItems={"flex-end"}>
-//             <Typography variant={"body2"}>
-//               updated {formatDate(commentData.updatedAt)}
-//             </Typography>
-//             <Typography variant={"body2"}>
-//               created {formatDate(commentData.createdAt)}
-//             </Typography>
-//             <Button
-//               onClick={handleDeleteComment}
-//               variant="outlined"
-//               color="error">
-//               Delete
-//             </Button>
-//           </Box>
-//         </Box>
-//       )}
-//     </>
-//   );
-// };
-
-// export default Comment;
-
-// version original
-// import { Box, Typography } from "@mui/material";
-// import MessageRoundedIcon from "@mui/icons-material/MessageRounded";
-// import formatDate from "../utils/formatDate";
-// import {
-//   consistentBorder,
-//   consistentBorderRadius,
-//   consistentBgColor,
-//   consistentBoxShadow,
-//   consistentBackdropFilter,
-// } from "../themes/ConsistentStyles";
-
-// const Comment = ({ commentData }) => {
-//   return (
-//     <>
-//       {commentData && (
-//         <Box
-//           mt={1}
-//           py={1}
-//           px={2}
-//           border={consistentBorder}
-//           borderRadius={consistentBorderRadius}
-//           bgcolor={consistentBgColor}
-//           boxShadow={consistentBoxShadow}
-//           sx={{
-//             backdropFilter: consistentBackdropFilter,
-//           }}>
-//           <Box display={"flex"} alignItems={"center"} gap={0.5}>
-//             <MessageRoundedIcon fontSize={"0.75rem"} color="primary" />
-//             <Typography variant={"commentitle"} color={"primary"}>
-//               Comment
-//             </Typography>
-//             <Typography variant={"body2"}>(id: {commentData.id})</Typography>
-//             <Typography variant={"body2"}>
-//               by userId: {commentData.userId}
-//             </Typography>
-//           </Box>
-//           <Box>
-//             <Typography mt={0.5} variant={"commentbody"}>
-//               {commentData.comment}
-//             </Typography>
-//           </Box>
-//           <Box
-//             display={"flex"}
-//             flexDirection={"column"}
-//             justifyContent={"flex-end"}
-//             alignItems={"flex-end"}>
-//             <Typography variant={"body2"}>
-//               updated {formatDate(commentData.updatedAt)}
-//             </Typography>
-//             <Typography variant={"body2"}>
-//               created {formatDate(commentData.createdAt)}
-//             </Typography>
-//           </Box>
-//         </Box>
-//       )}
-//     </>
-//   );
-// };
-
-// export default Comment;

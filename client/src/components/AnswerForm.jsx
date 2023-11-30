@@ -20,19 +20,29 @@ import {
   consistentFormFieldBackgroundColor,
   consistentFormFieldBorder,
 } from "../themes/ConsistentStyles";
+import putAnswer from "../api/putAnswer";
 
-const AddAnswerForm = ({ questionId, setShowAddAnswerForm }) => {
+const AnswerForm = ({
+  questionId,
+  setShowAddAnswerForm,
+  answerId,
+  originalSituation,
+  originalTask,
+  originalAction,
+  originalResult,
+  setIsEditing,
+}) => {
   const [answer, setAnswer] = useState({
-    situation: "",
-    task: "",
-    action: "",
-    result: "",
+    situation: answerId ? originalSituation : "",
+    task: answerId ? originalTask : "",
+    action: answerId ? originalAction : "",
+    result: answerId ? originalResult : "",
   });
   const [answerValidation, setAnswerValidation] = useState({
-    situation: undefined,
-    task: undefined,
-    action: undefined,
-    result: undefined,
+    situation: answerId ? true : undefined,
+    task: answerId ? true : undefined,
+    action: answerId ? true : undefined,
+    result: answerId ? true : undefined,
   });
 
   const changeHandler = (event) => {
@@ -51,8 +61,11 @@ const AddAnswerForm = ({ questionId, setShowAddAnswerForm }) => {
 
   const queryClient = useQueryClient();
 
-  const addAnswerMutation = useMutation({
-    mutationFn: () => postAnswer(questionId, answer),
+  const answerMutation = useMutation({
+    mutationFn: () =>
+      answerId
+        ? putAnswer(questionId, answerId, answer)
+        : postAnswer(questionId, answer),
     onSuccess: () => {
       queryClient.refetchQueries(["question", questionId]);
       setAnswer({
@@ -68,12 +81,16 @@ const AddAnswerForm = ({ questionId, setShowAddAnswerForm }) => {
         result: undefined,
       });
       setTimeout(() => {
-        setShowAddAnswerForm((prev) => !prev);
+        if (answerId) {
+          setIsEditing(false);
+        } else {
+          setShowAddAnswerForm((prev) => !prev);
+        }
       }, 1000);
     },
   });
 
-  const { isPending, isError, error, isSuccess } = addAnswerMutation;
+  const { isPending, isError, error, isSuccess } = answerMutation;
 
   const submitHandler = (event) => {
     event.preventDefault();
@@ -90,9 +107,18 @@ const AddAnswerForm = ({ questionId, setShowAddAnswerForm }) => {
     if (!isFormValid) {
       return;
     }
-    if (isFormValid) {
-      addAnswerMutation.mutate();
+    if (answerId) {
+      if (
+        answer.situation === originalSituation &&
+        answer.task === originalTask &&
+        answer.action === originalAction &&
+        answer.result === originalResult
+      ) {
+        setIsEditing(false);
+        return;
+      }
     }
+    answerMutation.mutate();
   };
 
   return (
@@ -114,7 +140,7 @@ const AddAnswerForm = ({ questionId, setShowAddAnswerForm }) => {
           <Box display={"flex"} alignItems={"center"} gap={0.5}>
             <RateReviewRoundedIcon fontSize="medium" color="primary" />
             <Typography variant={"answerformtitle"} color={"primary"}>
-              Add your Answer
+              {answerId ? "Edit your Answer" : "Add your Answer"}
             </Typography>
           </Box>
           <Box display="flex" alignItems={"center"} gap={0.5} mt={1.5}>
@@ -240,7 +266,11 @@ const AddAnswerForm = ({ questionId, setShowAddAnswerForm }) => {
           <Box display={"flex"} gap={1} mt={2}>
             <Button
               variant={"contained"}
-              onClick={() => setShowAddAnswerForm((prev) => !prev)}>
+              onClick={() =>
+                answerId
+                  ? setIsEditing(false)
+                  : setShowAddAnswerForm((prev) => !prev)
+              }>
               Cancel
             </Button>
             <Button
@@ -292,4 +322,4 @@ const AddAnswerForm = ({ questionId, setShowAddAnswerForm }) => {
   );
 };
 
-export default AddAnswerForm;
+export default AnswerForm;

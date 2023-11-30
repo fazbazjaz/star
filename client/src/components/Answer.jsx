@@ -4,6 +4,7 @@ import { Box, Typography, Button, IconButton } from "@mui/material";
 import PsychologyAltRoundedIcon from "@mui/icons-material/PsychologyAltRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import SmsOutlinedIcon from "@mui/icons-material/SmsOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { AuthContext } from "../context/AuthContext";
 import AddCommentForm from "./AddCommentForm";
@@ -17,11 +18,17 @@ import {
   consistentBoxShadow,
   consistentBackdropFilter,
 } from "../themes/ConsistentStyles";
+import AnswerForm from "./AnswerForm";
 
 const Answer = ({ answerData }) => {
   const { userCookie } = useContext(AuthContext);
+  const [isEditing, setIsEditing] = useState(false);
 
   const [showAddCommentForm, setShowAddCommentForm] = useState(false);
+
+  const handleEdit = async () => {
+    setIsEditing(true);
+  };
 
   const questionId = answerData.questionId;
   const answerId = answerData.id;
@@ -69,95 +76,116 @@ const Answer = ({ answerData }) => {
             </Typography>
             <Box marginLeft={"auto"}>
               {answerData.userId === userCookie.id && (
-                <IconButton
-                  onClick={() => handleDelete(answerData.id)}
-                  color="primary">
-                  <DeleteOutlineIcon />
-                </IconButton>
+                <>
+                  <IconButton
+                    onClick={() => handleEdit(answerData.id)}
+                    color="primary">
+                    <EditOutlinedIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleDelete(answerData.id)}
+                    color="primary">
+                    <DeleteOutlineIcon />
+                  </IconButton>
+                </>
               )}
             </Box>
           </Box>
           <Box display={"grid"} gap={1} mt={1}>
-            <Box
-              p={2}
-              border={consistentBorder}
-              borderRadius={consistentBorderRadius}
-              bgcolor={consistentBgColor}
-              boxShadow={consistentBoxShadow}
-              sx={{
-                backdropFilter: consistentBackdropFilter,
-              }}>
-              <Box display="flex" alignItems={"center"} gap={0.5}>
-                <ArrowForwardIosRoundedIcon
-                  fontSize={"small"}
-                  color={"primary"}
-                />
-                <Typography>Situation</Typography>
-              </Box>
-              <Typography mt={1.5} variant={"answerbody"}>
-                {answerData.situation}
-              </Typography>
-            </Box>
-            <Box
-              p={2}
-              border={consistentBorder}
-              borderRadius={consistentBorderRadius}
-              bgcolor={consistentBgColor}
-              boxShadow={consistentBoxShadow}
-              sx={{
-                backdropFilter: consistentBackdropFilter,
-              }}>
-              <Box display="flex" alignItems={"center"} gap={0.5}>
-                <ArrowForwardIosRoundedIcon
-                  fontSize={"small"}
-                  color={"primary"}
-                />
-                <Typography>Task</Typography>
-              </Box>
-              <Typography mt={1.5} variant={"answerbody"}>
-                {answerData.task}
-              </Typography>
-            </Box>
-            <Box
-              p={2}
-              border={consistentBorder}
-              borderRadius={consistentBorderRadius}
-              bgcolor={consistentBgColor}
-              boxShadow={consistentBoxShadow}
-              sx={{
-                backdropFilter: consistentBackdropFilter,
-              }}>
-              <Box display="flex" alignItems={"center"} gap={0.5}>
-                <ArrowForwardIosRoundedIcon
-                  fontSize={"small"}
-                  color={"primary"}
-                />
-                <Typography>Action</Typography>
-              </Box>
-              <Typography mt={1.5} variant={"answerbody"}>
-                {answerData.action}
-              </Typography>
-            </Box>
-            <Box
-              p={2}
-              border={consistentBorder}
-              borderRadius={consistentBorderRadius}
-              bgcolor={consistentBgColor}
-              boxShadow={consistentBoxShadow}
-              sx={{
-                backdropFilter: consistentBackdropFilter,
-              }}>
-              <Box display="flex" alignItems={"center"} gap={0.5}>
-                <ArrowForwardIosRoundedIcon
-                  fontSize={"small"}
-                  color={"primary"}
-                />
-                <Typography fontSize={18}>Result</Typography>
-              </Box>
-              <Typography mt={1.5} variant={"answerbody"}>
-                {answerData.result}
-              </Typography>
-            </Box>
+            {isEditing ? (
+              <AnswerForm
+                answerId={answerData.id}
+                questionId={answerData.questionId}
+                originalSituation={answerData.situation}
+                originalTask={answerData.task}
+                originalAction={answerData.action}
+                originalResult={answerData.result}
+                setIsEditing={setIsEditing}
+              />
+            ) : (
+              <>
+                <Box
+                  p={2}
+                  border={consistentBorder}
+                  borderRadius={consistentBorderRadius}
+                  bgcolor={consistentBgColor}
+                  boxShadow={consistentBoxShadow}
+                  sx={{
+                    backdropFilter: consistentBackdropFilter,
+                  }}>
+                  <Box display="flex" alignItems={"center"} gap={0.5}>
+                    <ArrowForwardIosRoundedIcon
+                      fontSize={"small"}
+                      color={"primary"}
+                    />
+                    <Typography>Situation</Typography>
+                  </Box>
+                  <Typography mt={1.5} variant={"answerbody"}>
+                    {answerData.situation}
+                  </Typography>
+                </Box>
+                <Box
+                  p={2}
+                  border={consistentBorder}
+                  borderRadius={consistentBorderRadius}
+                  bgcolor={consistentBgColor}
+                  boxShadow={consistentBoxShadow}
+                  sx={{
+                    backdropFilter: consistentBackdropFilter,
+                  }}>
+                  <Box display="flex" alignItems={"center"} gap={0.5}>
+                    <ArrowForwardIosRoundedIcon
+                      fontSize={"small"}
+                      color={"primary"}
+                    />
+                    <Typography>Task</Typography>
+                  </Box>
+                  <Typography mt={1.5} variant={"answerbody"}>
+                    {answerData.task}
+                  </Typography>
+                </Box>
+                <Box
+                  p={2}
+                  border={consistentBorder}
+                  borderRadius={consistentBorderRadius}
+                  bgcolor={consistentBgColor}
+                  boxShadow={consistentBoxShadow}
+                  sx={{
+                    backdropFilter: consistentBackdropFilter,
+                  }}>
+                  <Box display="flex" alignItems={"center"} gap={0.5}>
+                    <ArrowForwardIosRoundedIcon
+                      fontSize={"small"}
+                      color={"primary"}
+                    />
+                    <Typography>Action</Typography>
+                  </Box>
+                  <Typography mt={1.5} variant={"answerbody"}>
+                    {answerData.action}
+                  </Typography>
+                </Box>
+                <Box
+                  p={2}
+                  border={consistentBorder}
+                  borderRadius={consistentBorderRadius}
+                  bgcolor={consistentBgColor}
+                  boxShadow={consistentBoxShadow}
+                  sx={{
+                    backdropFilter: consistentBackdropFilter,
+                  }}>
+                  <Box display="flex" alignItems={"center"} gap={0.5}>
+                    <ArrowForwardIosRoundedIcon
+                      fontSize={"small"}
+                      color={"primary"}
+                    />
+                    <Typography fontSize={18}>Result</Typography>
+                  </Box>
+                  <Typography mt={1.5} variant={"answerbody"}>
+                    {answerData.result}
+                  </Typography>
+                </Box>
+              </>
+            )}
           </Box>
           <Box
             display={"flex"}
@@ -174,7 +202,11 @@ const Answer = ({ answerData }) => {
           </Box>
           {answerData.comments &&
             answerData.comments.map((commentData) => (
-              <Comment key={commentData.id} commentData={commentData} />
+              <Comment
+                key={commentData.id}
+                questionId={answerData.questionId}
+                commentData={commentData}
+              />
             ))}
           <Box mt={1.5}>
             <Button
