@@ -15,15 +15,10 @@ import {
 } from "../themes/ConsistentStyles";
 
 const Comment = ({ commentData, questionId }) => {
-  const { userCookie } = useContext(AuthContext);
+  const { authenticatedUser } = useContext(AuthContext);
 
-  console.log("questionId", questionId);
-
-  console.log("commentData:", commentData);
   const answerId = commentData.answerId;
-  console.log("answerId", answerId);
   const commentId = commentData.id;
-  console.log("commentId", commentId);
 
   const queryClient = useQueryClient();
 
@@ -65,7 +60,7 @@ const Comment = ({ commentData, questionId }) => {
             by userId: {commentData.userId}
           </Typography>
           <Box marginLeft={"auto"}>
-            {commentData.userId === userCookie.id && (
+            {commentData.userId === authenticatedUser.id && (
               <>
                 <IconButton
                   onClick={() => handleDelete(commentData.id)}

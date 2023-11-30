@@ -40,9 +40,9 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
       queryClient.refetchQueries(["question", questionId]);
       setComment("");
       setCommentValidation(undefined);
-      // setTimeout(() => {
-      //   setShowAddCommentForm((prev) => !prev);
-      // }, 1000);
+      setTimeout(() => {
+        setShowAddCommentForm((prev) => !prev);
+      }, 1000);
     },
   });
 
