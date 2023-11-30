@@ -68,6 +68,12 @@ const theme = createTheme({
       fontSize: "1.2rem",
       fontWeight: "500",
     },
+    heromaincardtitle: {
+      fontSize: "2.5rem",
+    },
+    heromaincardbody: {
+      fontSize: "1.2rem",
+    },
   },
 });
 

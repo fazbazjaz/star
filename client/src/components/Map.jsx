@@ -1,6 +1,10 @@
 import { useRef, useEffect } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import {
+  consistentPrimaryBackgroundColor,
+  consistentHeaderFooterBorder,
+} from "../themes/ConsistentStyles";
 
 const Map = () => {
   const mapContainerRef = useRef(null);
@@ -30,11 +34,22 @@ const Map = () => {
   }, []);
 
   return (
-    <Box
-      ref={mapContainerRef}
-      width={"100%"}
-      height={"30vh"}
-      marginTop={"auto"}></Box>
+    <>
+      <Box
+        py={1.5}
+        backgroundColor={consistentPrimaryBackgroundColor}
+        borderTop={consistentHeaderFooterBorder}
+        textAlign="center"
+        color="white">
+        <Typography>Find Us - 69 Wilson St, London, UK, EC2A 2BB</Typography>
+      </Box>
+
+      <Box
+        ref={mapContainerRef}
+        width={"100%"}
+        height={"30vh"}
+        marginTop={"auto"}></Box>
+    </>
   );
 };
 

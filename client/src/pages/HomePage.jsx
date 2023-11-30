@@ -6,6 +6,8 @@ import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 const HomePage = () => {
   return (
     <Box
+      display={"grid"}
+      gridTemplateRows={"1fr auto"}
       sx={{
         backgroundImage: consistentPageBackgroundImage,
         backgroundSize: "cover",

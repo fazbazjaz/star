@@ -1,9 +1,10 @@
 import { Box, Typography } from "@mui/material";
+import Navigation from "./Navigation";
 import {
   consistentHeaderFooterBorder,
   consistentPrimaryBackgroundColor,
 } from "../themes/ConsistentStyles";
-import Navigation from "./Navigation";
+import { starCharacterThumbRub } from "../themes/StarCharacters";
 
 const Header = () => {
   return (
@@ -22,7 +23,7 @@ const Header = () => {
         <Box display="flex" flexWrap={"wrap"} gap={1} alignItems={"center"}>
           <Box height={{ xs: "4rem", sm: "6rem" }}>
             <img
-              src="/images/star-character-thumb-rub.png"
+              src={starCharacterThumbRub}
               alt="Star Character"
               style={{ height: "100%" }}
             />
