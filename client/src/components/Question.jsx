@@ -171,10 +171,10 @@ const Question = ({
               justifyContent={"flex-end"}
               alignItems={"flex-end"}>
               <Typography variant={"body2"}>
-                Question updated {formatDate(questionData.updatedAt)}
+                updated {formatDate(questionData.updatedAt)}
               </Typography>
               <Typography variant={"body2"}>
-                Question created {formatDate(questionData.createdAt)}
+                created {formatDate(questionData.createdAt)}
               </Typography>
             </Box>
           </Box>
