@@ -108,7 +108,7 @@ export const AuthProvider = ({ children }) => {
 
   const promptGoogleSignIn = useCallback(async () => {
     google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplay() || notification.isSkippedMoment()) {
+      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
         document.cookie =
           "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       }
