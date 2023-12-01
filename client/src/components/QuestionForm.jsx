@@ -25,7 +25,7 @@ const QuestionForm = ({
   setShowAddQuestionForm,
   questionId,
   originalQuestion,
-  setIsEditing,
+  setShowUpdateQuestionForm,
 }) => {
   const [question, setQuestion] = useState(questionId ? originalQuestion : "");
 
@@ -50,7 +50,7 @@ const QuestionForm = ({
       setQuestionValidation(undefined);
       setTimeout(() => {
         if (questionId) {
-          setIsEditing(false);
+          setShowUpdateQuestionForm(false);
         } else {
           setShowAddQuestionForm((prev) => !prev);
         }
@@ -69,7 +69,7 @@ const QuestionForm = ({
       return;
     }
     if (questionId && question === originalQuestion) {
-      setIsEditing(false);
+      setShowUpdateQuestionForm(false);
       return;
     }
     questionMutation.mutate();
@@ -127,7 +127,7 @@ const QuestionForm = ({
               variant={"contained"}
               onClick={() =>
                 questionId
-                  ? setIsEditing(false)
+                  ? setShowUpdateQuestionForm(false)
                   : setShowAddQuestionForm((prev) => !prev)
               }>
               Cancel

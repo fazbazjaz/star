@@ -1,8 +1,9 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "../context/AuthContext";
 import { Box, Typography, IconButton } from "@mui/material";
 import MessageRoundedIcon from "@mui/icons-material/MessageRounded";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import deleteComment from "../api/deleteComment";
 import formatDate from "../utils/formatDate";
@@ -13,9 +14,12 @@ import {
   consistentBoxShadow,
   consistentBackdropFilter,
 } from "../themes/ConsistentStyles";
+import CommentForm from "./CommentForm";
 
 const Comment = ({ commentData, questionId }) => {
   const { authenticatedUser } = useContext(AuthContext);
+
+  const [showUpdateCommentForm, setShowUpdateCommentForm] = useState(false);
 
   const answerId = commentData.answerId;
   const commentId = commentData.id;
@@ -35,6 +39,10 @@ const Comment = ({ commentData, questionId }) => {
 
   const handleDelete = () => {
     deleteCommentMutation.mutate();
+  };
+
+  const handleEdit = () => {
+    setShowUpdateCommentForm(true);
   };
 
   return (
@@ -62,6 +70,9 @@ const Comment = ({ commentData, questionId }) => {
           <Box marginLeft={"auto"}>
             {commentData.userId === authenticatedUser.id && (
               <>
+                <IconButton onClick={handleEdit} color="primary">
+                  <EditOutlinedIcon />
+                </IconButton>
                 <IconButton
                   onClick={() => handleDelete(commentData.id)}
                   color="primary">
@@ -71,11 +82,21 @@ const Comment = ({ commentData, questionId }) => {
             )}
           </Box>
         </Box>
-        <Box>
-          <Typography mt={0.5} variant={"commentbody"}>
-            {commentData.comment}
-          </Typography>
-        </Box>
+        {showUpdateCommentForm ? (
+          <CommentForm
+            questionId={questionId}
+            answerId={commentData.answerId}
+            commentId={commentId}
+            originalComment={commentData.comment}
+            setShowUpdateCommentForm={setShowUpdateCommentForm}
+          />
+        ) : (
+          <Box>
+            <Typography mt={0.5} variant={"commentbody"}>
+              {commentData.comment}
+            </Typography>
+          </Box>
+        )}
         <Box
           display={"flex"}
           flexDirection={"column"}
