@@ -550,7 +550,7 @@ export const deleteCommentHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const editCommentsHandler = async (req: Request, res: Response) => {
+export const editCommentHandler = async (req: Request, res: Response) => {
   const questionId = parseInt(req.params.id);
   logger.info({
     message: "editCommentHandler questionId",

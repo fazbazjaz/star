@@ -12,7 +12,7 @@ import {
   deleteAnswerHandler,
   deleteCommentHandler,
   editAnswerHandler,
-  editCommentsHandler
+  editCommentHandler
 } from "../controllers/questionsController";
 
 export const questionsRouter = express.Router();
@@ -48,5 +48,5 @@ questionsRouter
 
 questionsRouter
   .route("/:id/answers/:answerId/comments/:commentId")
-  .put(authMiddleware, editCommentsHandler)
+  .put(authMiddleware, editCommentHandler)
   .delete(authMiddleware, deleteCommentHandler);
