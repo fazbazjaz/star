@@ -110,6 +110,7 @@ export const AuthProvider = ({ children }) => {
     // google.accounts.id.prompt();
     google.accounts.id.prompt((notification) => {
       if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+        // Remove the "g_state" Cookie that Google Sign In creates
         document.cookie =
           "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       }
@@ -117,9 +118,11 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = useCallback(async () => {
+    // Initialize the Google Sign In Client
+    initializeGoogleSignIn();
     // Display the Google Sign In Prompt
     promptGoogleSignIn();
-  }, [promptGoogleSignIn]);
+  }, [initializeGoogleSignIn, promptGoogleSignIn]);
 
   const logout = useCallback(() => {
     // Remove the "g_state" Cookie that Google Sign In creates
@@ -154,7 +157,10 @@ export const AuthProvider = ({ children }) => {
     // If there is no "authenticatedUser"
     if (!authenticatedUserLocalStorage) {
       // Initialize the Google Sign In Client
-      initializeGoogleSignIn();
+      // initializeGoogleSignIn();
+
+      // Call the Login function
+      login();
       return;
     }
 
@@ -167,8 +173,9 @@ export const AuthProvider = ({ children }) => {
     if (authenticatedUserLocalStorage && isCustomJWTExpired) {
       // Remove the "authenticatedUser" from Local Storage
       localStorage.removeItem("authenticatedUser");
+
       // Initialize the Google Sign In Client
-      initializeGoogleSignIn();
+      // initializeGoogleSignIn();
       return;
     }
 
@@ -179,7 +186,7 @@ export const AuthProvider = ({ children }) => {
       setAuthenticatedUser(authenticatedUserLocalStorage);
       return;
     }
-  }, [initializeGoogleSignIn, navigate]);
+  }, [login]); // initializeGoogleSignIn
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
