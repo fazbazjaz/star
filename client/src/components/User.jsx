@@ -32,19 +32,23 @@ const User = ({ userData }) => {
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
         <Typography>firstname:</Typography>
-        <Typography>{userData.firstname}</Typography>
+        <Typography>{userData.firstName && userData.firstname}</Typography>
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
         <Typography>lastname:</Typography>
-        <Typography>{userData.lastname.slice(0, 3)}~</Typography>
+        <Typography>
+          {userData.lastname && `${userData.lastname.slice(0, 3)}~`}
+        </Typography>
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
         <Typography>email:</Typography>
-        <Typography>{maskEmail(userData.email)}</Typography>
+        <Typography>{userData.email && maskEmail(userData.email)}</Typography>
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
         <Typography>picture:</Typography>
-        <Typography>~{userData.picture.slice(-10)}</Typography>
+        <Typography>
+          {userData.picture && `~${userData.picture.slice(-10)}`}
+        </Typography>
       </Box>
     </Box>
   );
