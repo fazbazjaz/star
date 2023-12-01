@@ -54,7 +54,7 @@ export const createQuestion = async (userId: number, question: string) => {
 export const editQuestion = async (questionId: number, question: string) => {
   return await database
     .update(questions)
-    .set({ question })
+    .set({ question, updatedAt: new Date(Date.now()) })
     .where(eq(questions.id, questionId))
     .returning();
 };
@@ -98,7 +98,7 @@ export const editAnswer = async (
 ) => {
   return await database
     .update(answers)
-    .set({ situation, task, action, result })
+    .set({ situation, task, action, result, updatedAt: new Date(Date.now()) })
     .where(and(eq(answers.questionId, questionId), eq(answers.id, answerId)))
     .returning();
 };
