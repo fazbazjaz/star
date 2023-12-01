@@ -107,7 +107,6 @@ export const AuthProvider = ({ children }) => {
   }, [fetchCustomJWTCookie, fetchUser, navigate]);
 
   const promptGoogleSignIn = useCallback(async () => {
-    // google.accounts.id.prompt();
     google.accounts.id.prompt((notification) => {
       if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
         // Remove the "g_state" Cookie that Google Sign In creates
