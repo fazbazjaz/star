@@ -32,7 +32,7 @@ const User = ({ userData }) => {
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
         <Typography>firstname:</Typography>
-        <Typography>{userData.firstName && userData.firstname}</Typography>
+        <Typography>{userData.firstname && userData.firstname}</Typography>
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
         <Typography>lastname:</Typography>
