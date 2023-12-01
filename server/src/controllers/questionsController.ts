@@ -12,7 +12,8 @@ import {
   editQuestion,
   deleteAnswer,
   deleteComment,
-  editAnswer
+  editAnswer,
+  editComment
 } from "../helpers/questions";
 import { logger } from "../logger";
 
@@ -546,5 +547,70 @@ export const deleteCommentHandler = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error(error);
     res.status(500).json({ error: `No Comment ID ${commentId} Found` });
+  }
+};
+
+export const editCommentHandler = async (req: Request, res: Response) => {
+  const questionId = parseInt(req.params.id);
+  logger.info({
+    message: "editCommentHandler questionId",
+    value: questionId
+  });
+
+  if (!questionId) {
+    res.status(400).json({ error: "Invalid Question ID Provided" });
+  }
+
+  const answerId = parseInt(req.params.answerId);
+  logger.info({
+    message: "editCommentHandler answerId",
+    value: answerId
+  });
+
+  if (!answerId) {
+    res.status(400).json({ error: "Invalid Answer ID Provided" });
+  }
+
+  const commentId = parseInt(req.params.commentId);
+  logger.info({
+    message: "editCommentHandler commentId",
+    value: commentId
+  });
+
+  if (!commentId) {
+    res.status(400).json({ error: "Invalid Comment ID Provided" });
+  }
+
+  const { comment } = req.body;
+  logger.info({
+    message: "editCommentHandler req.body",
+    value: req.body
+  });
+
+  if (!comment) {
+    return res.status(400).json({ error: "Your Comment was not Complete" });
+  }
+
+  try {
+    const updateCommentQuery = await editComment(
+      // questionId,
+      answerId,
+      commentId,
+      comment
+    );
+    logger.info({
+      message: "editCommentHandler updateCommentQuery",
+      value: updateCommentQuery
+    });
+
+    const data = updateCommentQuery[0];
+    logger.info({
+      message: "editCommentHandler data",
+      value: data
+    });
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
   }
 };

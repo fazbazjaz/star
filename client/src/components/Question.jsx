@@ -26,10 +26,10 @@ const Question = ({
 }) => {
   const { authenticatedUser } = useContext(AuthContext);
 
-  const [isEditing, setIsEditing] = useState(false);
+  const [showUpdateQuestionForm, setShowUpdateQuestionForm] = useState(false);
 
   const handleEdit = async () => {
-    setIsEditing(true);
+    setShowUpdateQuestionForm(true);
   };
 
   const location = useLocation();
@@ -107,9 +107,7 @@ const Question = ({
             </Typography>
             <Box marginLeft={"auto"}>
               {questionData.userId === authenticatedUser.id && (
-                <IconButton
-                  onClick={() => handleEdit(questionData.id)}
-                  color="primary">
+                <IconButton onClick={handleEdit} color="primary">
                   <EditOutlinedIcon />
                 </IconButton>
               )}
@@ -123,7 +121,7 @@ const Question = ({
             </Box>
           </Box>
           <Box mt={1}>
-            {!isEditing &&
+            {!showUpdateQuestionForm &&
               (currentPage === "allQuestionsPage" ||
                 currentPage === "profilePage") && (
                 <Link
@@ -134,16 +132,17 @@ const Question = ({
                   {questionData.question}
                 </Link>
               )}
-            {!isEditing && currentPage === "individualQuestionPage" && (
-              <Typography variant={"questionbody"}>
-                {questionData.question}
-              </Typography>
-            )}
-            {isEditing && (
+            {!showUpdateQuestionForm &&
+              currentPage === "individualQuestionPage" && (
+                <Typography variant={"questionbody"}>
+                  {questionData.question}
+                </Typography>
+              )}
+            {showUpdateQuestionForm && (
               <QuestionForm
                 questionId={questionData.id}
                 originalQuestion={questionData.question}
-                setIsEditing={setIsEditing}
+                setShowUpdateQuestionForm={setShowUpdateQuestionForm}
               />
             )}
           </Box>

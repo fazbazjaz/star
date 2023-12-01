@@ -10,6 +10,7 @@ import {
 import SmsIcon from "@mui/icons-material/Sms";
 import SendIcon from "@mui/icons-material/Send";
 import postComment from "../api/postComment";
+import putComment from "../api/putComment";
 import {
   consistentBorder,
   consistentBorderRadius,
@@ -20,8 +21,15 @@ import {
   consistentFormFieldBorder,
 } from "../themes/ConsistentStyles";
 
-const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
-  const [comment, setComment] = useState("");
+const CommentForm = ({
+  questionId,
+  answerId,
+  setShowAddCommentForm,
+  commentId,
+  originalComment,
+  setShowUpdateCommentForm,
+}) => {
+  const [comment, setComment] = useState(commentId ? originalComment : "");
   const [commentValidation, setCommentValidation] = useState(undefined);
 
   const changeHandler = (event) => {
@@ -34,19 +42,26 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
 
   const queryClient = useQueryClient();
 
-  const addCommentMutation = useMutation({
-    mutationFn: () => postComment(questionId, answerId, comment),
+  const commentMutation = useMutation({
+    mutationFn: () =>
+      commentId
+        ? putComment(questionId, answerId, commentId, comment)
+        : postComment(questionId, answerId, comment),
     onSuccess: () => {
       queryClient.refetchQueries(["question", questionId]);
       setComment("");
       setCommentValidation(undefined);
       setTimeout(() => {
-        setShowAddCommentForm((prev) => !prev);
+        if (commentId) {
+          setShowUpdateCommentForm(false);
+        } else {
+          setShowAddCommentForm((prev) => !prev);
+        }
       }, 1000);
     },
   });
 
-  const { isPending, isError, error, isSuccess } = addCommentMutation;
+  const { isPending, isError, error, isSuccess } = commentMutation;
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -56,9 +71,11 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
     if (!commentValidation) {
       return;
     }
-    if (commentValidation) {
-      addCommentMutation.mutate();
+    if (commentId && comment === originalComment) {
+      setShowUpdateCommentForm(false);
+      return;
     }
+    commentMutation.mutate();
   };
 
   return (
@@ -81,7 +98,7 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
           <Box display={"flex"} alignItems={"center"} gap={0.5} mb={1}>
             <SmsIcon fontSize="medium" color="primary" />
             <Typography variant={"commentformtitle"} color={"primary"}>
-              Add your Comment
+              {commentId ? "Edit your Comment" : "Add your Comment"}
             </Typography>
           </Box>
           <TextareaAutosize
@@ -111,7 +128,11 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
           <Box display={"flex"} alignItems={"center"} gap={1} mt={1.5}>
             <Button
               variant={"contained"}
-              onClick={() => setShowAddCommentForm((prev) => !prev)}>
+              onClick={() =>
+                commentId
+                  ? setShowUpdateCommentForm(false)
+                  : setShowAddCommentForm((prev) => !prev)
+              }>
               Cancel
             </Button>
             <Button
@@ -160,4 +181,4 @@ const AddCommentForm = ({ questionId, answerId, setShowAddCommentForm }) => {
   );
 };
 
-export default AddCommentForm;
+export default CommentForm;

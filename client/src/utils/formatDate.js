@@ -2,7 +2,6 @@ const formatDate = (date) => {
   date = new Date(date);
   const now = new Date();
   const difference = now - date;
-
   const daysAgo = Math.floor(difference / (1000 * 60 * 60 * 24));
   let years = 0;
   let months = 0;
@@ -21,15 +20,15 @@ const formatDate = (date) => {
   }
   const ampm = hours >= 12 ? "pm" : "am";
   const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-  const datePart = years
-    ? `${years} years ago, `
-    : months
-      ? `${months} months ago, `
-      : days
-        ? `${days} days ago, `
-        : `today, `;
+  const yearsPart = years ? `${years} years ago, ` : ``;
+  const monthsPart = months ? `${months} months ago, ` : ``;
+  let daysPart = days ? `${days} days ago, ` : `today, `;
+  const nowTime = new Date().getHours();
+  if (nowTime < 12 && ampm === "pm") {
+    daysPart = `yesterday, `;
+  }
   const timePart = `at ${formattedHours}.${minutes} ${ampm}`;
-  return datePart + timePart;
+  return yearsPart + monthsPart + daysPart + timePart;
 };
 
 export default formatDate;

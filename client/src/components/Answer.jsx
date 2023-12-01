@@ -7,7 +7,7 @@ import SmsOutlinedIcon from "@mui/icons-material/SmsOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { AuthContext } from "../context/AuthContext";
-import AddCommentForm from "./AddCommentForm";
+import AddCommentForm from "./CommentForm";
 import Comment from "./Comment";
 import deleteAnswer from "../api/deleteAnswer";
 import formatDate from "../utils/formatDate";
@@ -23,12 +23,12 @@ import AnswerForm from "./AnswerForm";
 const Answer = ({ answerData }) => {
   const { authenticatedUser } = useContext(AuthContext);
 
-  const [isEditing, setIsEditing] = useState(false);
+  const [showUpdateAnswerForm, setShowUpdateAnswerForm] = useState(false);
 
   const [showAddCommentForm, setShowAddCommentForm] = useState(false);
 
   const handleEdit = async () => {
-    setIsEditing(true);
+    setShowUpdateAnswerForm(true);
   };
 
   const questionId = answerData.questionId;
@@ -78,9 +78,7 @@ const Answer = ({ answerData }) => {
             <Box marginLeft={"auto"}>
               {answerData.userId === authenticatedUser.id && (
                 <>
-                  <IconButton
-                    onClick={() => handleEdit(answerData.id)}
-                    color="primary">
+                  <IconButton onClick={handleEdit} color="primary">
                     <EditOutlinedIcon />
                   </IconButton>
                   <IconButton
@@ -93,7 +91,7 @@ const Answer = ({ answerData }) => {
             </Box>
           </Box>
           <Box display={"grid"} gap={1} mt={1}>
-            {isEditing ? (
+            {showUpdateAnswerForm ? (
               <AnswerForm
                 answerId={answerData.id}
                 questionId={answerData.questionId}
@@ -101,7 +99,7 @@ const Answer = ({ answerData }) => {
                 originalTask={answerData.task}
                 originalAction={answerData.action}
                 originalResult={answerData.result}
-                setIsEditing={setIsEditing}
+                setShowUpdateAnswerForm={setShowUpdateAnswerForm}
               />
             ) : (
               <>
