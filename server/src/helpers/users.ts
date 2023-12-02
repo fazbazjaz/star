@@ -11,12 +11,12 @@ export const getUserById = async (userId: SelectUserType["id"]) => {
 };
 
 export const getUserByGoogleId = async (
-  userGoogleId: SelectUserType["google_id"]
+  userGoogleId: SelectUserType["googleId"]
 ) => {
   return await database
     .select()
     .from(users)
-    .where(eq(users.google_id, userGoogleId));
+    .where(eq(users.googleId, userGoogleId));
 };
 
 export const createUser = async (user: InsertUserType) => {

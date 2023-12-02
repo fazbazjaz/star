@@ -14,9 +14,9 @@ describe("Get From Questions Table", () => {
   beforeEach(async () => {
     await cleanAll();
     const user = await createUser({
-      google_id: "012345689",
-      firstname: "Bob",
-      lastname: "Smith",
+      googleId: "012345689",
+      firstName: "Bob",
+      lastName: "Smith",
       email: "bob@gmail2.com"
     });
 

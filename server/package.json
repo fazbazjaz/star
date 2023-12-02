@@ -17,7 +17,8 @@
     "database:update:metadata": "drizzle-kit up:pg",
     "database:migration:generate": "drizzle-kit generate:pg",
     "database:migration:apply": "ts-node src/database/applyMigration.ts",
-    "database:migration": "drizzle-kit check:pg && drizzle-kit up:pg && drizzle-kit generate:pg && ts-node src/database/applyMigration.ts",
+    "database:migration": "drizzle-kit check:pg && drizzle-kit up:pg && drizzle-kit generate:pg && ts-node src/database/applyMigration.ts && ts-node src/database/seed.ts",
+    "database:seed": "ts-node src/database/seed.ts",
     "database:studio": "drizzle-kit studio"
   },
   "dependencies": {

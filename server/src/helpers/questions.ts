@@ -96,7 +96,6 @@ export const editAnswer = async (
   action: string,
   result: string
 ) => {
-  console.log("situation");
   return await database
     .update(answers)
     .set({ situation, task, action, result, updatedAt: new Date(Date.now()) })
@@ -119,6 +118,19 @@ export const createComment = async (
   return await database
     .insert(comments)
     .values({ userId, answerId, comment })
+    .returning();
+};
+
+export const editComment = async (
+  // questionId: number,
+  answerId: number,
+  commentId: number,
+  comment: string
+) => {
+  return await database
+    .update(comments)
+    .set({ comment })
+    .where(and(eq(comments.id, commentId), eq(comments.answerId, answerId)))
     .returning();
 };
 

@@ -2,7 +2,7 @@
 
 export interface CustomJWTPayload {
   id: number;
-  google_id: string;
+  googleId: string;
   iat?: number;
   exp?: number;
 }

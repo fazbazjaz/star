@@ -30,7 +30,7 @@ const AnswerForm = ({
   originalTask,
   originalAction,
   originalResult,
-  setIsEditing,
+  setShowUpdateAnswerForm,
 }) => {
   const [answer, setAnswer] = useState({
     situation: answerId ? originalSituation : "",
@@ -82,7 +82,7 @@ const AnswerForm = ({
       });
       setTimeout(() => {
         if (answerId) {
-          setIsEditing(false);
+          setShowUpdateAnswerForm(false);
         } else {
           setShowAddAnswerForm((prev) => !prev);
         }
@@ -114,7 +114,7 @@ const AnswerForm = ({
         answer.action === originalAction &&
         answer.result === originalResult
       ) {
-        setIsEditing(false);
+        setShowUpdateAnswerForm(false);
         return;
       }
     }
@@ -268,7 +268,7 @@ const AnswerForm = ({
               variant={"contained"}
               onClick={() =>
                 answerId
-                  ? setIsEditing(false)
+                  ? setShowUpdateAnswerForm(false)
                   : setShowAddAnswerForm((prev) => !prev)
               }>
               Cancel
