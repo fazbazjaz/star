@@ -17,6 +17,10 @@ export type InsertUserType = InferInsertModel<typeof users>;
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   googleId: varchar("google_id").unique().notNull(),
+  roleId: integer("role_id")
+    .default(1)
+    .notNull()
+    .references(() => roles.id),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   email: varchar("email").unique(),
@@ -26,7 +30,11 @@ export const users = pgTable("users", {
 });
 
 // Relation for Users Table
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
+  role: one(roles, {
+    fields: [users.roleId],
+    references: [roles.id]
+  }),
   questions: many(questions),
   answers: many(answers),
   comments: many(comments)
@@ -36,9 +44,10 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const questions = pgTable("questions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   question: text("question").notNull(),
+  likes: integer("likes").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
 });
@@ -57,15 +66,16 @@ export const questionsRelations = relations(questions, ({ one, many }) => ({
 export const answers = pgTable("answers", {
   id: serial("id").primaryKey(),
   userId: integer("user_id")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   questionId: integer("question_id")
-    .references(() => questions.id, { onDelete: "cascade" })
-    .notNull(),
+    .notNull()
+    .references(() => questions.id, { onDelete: "cascade" }),
   situation: text("situation").notNull(),
   task: text("task").notNull(),
   action: text("action").notNull(),
   result: text("result").notNull(),
+  likes: integer("likes").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
 });
@@ -87,14 +97,15 @@ export const answersRelations = relations(answers, ({ one, many }) => ({
 export const comments = pgTable("comments", {
   id: serial("id").primaryKey(),
   userId: integer("user_id")
+    .notNull()
     .references(() => users.id, {
       onDelete: "cascade"
-    })
-    .notNull(),
+    }),
   answerId: integer("answer_id")
-    .references(() => answers.id, { onDelete: "cascade" })
-    .notNull(),
+    .notNull()
+    .references(() => answers.id, { onDelete: "cascade" }),
   comment: text("comment").notNull(),
+  likes: integer("likes").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
 });
@@ -114,7 +125,7 @@ export const commentsRelations = relations(comments, ({ one }) => ({
 // Tags Table
 export const tags = pgTable("tags", {
   id: serial("id").primaryKey(),
-  tag: varchar("tag").notNull(),
+  tag: varchar("tag").unique().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
 });
@@ -131,13 +142,13 @@ export const questionsToTags = pgTable(
   "questions_to_tags",
   {
     questionId: integer("question_id")
+      .notNull()
       .references(() => questions.id, {
         onDelete: "cascade"
-      })
-      .notNull(),
+      }),
     tagId: integer("tag_id")
-      .references(() => tags.id, { onDelete: "cascade" })
       .notNull()
+      .references(() => tags.id, { onDelete: "cascade" })
   },
   (t) => ({
     pk: primaryKey({ columns: [t.questionId, t.tagId] })
@@ -164,13 +175,13 @@ export const answersToTags = pgTable(
   "answers_to_tags",
   {
     answerId: integer("answer_id")
+      .notNull()
       .references(() => answers.id, {
         onDelete: "cascade"
-      })
-      .notNull(),
+      }),
     tagId: integer("tag_id")
-      .references(() => tags.id, { onDelete: "cascade" })
       .notNull()
+      .references(() => tags.id, { onDelete: "cascade" })
   },
   (t) => ({
     pk: primaryKey({ columns: [t.answerId, t.tagId] })
@@ -194,13 +205,13 @@ export const commentsToTags = pgTable(
   "comments_to_tags",
   {
     commentId: integer("comment_id")
+      .notNull()
       .references(() => comments.id, {
         onDelete: "cascade"
-      })
-      .notNull(),
+      }),
     tagId: integer("tag_id")
-      .references(() => tags.id, { onDelete: "cascade" })
       .notNull()
+      .references(() => tags.id, { onDelete: "cascade" })
   },
   (t) => ({
     pk: primaryKey({ columns: [t.commentId, t.tagId] })
@@ -217,4 +228,17 @@ export const commentsToTagsRelations = relations(commentsToTags, ({ one }) => ({
     fields: [commentsToTags.tagId],
     references: [tags.id]
   })
+}));
+
+// Roles Table
+export const roles = pgTable("roles", {
+  id: serial("id").primaryKey(),
+  role: varchar("role").unique().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Relations for Roles Table
+export const rolesRelations = relations(roles, ({ many }) => ({
+  users: many(users)
 }));
