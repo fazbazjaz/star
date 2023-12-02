@@ -8,7 +8,6 @@ export const getAllQuestions = async () => {
 
 export const getQuestionsByCursor = async (cursor: number) => {
   console.log("getQuestionsByCursor cursor:", cursor);
-
   // Build this SQL query with Drizzle:
   // SELECT * FROM questions WHERE id > cursor ORDER BY id LIMIT 5
   return await database.query.questions.findMany({

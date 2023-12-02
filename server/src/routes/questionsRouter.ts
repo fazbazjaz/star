@@ -20,9 +20,12 @@ export const questionsRouter = express.Router();
 
 // Questions
 questionsRouter
-  .route("/")
-  .get(authMiddleware, getAllQuestionsHandler)
-  .post(authMiddleware, createQuestionHandler);
+  .route("/user/:id")
+  .get(authMiddleware, findAllQuestionsByUserHandler);
+
+questionsRouter
+  .route("/infinite")
+  .get(authMiddleware, getQuestionsByCursorHandler);
 
 questionsRouter
   .route("/:id")
@@ -31,12 +34,9 @@ questionsRouter
   .delete(authMiddleware, deleteQuestionHandler);
 
 questionsRouter
-  .route("/user/:id")
-  .get(authMiddleware, findAllQuestionsByUserHandler);
-
-questionsRouter
-  .route("/infinite")
-  .get(authMiddleware, getQuestionsByCursorHandler);
+  .route("/")
+  .get(authMiddleware, getAllQuestionsHandler)
+  .post(authMiddleware, createQuestionHandler);
 
 // Answers
 questionsRouter.route("/:id/answers").post(authMiddleware, createAnswerHandler);
