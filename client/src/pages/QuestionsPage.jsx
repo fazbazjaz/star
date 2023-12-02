@@ -58,8 +58,8 @@ const QuestionsPage = () => {
     // getNextPageParam: (lastPage, allPages, lastPageParam, allPageParams) =>
     //   lastPage.nextCursor,
     getNextPageParam: (lastPage) => {
-      console.log("getNextPageParam lastPage:", lastPage);
-      console.log("getNextPageParam lastPage.nextCursor:", lastPage.nextCursor);
+      // console.log("getNextPageParam lastPage:", lastPage);
+      // console.log("getNextPageParam lastPage.nextCursor:", lastPage.nextCursor);
       return lastPage.nextCursor;
     },
     // initialData: {},
