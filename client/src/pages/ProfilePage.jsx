@@ -65,7 +65,7 @@ const ProfilePage = () => {
             <Box>
               <Typography variant={"body2"}>Name:</Typography>
               <Typography fontWeight={"bold"}>
-                {authenticatedUser.firstname} {authenticatedUser.lastname}
+                {authenticatedUser.firstName} {authenticatedUser.lastName}
               </Typography>
             </Box>
             <Box>

@@ -15,9 +15,9 @@ export type InsertUserType = InferInsertModel<typeof users>;
 // Users Table
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  google_id: varchar("google_id").unique().notNull(),
-  firstname: varchar("firstname"),
-  lastname: varchar("lastname"),
+  googleId: varchar("google_id").unique().notNull(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
   email: varchar("email").unique(),
   picture: varchar("picture"),
   created_at: timestamp("created_at").defaultNow(),
