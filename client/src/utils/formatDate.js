@@ -1,34 +1,44 @@
-const formatDate = (date) => {
-  date = new Date(date);
+const formatDate = (postgresqlTimestamp) => {
   const now = new Date();
-  const difference = now - date;
-  const daysAgo = Math.floor(difference / (1000 * 60 * 60 * 24));
-  let years = 0;
-  let months = 0;
-  if (daysAgo > 365) {
-    years = Math.floor(daysAgo / 365);
+  const date = new Date(postgresqlTimestamp);
+
+  const millisecondsDifference = now - date;
+
+  const daysDifference = Math.floor(
+    millisecondsDifference / (24 * 60 * 60 * 1000)
+  );
+
+  let partOne;
+
+  if (daysDifference === 0) {
+    partOne = "today";
+  } else if (daysDifference === 1) {
+    partOne = "yesterday";
+  } else if (daysDifference < 7) {
+    partOne = `${daysDifference} days ago`;
+  } else if (daysDifference < 30) {
+    const weeks = Math.floor(daysDifference / 7);
+    partOne = `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
+  } else if (daysDifference < 365) {
+    const months = Math.floor(daysDifference / 30);
+    partOne = `${months} ${months === 1 ? "month" : "months"} ago`;
+  } else {
+    const years = Math.floor(daysDifference / 365);
+    partOne = `${years} ${years === 1 ? "year" : "years"} ago`;
   }
-  const left = daysAgo - years * 365;
-  if (left > 30) {
-    months = Math.floor(left / 30);
-  }
-  const days = left - months * 30;
-  const hours = date.getHours();
-  let minutes = date.getMinutes();
-  if (minutes < 10) {
-    minutes = `0${minutes}`;
-  }
-  const ampm = hours >= 12 ? "pm" : "am";
-  const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-  const yearsPart = years ? `${years} years ago, ` : ``;
-  const monthsPart = months ? `${months} months ago, ` : ``;
-  let daysPart = days ? `${days} days ago, ` : `today, `;
-  const nowTime = new Date().getHours();
-  if (nowTime < 12 && ampm === "pm") {
-    daysPart = `yesterday, `;
-  }
-  const timePart = `at ${formattedHours}.${minutes} ${ampm}`;
-  return yearsPart + monthsPart + daysPart + timePart;
+
+  const formatTime = (date) => {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const amOrPm = hours >= 12 ? "pm" : "am";
+    const formattedHours = (hours % 12 || 12).toString().padStart(2, "0");
+    const formattedMinutes = minutes.toString().padStart(2, "0");
+    return `${formattedHours}:${formattedMinutes}${amOrPm}`;
+  };
+
+  const partTwo = formatTime(date);
+
+  return `${partOne}, at ${partTwo}`;
 };
 
 export default formatDate;
