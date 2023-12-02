@@ -17,6 +17,10 @@ export type InsertUserType = InferInsertModel<typeof users>;
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   googleId: varchar("google_id").unique().notNull(),
+  // roleId: integer("role_id")
+  //   .references(() => roles.id)
+  //   .default(0)
+  //   .notNull(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   email: varchar("email").unique(),
@@ -26,7 +30,11 @@ export const users = pgTable("users", {
 });
 
 // Relation for Users Table
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
+  // role: one(roles, {
+  //   fields: [users.roleId],
+  //   references: [roles.id]
+  // }),
   questions: many(questions),
   answers: many(answers),
   comments: many(comments)
@@ -217,4 +225,17 @@ export const commentsToTagsRelations = relations(commentsToTags, ({ one }) => ({
     fields: [commentsToTags.tagId],
     references: [tags.id]
   })
+}));
+
+// Roles Table
+export const roles = pgTable("roles", {
+  id: serial("id").primaryKey(),
+  role: varchar("role").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Relations for Roles Table
+export const rolesRelations = relations(roles, ({ many }) => ({
+  users: many(users)
 }));
