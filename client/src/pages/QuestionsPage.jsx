@@ -59,7 +59,7 @@ const QuestionsPage = () => {
     //   lastPage.nextCursor,
     getNextPageParam: (lastPage) => {
       console.log("getNextPageParam lastPage:", lastPage);
-      // console.log("QuestionPages useInfiniteQuery allPages:", allPages);
+      console.log("getNextPageParam lastPage.nextCursor:", lastPage.nextCursor);
       return lastPage.nextCursor;
     },
     // initialData: {},
@@ -98,7 +98,11 @@ const QuestionsPage = () => {
         <Box>
           <Box display={"flex"} justifyContent={"space-between"}>
             <Typography variant={"pagetitle"}>
-              All Questions ({questionsByCursorData.pages.length})
+              All Questions (
+              {questionsByCursorData.pages
+                .map((page) => page.data.length)
+                .reduce((acc, cv) => acc + cv, 0)}
+              )
             </Typography>
             <Button
               variant="outlined"
