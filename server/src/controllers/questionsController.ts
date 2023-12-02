@@ -620,16 +620,27 @@ export const getQuestionsByCursorHandler = async (
   req: Request,
   res: Response
 ) => {
-  // get the cursor query parameter
-  const cursor = parseInt(req.query.cursor as string, 10);
-  logger.info({
-    message: "getQuestionsByCursor cursor",
-    value: cursor
-  });
+  try {
+    // the route is /api/questions/infinite?cursor=X
+    // get the cursor query parameter
+    const cursor = parseInt(req.query.cursor as string, 10);
+    logger.info({
+      message: "getQuestionsByCursor cursor",
+      value: cursor
+    });
 
-  const query = await getQuestionsByCursor(cursor);
-  logger.info({
-    message: "getQuestionsByCursorHandler query",
-    value: query
-  });
+    const query = await getQuestionsByCursor(cursor);
+    logger.info({
+      message: "getQuestionsByCursorHandler query",
+      value: query
+    });
+
+    const nextCursor = query.length > 0 ? query[query.length - 1].id : cursor;
+    logger.info({
+      message: "getQuestionsByCursorHandler nextCursor",
+      value: nextCursor
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
 };
