@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query"; // useQuery
 import { Box, Typography, Button } from "@mui/material";
-import Loading from "../components/Loading";
-import Error from "../components/Loading";
+// import Loading from "../components/Loading";
+// import Error from "../components/Loading";
 import Question from "../components/Question";
 import QuestionForm from "../components/QuestionForm";
-import getAllQuestions from "../api/getAllQuestions";
+// import getAllQuestions from "../api/getAllQuestions";
 import getQuestionsByCursor from "../api/getQuestionsByCursor";
 import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
