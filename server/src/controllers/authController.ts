@@ -65,8 +65,8 @@ export const idTokenHandler = async (req: Request, res: Response) => {
   }
 
   const userGoogleId = idTokenPayload.sub;
-  const userFirstname = idTokenPayload.given_name;
-  const userLastname = idTokenPayload.family_name;
+  const userFirstName = idTokenPayload.given_name;
+  const userLastName = idTokenPayload.family_name;
   const userEmail = idTokenPayload.email;
   const userPicture = idTokenPayload.picture;
 
@@ -76,9 +76,9 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     user = await getUserByGoogleId(userGoogleId);
     if (!user || user.length === 0) {
       user = await createUser({
-        google_id: userGoogleId,
-        firstname: userFirstname,
-        lastname: userLastname,
+        googleId: userGoogleId,
+        firstName: userFirstName,
+        lastName: userLastName,
         email: userEmail,
         picture: userPicture
       });
@@ -93,7 +93,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
 
   const customJWTPayload: CustomJWTPayload = {
     id: userId,
-    google_id: userGoogleId
+    googleId: userGoogleId
   };
   logger.info({
     message: "idTokenHandler customJWTPayload",
@@ -162,7 +162,7 @@ export const userHandler = async (req: Request, res: Response) => {
       value: userId
     });
 
-    const userGoogleId = verifiedCustomJWT.google_id;
+    const userGoogleId = verifiedCustomJWT.googleId;
     logger.info({
       message: "userHandler userGoogleId",
       value: userGoogleId
@@ -180,7 +180,7 @@ export const userHandler = async (req: Request, res: Response) => {
         .json({ error: "Unauthorized - User Does Not Exist" });
     }
 
-    if (userId !== userQuery[0].id || userGoogleId !== userQuery[0].google_id) {
+    if (userId !== userQuery[0].id || userGoogleId !== userQuery[0].googleId) {
       return res.status(401).json({
         error:
           "Unauthorized - Mismatch between User in CustomJWT and User in Database"
