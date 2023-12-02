@@ -12,7 +12,8 @@ import {
   deleteAnswerHandler,
   deleteCommentHandler,
   editAnswerHandler,
-  editCommentHandler
+  editCommentHandler,
+  getQuestionsByCursorHandler
 } from "../controllers/questionsController";
 
 export const questionsRouter = express.Router();
@@ -32,6 +33,10 @@ questionsRouter
 questionsRouter
   .route("/user/:id")
   .get(authMiddleware, findAllQuestionsByUserHandler);
+
+questionsRouter
+  .route("/infinite")
+  .get(authMiddleware, getQuestionsByCursorHandler);
 
 // Answers
 questionsRouter.route("/:id/answers").post(authMiddleware, createAnswerHandler);
