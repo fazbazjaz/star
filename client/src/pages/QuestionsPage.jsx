@@ -57,9 +57,10 @@ const QuestionsPage = () => {
     // It should return a single variable that will be passed as the last optional parameter to your query function.
     // getNextPageParam: (lastPage, allPages, lastPageParam, allPageParams) =>
     //   lastPage.nextCursor,
-    getNextPageParam: (lastPage, allPages) => {
+    getNextPageParam: (lastPage) => {
+      console.log("getNextPageParam lastPage:", lastPage);
       // console.log("QuestionPages useInfiniteQuery allPages:", allPages);
-      return allPages.nextCursor;
+      return lastPage.nextCursor;
     },
     // initialData: {},
     // getPreviousPageParam: (
@@ -70,10 +71,10 @@ const QuestionsPage = () => {
     // ) => firstPage.prevCursor,
   });
 
-  // console.log(
-  //   "QuestionPages questionsByCursorData.pages",
-  //   questionsByCursorData?.pages
-  // );
+  console.log(
+    "QuestionPages questionsByCursorData.pages",
+    questionsByCursorData?.pages
+  );
 
   // console.log(
   //   "QuestionPages questionsByCursorData.pages[0].data",
@@ -120,6 +121,12 @@ const QuestionsPage = () => {
           </Box>
         </Box>
       )}
+      <Button
+        variant={"contained"}
+        onClick={fetchNextPage}
+        sx={{ marginTop: 2 }}>
+        Fetch Next Page
+      </Button>
     </Box>
   );
 };
