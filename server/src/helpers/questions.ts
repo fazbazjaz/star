@@ -1,6 +1,6 @@
 import { database } from "../database/connection";
 import { questions, answers, comments } from "../database/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, gt } from "drizzle-orm";
 
 export const getAllQuestions = async () => {
   return await database.select().from(questions);
@@ -9,9 +9,20 @@ export const getAllQuestions = async () => {
 export const getQuestionsByCursor = async (cursor: number) => {
   console.log("getQuestionsByCursor cursor:", cursor);
 
-  // build this SQL query with Drizzle:
+  // Build this SQL query with Drizzle:
   // SELECT * FROM questions WHERE id > cursor ORDER BY id LIMIT 5
-  return await database.select().from(questions).where();
+  return await database.query.questions.findMany({
+    with: {
+      answers: {
+        with: {
+          comments: true
+        }
+      }
+    },
+    where: gt(questions.id, cursor),
+    orderBy: questions.id,
+    limit: 5
+  });
 };
 
 export const getOneQuestion = async (questionId: number) => {
