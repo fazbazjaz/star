@@ -38,12 +38,12 @@ const QuestionsPage = () => {
   // Note: Options initialData or placeholderData need to conform to the same structure of an object with data.pages and data.pageParams properties.
   const {
     data: questionsByCursorData,
-    error,
+    // error,
     fetchNextPage,
-    hasNextPage,
-    isFetching,
-    isFetchingNextPage,
-    status,
+    // hasNextPage,
+    // isFetching,
+    // isFetchingNextPage,
+    // status,
   } = useInfiniteQuery({
     queryKey: ["questions"],
     // Required, but only if no default query function has been defined defaultQueryFn
@@ -71,10 +71,10 @@ const QuestionsPage = () => {
     // ) => firstPage.prevCursor,
   });
 
-  console.log(
-    "QuestionPages questionsByCursorData.pages",
-    questionsByCursorData?.pages
-  );
+  // console.log(
+  //   "QuestionPages questionsByCursorData.pages",
+  //   questionsByCursorData?.pages
+  // );
 
   // console.log(
   //   "QuestionPages questionsByCursorData.pages[0].data",
