@@ -7,6 +7,7 @@ import {
   integer
 } from "drizzle-orm/pg-core";
 import { InferSelectModel, InferInsertModel, relations } from "drizzle-orm";
+import { primaryKey } from "drizzle-orm/pg-core";
 
 // User Types
 export type SelectUserType = InferSelectModel<typeof users>;
@@ -15,9 +16,9 @@ export type InsertUserType = InferInsertModel<typeof users>;
 // Users Table
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  google_id: varchar("google_id").unique().notNull(),
-  firstname: varchar("firstname"),
-  lastname: varchar("lastname"),
+  googleId: varchar("google_id").unique().notNull(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
   email: varchar("email").unique(),
   picture: varchar("picture"),
   created_at: timestamp("created_at").defaultNow(),
@@ -48,7 +49,8 @@ export const questionsRelations = relations(questions, ({ one, many }) => ({
     fields: [questions.userId],
     references: [users.id]
   }),
-  answers: many(answers)
+  answers: many(answers),
+  questionsToTags: many(questionsToTags)
 }));
 
 // Answers Table
@@ -106,5 +108,113 @@ export const commentsRelations = relations(comments, ({ one }) => ({
   answer: one(answers, {
     fields: [comments.answerId],
     references: [answers.id]
+  })
+}));
+
+// Tags Table
+export const tags = pgTable("tags", {
+  id: serial("id").primaryKey(),
+  tag: varchar("tag").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Relations for Tags Table
+export const tagsRelations = relations(tags, ({ many }) => ({
+  questionsToTags: many(questionsToTags),
+  answersToTags: many(answersToTags),
+  commentsToTags: many(commentsToTags)
+}));
+
+// QuestionsToTags Table
+export const questionsToTags = pgTable(
+  "questions_to_tags",
+  {
+    questionId: integer("question_id")
+      .references(() => questions.id, {
+        onDelete: "cascade"
+      })
+      .notNull(),
+    tagId: integer("tag_id")
+      .references(() => tags.id, { onDelete: "cascade" })
+      .notNull()
+  },
+  (t) => ({
+    pk: primaryKey(t.questionId, t.tagId)
+  })
+);
+
+// Relations for questionsToTags Table
+export const questionsToTagsRelations = relations(
+  questionsToTags,
+  ({ one }) => ({
+    question: one(questions, {
+      fields: [questionsToTags.questionId],
+      references: [questions.id]
+    }),
+    tag: one(tags, {
+      fields: [questionsToTags.tagId],
+      references: [tags.id]
+    })
+  })
+);
+
+// AnswersToTags Table
+export const answersToTags = pgTable(
+  "answers_to_tags",
+  {
+    answerId: integer("answer_id")
+      .references(() => answers.id, {
+        onDelete: "cascade"
+      })
+      .notNull(),
+    tagId: integer("tag_id")
+      .references(() => tags.id, { onDelete: "cascade" })
+      .notNull()
+  },
+  (t) => ({
+    pk: primaryKey(t.answerId, t.tagId)
+  })
+);
+
+// Relations for answersToTags Table
+export const answersToTagsRelations = relations(answersToTags, ({ one }) => ({
+  answer: one(answers, {
+    fields: [answersToTags.answerId],
+    references: [answers.id]
+  }),
+  tag: one(tags, {
+    fields: [answersToTags.tagId],
+    references: [tags.id]
+  })
+}));
+
+// commentsToTags Table
+export const commentsToTags = pgTable(
+  "comments_to_tags",
+  {
+    commentId: integer("comment_id")
+      .references(() => comments.id, {
+        onDelete: "cascade"
+      })
+      .notNull(),
+    tagId: integer("tag_id")
+      .references(() => tags.id, { onDelete: "cascade" })
+      .notNull()
+  },
+  (t) => ({
+    pk: primaryKey(t.commentId, t.tagId)
+  })
+);
+
+// Relations for commentsToTags Table
+export const commentsToTagsRelations = relations(commentsToTags, ({ one }) => ({
+  comment: one(comments, {
+    fields: [commentsToTags.commentId],
+    references: [comments.id]
+  }),
+  tag: one(tags, {
+    fields: [commentsToTags.tagId],
+    references: [tags.id]
   })
 }));
