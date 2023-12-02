@@ -4,10 +4,10 @@ import {
   varchar,
   timestamp,
   text,
-  integer
+  integer,
+  primaryKey
 } from "drizzle-orm/pg-core";
 import { InferSelectModel, InferInsertModel, relations } from "drizzle-orm";
-import { primaryKey } from "drizzle-orm/pg-core";
 
 // User Types
 export type SelectUserType = InferSelectModel<typeof users>;
@@ -140,7 +140,7 @@ export const questionsToTags = pgTable(
       .notNull()
   },
   (t) => ({
-    pk: primaryKey(t.questionId, t.tagId)
+    pk: primaryKey({ columns: [t.questionId, t.tagId] })
   })
 );
 
@@ -173,7 +173,7 @@ export const answersToTags = pgTable(
       .notNull()
   },
   (t) => ({
-    pk: primaryKey(t.answerId, t.tagId)
+    pk: primaryKey({ columns: [t.answerId, t.tagId] })
   })
 );
 
@@ -203,7 +203,7 @@ export const commentsToTags = pgTable(
       .notNull()
   },
   (t) => ({
-    pk: primaryKey(t.commentId, t.tagId)
+    pk: primaryKey({ columns: [t.commentId, t.tagId] })
   })
 );
 
