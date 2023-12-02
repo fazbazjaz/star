@@ -1,5 +1,4 @@
 import { Box, Typography } from "@mui/material";
-import maskEmail from "../utils/maskEmail";
 import {
   consistentBorder,
   consistentBorderRadius,
@@ -42,7 +41,12 @@ const User = ({ userData }) => {
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
         <Typography>email:</Typography>
-        <Typography>{userData.email && maskEmail(userData.email)}</Typography>
+        <Typography>
+          {userData.email &&
+            `${userData.email.split("@")[0].slice(0, 3)}~@${
+              userData.email.split("@")[1]
+            }`}
+        </Typography>
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
         <Typography>picture:</Typography>

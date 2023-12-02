@@ -6,20 +6,21 @@ import Error from "../components/Loading";
 import Question from "../components/Question";
 import QuestionForm from "../components/QuestionForm";
 import getAllQuestions from "../api/getAllQuestions";
+import getQuestionsByCursor from "../api/getQuestionsByCursor";
 import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const QuestionsPage = () => {
   const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
 
-  const {
-    isPending,
-    isError,
-    error,
-    data: allQuestionsData,
-  } = useQuery({
-    queryKey: ["questions"],
-    queryFn: getAllQuestions,
-  });
+  // const {
+  //   isPending,
+  //   isError,
+  //   error,
+  //   data: allQuestionsData,
+  // } = useQuery({
+  //   queryKey: ["questions"],
+  //   queryFn: getAllQuestions,
+  // });
 
   // TO DO: Implement Infinite Scroll
 
@@ -35,26 +36,49 @@ const QuestionsPage = () => {
   // A hasPreviousPage boolean is now available and is true if getPreviousPageParam returns a value other than null or undefined
   // The isFetchingNextPage and isFetchingPreviousPage booleans are now available to distinguish between a background refresh state and a loading more state
   // Note: Options initialData or placeholderData need to conform to the same structure of an object with data.pages and data.pageParams properties.
-  // const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
-  //   queryKey: ["questions"],
-  //   // Required, but only if no default query function has been defined defaultQueryFn
-  //   queryFn: ({ pageParam }) => fetchNextPage(pageParam),
-  //   // The default page param to use when fetching the first page
-  //   initialPageParam: 1,
-  //   // When new data is received for this query, this function receives both
-  //   // the last page of the infinite list of data
-  //   // and the full array of all pages
-  //   // as well as pageParam information.
-  //   // It should return a single variable that will be passed as the last optional parameter to your query function.
-  //   getNextPageParam: (lastPage, allPages, lastPageParam, allPageParams) =>
-  //     lastPage.nextCursor,
-  //   getPreviousPageParam: (
-  //     firstPage,
-  //     allPages,
-  //     firstPageParam,
-  //     allPageParams
-  //   ) => firstPage.prevCursor,
-  // });
+  const {
+    data: questionsByCursorData,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
+    queryKey: ["questions"],
+    // Required, but only if no default query function has been defined defaultQueryFn
+    queryFn: ({ pageParam }) => getQuestionsByCursor(pageParam),
+    // The default page param to use when fetching the first page
+    initialPageParam: 0,
+    // When new data is received for this query, this function receives both
+    // the last page of the infinite list of data
+    // and the full array of all pages
+    // as well as pageParam information.
+    // It should return a single variable that will be passed as the last optional parameter to your query function.
+    // getNextPageParam: (lastPage, allPages, lastPageParam, allPageParams) =>
+    //   lastPage.nextCursor,
+    getNextPageParam: (lastPage, allPages) => {
+      // console.log("QuestionPages useInfiniteQuery allPages:", allPages);
+      return allPages.nextCursor;
+    },
+    // initialData: {},
+    // getPreviousPageParam: (
+    //   firstPage,
+    //   allPages,
+    //   firstPageParam,
+    //   allPageParams
+    // ) => firstPage.prevCursor,
+  });
+
+  // console.log(
+  //   "QuestionPages questionsByCursorData.pages",
+  //   questionsByCursorData?.pages
+  // );
+
+  // console.log(
+  //   "QuestionPages questionsByCursorData.pages[0].data",
+  //   questionsByCursorData?.pages[0].data
+  // );
 
   return (
     <Box
@@ -67,13 +91,13 @@ const QuestionsPage = () => {
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
       }}>
-      {isPending && <Loading />}
-      {isError && <Error message={error.message} />}
-      {allQuestionsData && (
+      {/* {isPending && <Loading />} */}
+      {/* {isError && <Error message={error.message} />} */}
+      {questionsByCursorData && (
         <Box>
           <Box display={"flex"} justifyContent={"space-between"}>
             <Typography variant={"pagetitle"}>
-              All Questions ({allQuestionsData.length})
+              All Questions ({questionsByCursorData.pages.length})
             </Typography>
             <Button
               variant="outlined"
@@ -88,9 +112,13 @@ const QuestionsPage = () => {
             <QuestionForm setShowAddQuestionForm={setShowAddQuestionForm} />
           )}
           <Box display={"grid"} gap={2} mt={1}>
-            {allQuestionsData.map((questionData) => (
-              <Question key={questionData.id} questionData={questionData} />
-            ))}
+            {questionsByCursorData.pages.map((page) => {
+              return page.data.map((questionData) => {
+                return (
+                  <Question key={questionData.id} questionData={questionData} />
+                );
+              });
+            })}
           </Box>
         </Box>
       )}

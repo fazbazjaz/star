@@ -5,12 +5,12 @@ const getQuestionsByCursor = async (cursor) => {
     }/api/questions/infinite?cursor=${cursor}`,
     { credentials: "include" }
   );
-  // console.log("getQuestionsByCursor response:", response);
+  console.log("getQuestionsByCursor response:", response);
   if (!response.ok) {
     throw new Error("getQuestionsByCursor failed");
   }
   const data = await response.json();
-  // console.log("getQuestionsByCursor data:", data);
+  console.log("getQuestionsByCursor data:", data);
   return data;
 };
 
