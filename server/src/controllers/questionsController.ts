@@ -622,7 +622,7 @@ export const getQuestionsByCursorHandler = async (
 ) => {
   try {
     // the route is /api/questions/infinite?cursor=X
-    // get the cursor query parameter
+    // get the query parameter "cursor"
     const cursor = parseInt(req.query.cursor as string, 10); // || 0
     logger.info({
       message: "getQuestionsByCursor cursor",
