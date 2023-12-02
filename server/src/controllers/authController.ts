@@ -77,7 +77,6 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     if (!user || user.length === 0) {
       user = await createUser({
         googleId: userGoogleId,
-        // roleId: 0,
         firstName: userFirstName,
         lastName: userLastName,
         email: userEmail,
