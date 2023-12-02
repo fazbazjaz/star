@@ -640,7 +640,13 @@ export const getQuestionsByCursorHandler = async (
       message: "getQuestionsByCursorHandler nextCursor",
       value: nextCursor
     });
+
+    res.send(200).json({
+      data: query,
+      nextCursor: nextCursor + 5
+    });
   } catch (error) {
+    logger.error(error);
     res.status(500).json({ error: "Server Error" });
   }
 };
