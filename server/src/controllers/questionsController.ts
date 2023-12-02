@@ -13,7 +13,8 @@ import {
   deleteAnswer,
   deleteComment,
   editAnswer,
-  editComment
+  editComment,
+  getQuestionsByCursor
 } from "../helpers/questions";
 import { logger } from "../logger";
 
@@ -613,4 +614,22 @@ export const editCommentHandler = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ error: "Server Error" });
   }
+};
+
+export const getQuestionsByCursorHandler = async (
+  req: Request,
+  res: Response
+) => {
+  // get the cursor query parameter
+  const cursor = parseInt(req.query.cursor as string, 10);
+  logger.info({
+    message: "getQuestionsByCursor cursor",
+    value: cursor
+  });
+
+  const query = await getQuestionsByCursor(cursor);
+  logger.info({
+    message: "getQuestionsByCursorHandler query",
+    value: query
+  });
 };

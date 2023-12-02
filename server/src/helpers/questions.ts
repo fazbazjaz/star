@@ -6,6 +6,11 @@ export const getAllQuestions = async () => {
   return await database.select().from(questions);
 };
 
+export const getQuestionsByCursor = async (cursor: number) => {
+  console.log("getQuestionsByCursor cursor:", cursor);
+  return await database.select().from(questions).where();
+};
+
 export const getOneQuestion = async (questionId: number) => {
   return await database
     .select()
