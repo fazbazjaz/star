@@ -27,17 +27,17 @@ const User = ({ userData }) => {
         <Typography>{userData.id}</Typography>
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
-        <Typography>google_id:</Typography>
-        <Typography>~{userData.google_id.slice(-8)}</Typography>
+        <Typography>googleId:</Typography>
+        <Typography>~{userData.googleId.slice(-8)}</Typography>
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
-        <Typography>firstname:</Typography>
-        <Typography>{userData.firstname && userData.firstname}</Typography>
+        <Typography>firstName:</Typography>
+        <Typography>{userData.firstName && userData.firstName}</Typography>
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
-        <Typography>lastname:</Typography>
+        <Typography>lastName:</Typography>
         <Typography>
-          {userData.lastname && `${userData.lastname.slice(0, 3)}~`}
+          {userData.lastName && `${userData.lastName.slice(0, 3)}~`}
         </Typography>
       </Box>
       <Box display="flex" gap={1} borderLeft={1} paddingLeft={1}>
