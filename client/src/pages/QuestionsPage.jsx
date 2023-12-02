@@ -112,13 +112,11 @@ const QuestionsPage = () => {
             <QuestionForm setShowAddQuestionForm={setShowAddQuestionForm} />
           )}
           <Box display={"grid"} gap={2} mt={1}>
-            {questionsByCursorData.pages.map((page) => {
-              return page.data.map((questionData) => {
-                return (
-                  <Question key={questionData.id} questionData={questionData} />
-                );
-              });
-            })}
+            {questionsByCursorData?.pages.map((page) =>
+              page?.data.map((questionData) => (
+                <Question key={questionData.id} questionData={questionData} />
+              ))
+            )}
           </Box>
         </Box>
       )}
