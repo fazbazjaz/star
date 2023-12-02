@@ -18,40 +18,39 @@ import {
 
 export const questionsRouter = express.Router();
 
-// Questions
-questionsRouter
-  .route("/user/:id")
-  .get(authMiddleware, findAllQuestionsByUserHandler);
+// Apply authMiddleware to all Routes
+questionsRouter.use(authMiddleware);
 
-questionsRouter
-  .route("/infinite")
-  .get(authMiddleware, getQuestionsByCursorHandler);
+// Questions
+questionsRouter.route("/user/:id").get(findAllQuestionsByUserHandler);
+
+questionsRouter.route("/infinite").get(getQuestionsByCursorHandler);
 
 questionsRouter
   .route("/:id")
-  .get(authMiddleware, findOneQuestionHandler)
-  .put(authMiddleware, editQuestionHandler)
-  .delete(authMiddleware, deleteQuestionHandler);
+  .get(findOneQuestionHandler)
+  .put(editQuestionHandler)
+  .delete(deleteQuestionHandler);
 
 questionsRouter
   .route("/")
-  .get(authMiddleware, getAllQuestionsHandler)
-  .post(authMiddleware, createQuestionHandler);
+  .get(getAllQuestionsHandler)
+  .post(createQuestionHandler);
 
 // Answers
-questionsRouter.route("/:id/answers").post(authMiddleware, createAnswerHandler);
+questionsRouter.route("/:id/answers").post(createAnswerHandler);
 
 questionsRouter
   .route("/:id/answers/:answerId")
-  .put(authMiddleware, editAnswerHandler)
-  .delete(authMiddleware, deleteAnswerHandler);
+  .put(editAnswerHandler)
+  .delete(deleteAnswerHandler);
 
 // Comments
 questionsRouter
   .route("/:id/answers/:answerId/comments")
-  .post(authMiddleware, createCommentHandler);
+  .post(createCommentHandler);
 
 questionsRouter
   .route("/:id/answers/:answerId/comments/:commentId")
-  .put(authMiddleware, editCommentHandler)
-  .delete(authMiddleware, deleteCommentHandler);
+  .put(editCommentHandler)
+  .delete(deleteCommentHandler);
