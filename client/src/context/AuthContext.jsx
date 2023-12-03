@@ -10,39 +10,17 @@ import { useNavigate } from "react-router-dom";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  // From "index.html" <script src="https://accounts.google.com/gsi/client" async defer></script>
-  // Declare the Global Google Object
-  /* global google */
-
   const [authenticatedUser, setAuthenticatedUser] = useState(null);
 
   const navigate = useNavigate();
 
-  const fetchCustomJWTCookie = useCallback(async (googleIdToken) => {
-    try {
-      // Send the Google ID Token to the backend in the Request Header
-      // and Receive back an HTTP-Only Cookie with a CustomJWT inside
-      const response = await fetch(
-        `${import.meta.env.VITE_SERVER_URL}/api/auth/google/idtoken`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${googleIdToken}`,
-          },
-          credentials: "include",
-        }
-      );
-      // console.log("fetchCustomJWTCookie response:", response);
-      if (!response.ok) {
-        throw new Error(
-          `Error: ${response.status} ${response.statusText} : fetchCustomJWTCookie failed`
-        );
-      }
-    } catch (error) {
-      console.error("AuthProvider fetchCookieWithCustomJWT error:", error);
-    }
-  }, []);
+  // ----------------------------------------------------------------
+
+  // From "index.html" <script src="https://accounts.google.com/gsi/client" async defer></script>
+  // Declare the Global Google Object
+  /* global google */
+
+  // ----------------------------------------------------------------
 
   const fetchUser = useCallback(async () => {
     try {
@@ -68,7 +46,10 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const initializeGoogleSignIn = useCallback(async () => {
+  // ----------------------------------------------------------------
+
+  // eslint-disable-next-line
+  const googleAccountsIdInitializeFlow = useCallback(async () => {
     google.accounts.id.initialize({
       client_id: `${import.meta.env.VITE_GOOGLE_CLIENT_ID}`,
       callback: async (googleIdTokenResponse) => {
@@ -77,15 +58,32 @@ export const AuthProvider = ({ children }) => {
           const googleIdToken = googleIdTokenResponse.credential;
 
           // Send the Google ID Token to the backend in the Request Header
-          // Receive back an HTTP-Only Cookie with a CustomJWT inside
-          await fetchCustomJWTCookie(googleIdToken);
+          // and Receive back an HTTP-Only Cookie with a CustomJWT inside
+          const response = await fetch(
+            `${import.meta.env.VITE_SERVER_URL}/api/auth/google/idtoken`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${googleIdToken}`,
+              },
+              credentials: "include",
+            }
+          );
+          // console.log("googleAccountsIdInitializeFlow response:", response);
+
+          if (!response.ok) {
+            throw new Error(
+              `Error: ${response.status} ${response.statusText} : googleAccountsIdInitializeFlow response failed`
+            );
+          }
 
           // Send a GET Request to /api/auth/user including our CustomJWT
           // Receive back a JSON body of User Information
           const user = await fetchUser();
 
           if (!user) {
-            throw new Error("initializeGoogleSignIn callback error - No User");
+            throw new Error("googleAccountsIdInitializeFlow no user");
           }
 
           // Set "authenticatedUser" into LocalStorage
@@ -97,55 +95,134 @@ export const AuthProvider = ({ children }) => {
           // Navigate to the Profile Page
           navigate("/profile");
         } catch (error) {
-          console.error(
-            "AuthProvider initializeGoogleSignIn callback error",
-            error
-          );
+          console.error("googleAccountsIdInitializeFlow callback error", error);
         }
       },
-      state_cookie_domain: "localhost",
-      // use_fedcm_for_prompt: true,
-      itp_support: true,
     });
-  }, [fetchCustomJWTCookie, fetchUser, navigate]);
 
-  const promptGoogleSignIn = useCallback(async () => {
-    google.accounts.id.prompt((notification) => {
-      console.log("promptGoogleSignIn notification:", notification);
+    google.accounts.id.prompt();
+  }, [fetchUser, navigate]);
 
-      // notification is an object
+  // ----------------------------------------------------------------
 
-      // on Firefox on "prompt" (if correctly displaying)
-      // { g: "display", h: true }
+  // eslint-disable-next-line
+  const googleAccountsOAuth2InitCodeClientPopupFlow = useCallback(async () => {
+    // AUTHORIZATION CODE FLOW EXAMPLE:
 
-      // on Firefox if successful returns
-      // { g: "dismissed", i: "credential_returned" }
+    // GIS POPUP UX
 
-      // on Google Chrome (when no Google User) returns:
-      // { g: "display", h : false, j: "opt_out_or_no_session"}
+    // This example shows only the Google Identity Service JavaScript library using
+    // the AUTHORIZATION CODE model a POPUP dialog for user consent and callback handler
+    // to receive the authorization code from Google.
+    // It is provided to illustrate the minimal number of steps required to
+    // configure a client, obtain consent and send an authorization code to your backend platform.
 
-      // on Google Chrome (when Google User Logged In)
-      // { g: "display", h: true }
-      // { g: "dismissed", i: "credential_returned" }
+    const googleAccountsOAuth2InitCodeClientPopupClient =
+      google.accounts.oauth2.initCodeClient({
+        client_id: `${import.meta.env.VITE_GOOGLE_CLIENT_ID}`,
+        scope: "profile email openid",
+        ux_mode: "popup",
+        callback: async (googleAuthorizationCodeResponse) => {
+          try {
+            const googleAuthorizationCode =
+              googleAuthorizationCodeResponse.code;
+            console.log(
+              "googleAccountsOAuth2InitCodeClientPopupFlow googleAuthorizationCode:",
+              googleAuthorizationCode
+            );
 
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        // Remove the "g_state" Cookie that Google Sign In creates
-        document.cookie =
-          "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        console.log(
-          "promptGoogleSignIn notification:",
-          notification.getNotDisplayedReason()
-        );
-      }
-    });
-  }, []);
+            // send the "Authorization Code" to the backend in the Request Header
+            // and Receive back an HTTP-Only Cookie with a CustomJWT inside
+            const response = await fetch(
+              `${
+                import.meta.env.VITE_SERVER_URL
+              }/api/auth/google/authorizationcode`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${googleAuthorizationCode}`,
+                },
+              }
+            );
+            console.log(
+              "googleAccountsOAuth2InitCodeClientPopupFlow response:",
+              response
+            );
 
-  // const login = useCallback(async () => {
-  //   // Initialize the Google Sign In Client
-  //   initializeGoogleSignIn();
-  //   // Display the Google Sign In Prompt
-  //   promptGoogleSignIn();
-  // }, [initializeGoogleSignIn, promptGoogleSignIn]);
+            if (!response.ok) {
+              throw new Error(
+                `Error: ${response.status} ${response.statusText} : googleAccountsOAuth2InitCodeClientPopupFlow response failed`
+              );
+            }
+
+            // Send a GET Request to /api/auth/user including our CustomJWT
+            // Receive back a JSON body of User Information
+            const user = await fetchUser();
+
+            if (!user) {
+              throw new Error(
+                "googleAccountsOAuth2InitCodeClientPopupFlow no user"
+              );
+            }
+
+            // Set "authenticatedUser" into LocalStorage
+            localStorage.setItem("authenticatedUser", JSON.stringify(user));
+
+            // Set the authenticatedUser React State
+            setAuthenticatedUser(user);
+
+            // Navigate to the Profile Page
+            navigate("/profile");
+          } catch (error) {
+            console.error(
+              "googleAccountsOAuth2InitCodeClientPopupFlow callback error",
+              error
+            );
+          }
+        },
+      });
+
+    googleAccountsOAuth2InitCodeClientPopupClient.requestCode();
+  }, [fetchUser, navigate]);
+
+  // ----------------------------------------------------------------
+
+  // eslint-disable-next-line
+  const googleAccountsOAuth2InitCodeClientRedirectFlow =
+    useCallback(async () => {
+      // AUTHORIZATION CODE FLOW EXAMPLE:
+
+      // GIS REDIRECT UX
+
+      // Authorization Code model supports the "popup" and "redirect" UX modes
+      // to send a per user authorization code to the endpoint hosted by your platform.
+      // The redirect UX mode is shown here:
+
+      const googleAccountsOAuth2InitCodeClientRedirect =
+        google.accounts.oauth2.initCodeClient({
+          client_id: `${import.meta.env.VITE_GOOGLE_CLIENT_ID}`,
+          scope: "profile email openid",
+          ux_mode: "redirect",
+          redirect_uri: `${
+            import.meta.env.VITE_SERVER_URL
+          }/api/auth/google/authorizationcode`,
+        });
+
+      googleAccountsOAuth2InitCodeClientRedirect.requestCode();
+
+      // After this we are redirected back to the Client Homepage...
+      // Need to then handle making a fetchUser() request to get the User information...
+      // (?) Or change the specific authController Handler to redirect to the other route /api/auth/user and then finally redirect back to the client...(?)
+    }, []);
+
+  const login = useCallback(async () => {
+    // Turn one on at a time to test...
+
+    // googleAccountsIdInitializeFlow();
+    googleAccountsOAuth2InitCodeClientPopupFlow();
+    // googleAccountsOAuth2InitCodeClientRedirectFlow();
+  }, [googleAccountsOAuth2InitCodeClientPopupFlow]);
 
   const logout = useCallback(() => {
     // Remove the "g_state" Cookie that Google Sign In creates
@@ -164,37 +241,21 @@ export const AuthProvider = ({ children }) => {
 
   const contextValue = useMemo(
     () => ({
-      // initializeGoogleSignIn,
-      promptGoogleSignIn,
+      login,
       logout,
       authenticatedUser,
     }),
-    [promptGoogleSignIn, logout, authenticatedUser]
+    [login, logout, authenticatedUser]
   );
 
   useEffect(() => {
-    console.log("useEffect Run");
-
-    // Everytime the useEffect runs
-    // Initialize the Google Sign In Client
-    // Not good ❌
-    // console.log("useEffect BASE initializeGoogleSignIn");
-    // initializeGoogleSignIn();
-
     // Get "authenticatedUser" from LocalStorage
     const authenticatedUserLocalStorage = JSON.parse(
-      localStorage.getItem("useEffect authenticatedUser")
-    );
-    console.log(
-      "useEffect authenticatedUserLocalStorage:",
-      authenticatedUserLocalStorage
+      localStorage.getItem("authenticatedUser")
     );
 
     // If there is no "authenticatedUser"
     if (!authenticatedUserLocalStorage) {
-      console.log("useEffect IF BLOCK 1️⃣ initializeGoogleSignIn");
-      // Initialize the Google Sign In Client
-      initializeGoogleSignIn();
       return;
     }
 
@@ -205,28 +266,19 @@ export const AuthProvider = ({ children }) => {
 
     // If there is an "authenticatedUser" but the CustomJWT has expired
     if (authenticatedUserLocalStorage && isCustomJWTExpired) {
-      console.log(
-        "useEffect IF BLOCK 2️⃣ localStorage BAD & initializeGoogleSignIn"
-      );
-
       // Remove the "authenticatedUser" from Local Storage
       localStorage.removeItem("authenticatedUser");
-
-      // Initialize the Google Sign In Client
-      initializeGoogleSignIn();
       return;
     }
 
     // there is an "authenticatedUser" and the CustomJWT is still valid
     if (authenticatedUserLocalStorage && !isCustomJWTExpired) {
-      console.log("useEffect IF BLOCK 3️⃣ localStorage GOOD");
-
       // If there is an "authenticatedUser"
       // Update the authenticatedUser React State with that user
       setAuthenticatedUser(authenticatedUserLocalStorage);
       return;
     }
-  }, [promptGoogleSignIn, initializeGoogleSignIn]);
+  }, []);
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
