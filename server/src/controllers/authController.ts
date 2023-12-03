@@ -111,8 +111,8 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     });
 
     logger.info({
-      message: "idTokenHandler res.getHeaders()",
-      value: res.getHeaders()
+      message: `idTokenHandler res.getHeaders()["set-cookie"]`,
+      value: res.getHeaders()["set-cookie"]
     });
 
     res.sendStatus(200);
@@ -263,8 +263,8 @@ export const authorizationCodePopupHandler = async (
     });
 
     logger.info({
-      message: "authorizationCodeRedirectHandler res.getHeaders()",
-      value: res.getHeaders()
+      message: `authorizationCodePopupHandler res.getHeaders()["set-cookie"]`,
+      value: res.getHeaders()["set-cookie"]
     });
 
     res.sendStatus(200);
@@ -404,8 +404,8 @@ export const authorizationCodeRedirectHandler = async (
     });
 
     logger.info({
-      message: "authorizationCodeRedirectHandler res.getHeaders()",
-      value: res.getHeaders()
+      message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
+      value: res.getHeaders()["set-cookie"]
     });
 
     // redirect to the Client (with the HTTP-Only Cookie containing Custom JWT)
