@@ -8,10 +8,10 @@ import Navigation from "./Navigation";
 const Header = () => {
   return (
     <Box
-      backgroundColor={consistentPrimaryBackgroundColor}
-      borderBottom={consistentHeaderFooterBorder}
       px={2}
-      pb={1}>
+      pb={1}
+      backgroundColor={consistentPrimaryBackgroundColor}
+      borderBottom={consistentHeaderFooterBorder}>
       <Box maxWidth={1200} mx={"auto"}>
         <Box
           display={"flex"}

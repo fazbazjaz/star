@@ -9,11 +9,11 @@ import CodeIcon from "@mui/icons-material/Code";
 const Footer = () => {
   return (
     <Box
-      borderTop={consistentHeaderFooterBorder}
-      backgroundColor={consistentPrimaryBackgroundColor}
       px={2}
       pt={2}
-      pb={3}>
+      pb={3}
+      borderTop={consistentHeaderFooterBorder}
+      backgroundColor={consistentPrimaryBackgroundColor}>
       <Box
         maxWidth={1200}
         mx={"auto"}
