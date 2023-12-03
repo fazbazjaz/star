@@ -42,7 +42,7 @@ const QuestionsPage = () => {
     fetchNextPage,
     // hasNextPage,
     // isFetching,
-    // isFetchingNextPage,
+    isFetchingNextPage,
     // status,
   } = useInfiniteQuery({
     queryKey: ["questions"],
@@ -129,7 +129,9 @@ const QuestionsPage = () => {
         variant={"contained"}
         onClick={fetchNextPage}
         sx={{ marginTop: 2 }}>
-        Fetch Next Page
+        {isFetchingNextPage // put in a conditional check about pages.length to display a third state "No More Questions To Load"
+          ? "Loading More Questions..."
+          : "Load More Questions"}
       </Button>
     </Box>
   );
