@@ -126,16 +126,16 @@ const seedTags = async () => {
 
 const seedAll = async () => {
   try {
-    console.log("Seeding: Attempting to Seed the Database");
+    console.log("➡️ Seeding: Attempting to Seed the Database");
 
     await seedRoles();
     await seedTags();
 
-    console.log("Seeding: Completed Seeding the Database");
+    console.log("✅ Seeding: Completed Seeding the Database");
 
     process.exit(0);
   } catch (error) {
-    console.log("Seeding: Error Seeding the Database");
+    console.log("❌ Seeding: Error Seeding the Database");
 
     process.exit(0);
   }
