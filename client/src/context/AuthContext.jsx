@@ -116,12 +116,12 @@ export const AuthProvider = ({ children }) => {
     });
   }, []);
 
-  const login = useCallback(async () => {
-    // Initialize the Google Sign In Client
-    initializeGoogleSignIn();
-    // Display the Google Sign In Prompt
-    promptGoogleSignIn();
-  }, [initializeGoogleSignIn, promptGoogleSignIn]);
+  // const login = useCallback(async () => {
+  //   // Initialize the Google Sign In Client
+  //   initializeGoogleSignIn();
+  //   // Display the Google Sign In Prompt
+  //   promptGoogleSignIn();
+  // }, [initializeGoogleSignIn, promptGoogleSignIn]);
 
   const logout = useCallback(() => {
     // Remove the "g_state" Cookie that Google Sign In creates
@@ -140,11 +140,12 @@ export const AuthProvider = ({ children }) => {
 
   const contextValue = useMemo(
     () => ({
-      login,
+      // initializeGoogleSignIn,
+      promptGoogleSignIn,
       logout,
       authenticatedUser,
     }),
-    [login, logout, authenticatedUser]
+    [promptGoogleSignIn, logout, authenticatedUser]
   );
 
   useEffect(() => {
@@ -152,14 +153,15 @@ export const AuthProvider = ({ children }) => {
     const authenticatedUserLocalStorage = JSON.parse(
       localStorage.getItem("authenticatedUser")
     );
+    // console.log(authenticatedUserLocalStorage);
 
     // If there is no "authenticatedUser"
     if (!authenticatedUserLocalStorage) {
+      // console.log("trigger second initial GSI");
       // Initialize the Google Sign In Client
       // initializeGoogleSignIn();
-
       // Call the Login function
-      login();
+      initializeGoogleSignIn();
       return;
     }
 
@@ -185,8 +187,12 @@ export const AuthProvider = ({ children }) => {
       setAuthenticatedUser(authenticatedUserLocalStorage);
       return;
     }
-  }, [login]); // initializeGoogleSignIn
+  }, [initializeGoogleSignIn, promptGoogleSignIn]); // initializeGoogleSignIn
 
+  useEffect(() => {
+    // console.log("trigger first initial GSI");
+    initializeGoogleSignIn();
+  }, [initializeGoogleSignIn]);
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
