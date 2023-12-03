@@ -222,7 +222,7 @@ export const AuthProvider = ({ children }) => {
     // googleAccountsIdInitializeFlow();
     googleAccountsOAuth2InitCodeClientPopupFlow();
     // googleAccountsOAuth2InitCodeClientRedirectFlow();
-  }, [googleAccountsOAuth2InitCodeClientPopupFlow]);
+  }, []);
 
   const logout = useCallback(() => {
     // Remove the "g_state" Cookie that Google Sign In creates
