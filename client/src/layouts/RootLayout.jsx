@@ -26,9 +26,9 @@ const RootLayout = () => {
               sx={{
                 backgroundImage: consistentPageBackgroundImage,
                 backgroundSize: "cover",
-                backgroundPosition: "center center",
+                backgroundPositionX: "center",
+                backgroundAttachment: "fixed",
                 backgroundRepeat: "no-repeat",
-                overflow: "hidden",
               }}>
               <Box maxWidth={1200} mx={"auto"}>
                 <Outlet />
