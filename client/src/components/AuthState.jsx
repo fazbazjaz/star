@@ -15,8 +15,7 @@ const AuthState = () => {
       flexDirection={"column"}
       p={1}
       borderBottom={consistentHeaderFooterBorder}
-      backgroundColor={consistentPrimaryBackgroundColor}
-      color={"white"}>
+      backgroundColor={consistentPrimaryBackgroundColor}>
       <Typography fontSize={10} fontWeight={700}>
         AuthProvider State &quot;user&quot;
       </Typography>

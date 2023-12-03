@@ -1,4 +1,4 @@
-import { disconnectFromDatabase } from "../../helpers/database";
+import { disconnectFromDatabase } from "../helpers/database";
 import { getAllUsers, createUser, getUserById } from "../../helpers/users";
 import { cleanAll } from "../helpers/dbCleaner";
 

@@ -2,12 +2,7 @@ import { Box, Typography } from "@mui/material";
 
 const Hero = () => {
   return (
-    <Box
-      display={"flex"}
-      flexDirection={"column"}
-      alignItems={"center"}
-      py={6}
-      color={"white"}>
+    <Box display={"flex"} flexDirection={"column"} alignItems={"center"} py={6}>
       <Typography align={"center"} variant={"h2"} marked={"center"}>
         STAR - Situation, Task, Action, Result!
       </Typography>
