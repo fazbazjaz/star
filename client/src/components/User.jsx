@@ -13,7 +13,7 @@ const User = ({ userData }) => {
           value = `${value.split("@")[0].slice(0, 3)}~@${value.split("@")[1]}`;
         } else if (key === "picture") {
           value = `~${value.slice(-10)}`;
-        } else if (key === "created_at" || key === "updated_at") {
+        } else if (key === "createdAt" || key === "updatedAt") {
           return;
         }
         return (

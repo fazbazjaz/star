@@ -66,7 +66,7 @@ const UsersPage = () => {
               mt={1}>
               {Object.values(usersData).map((userData) => {
                 return Object.keys(userData).map((key, index, array) => {
-                  if (key === "created_at" || key === "updated_at") {
+                  if (key === "createdAt" || key === "updatedAt") {
                     return;
                   }
                   return (
