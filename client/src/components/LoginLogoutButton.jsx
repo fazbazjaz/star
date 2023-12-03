@@ -5,9 +5,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 const LoginLogoutButton = () => {
-  // const { authenticatedUser, login, logout } = useContext(AuthContext);
-  const { authenticatedUser, promptGoogleSignIn, logout } =
-    useContext(AuthContext);
+  const { authenticatedUser, login, logout } = useContext(AuthContext);
 
   return (
     <Box marginLeft={{ xs: "inherit", sm: "auto" }}>
@@ -22,9 +20,7 @@ const LoginLogoutButton = () => {
         <Button
           variant="contained"
           startIcon={<LoginIcon />}
-          onClick={() => {
-            promptGoogleSignIn();
-          }}>
+          onClick={() => login()}>
           Login
         </Button>
       )}

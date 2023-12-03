@@ -217,12 +217,11 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
   const login = useCallback(async () => {
-    // Turn one on at a time to test...
-
-    // googleAccountsIdInitializeFlow();
-    googleAccountsOAuth2InitCodeClientPopupFlow();
+    // TURN ON ONE AT A TIME TO TEST:
+    googleAccountsIdInitializeFlow();
+    // googleAccountsOAuth2InitCodeClientPopupFlow();
     // googleAccountsOAuth2InitCodeClientRedirectFlow();
-  }, [googleAccountsOAuth2InitCodeClientPopupFlow]);
+  }, [googleAccountsIdInitializeFlow]);
 
   const logout = useCallback(() => {
     // Remove the "g_state" Cookie that Google Sign In creates
