@@ -125,10 +125,20 @@ const seedTags = async () => {
 };
 
 const seedAll = async () => {
-  console.log("Seeding: Attempting to Seed the Database");
-  await seedRoles();
-  await seedTags();
-  console.log("Seeding: Completed Seeding the Database");
+  try {
+    console.log("Seeding: Attempting to Seed the Database");
+
+    await seedRoles();
+    await seedTags();
+
+    console.log("Seeding: Completed Seeding the Database");
+
+    process.exit(0);
+  } catch (error) {
+    console.log("Seeding: Error Seeding the Database");
+
+    process.exit(0);
+  }
 };
 
 seedAll();
