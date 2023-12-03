@@ -64,24 +64,25 @@ const UsersPage = () => {
                 "repeat(7, minmax(min-content, max-content))"
               }
               mt={1}>
-              {Object.values(usersData).map((userData) => {
-                return Object.keys(userData).map((key, index, array) => {
-                  if (key === "createdAt" || key === "updatedAt") {
-                    return;
-                  }
-                  return (
-                    <Box key={key}>
-                      <Typography
-                        p={1}
-                        borderRight={
-                          array.length - 3 !== index ? consistentBorder : null
-                        }
-                        borderBottom={consistentBorder}>
-                        {key}
-                      </Typography>
-                    </Box>
-                  );
-                });
+              {Object.keys(usersData[0]).map((columnHeading, index, array) => {
+                if (
+                  columnHeading === "createdAt" ||
+                  columnHeading === "updatedAt"
+                ) {
+                  return;
+                }
+                return (
+                  <Box key={columnHeading}>
+                    <Typography
+                      p={1}
+                      borderRight={
+                        array.length - 3 !== index ? consistentBorder : null
+                      }
+                      borderBottom={consistentBorder}>
+                      {columnHeading}
+                    </Typography>
+                  </Box>
+                );
               })}
               {usersData.map((userData) => (
                 <User key={userData.id} userData={userData} />
