@@ -103,15 +103,39 @@ export const AuthProvider = ({ children }) => {
           );
         }
       },
+      state_cookie_domain: "localhost",
+      // use_fedcm_for_prompt: true,
+      itp_support: true,
     });
   }, [fetchCustomJWTCookie, fetchUser, navigate]);
 
   const promptGoogleSignIn = useCallback(async () => {
     google.accounts.id.prompt((notification) => {
+      console.log("promptGoogleSignIn notification:", notification);
+
+      // notification is an object
+
+      // on Firefox on "prompt" (if correctly displaying)
+      // { g: "display", h: true }
+
+      // on Firefox if successful returns
+      // { g: "dismissed", i: "credential_returned" }
+
+      // on Google Chrome (when no Google User) returns:
+      // { g: "display", h : false, j: "opt_out_or_no_session"}
+
+      // on Google Chrome (when Google User Logged In)
+      // { g: "display", h: true }
+      // { g: "dismissed", i: "credential_returned" }
+
       if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
         // Remove the "g_state" Cookie that Google Sign In creates
         document.cookie =
           "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        console.log(
+          "promptGoogleSignIn notification:",
+          notification.getNotDisplayedReason()
+        );
       }
     });
   }, []);
@@ -149,18 +173,27 @@ export const AuthProvider = ({ children }) => {
   );
 
   useEffect(() => {
+    console.log("useEffect Run");
+
+    // Everytime the useEffect runs
+    // Initialize the Google Sign In Client
+    // Not good ❌
+    // console.log("useEffect BASE initializeGoogleSignIn");
+    // initializeGoogleSignIn();
+
     // Get "authenticatedUser" from LocalStorage
     const authenticatedUserLocalStorage = JSON.parse(
-      localStorage.getItem("authenticatedUser")
+      localStorage.getItem("useEffect authenticatedUser")
     );
-    // console.log(authenticatedUserLocalStorage);
+    console.log(
+      "useEffect authenticatedUserLocalStorage:",
+      authenticatedUserLocalStorage
+    );
 
     // If there is no "authenticatedUser"
     if (!authenticatedUserLocalStorage) {
-      // console.log("trigger second initial GSI");
+      console.log("useEffect IF BLOCK 1️⃣ initializeGoogleSignIn");
       // Initialize the Google Sign In Client
-      // initializeGoogleSignIn();
-      // Call the Login function
       initializeGoogleSignIn();
       return;
     }
@@ -172,27 +205,29 @@ export const AuthProvider = ({ children }) => {
 
     // If there is an "authenticatedUser" but the CustomJWT has expired
     if (authenticatedUserLocalStorage && isCustomJWTExpired) {
+      console.log(
+        "useEffect IF BLOCK 2️⃣ localStorage BAD & initializeGoogleSignIn"
+      );
+
       // Remove the "authenticatedUser" from Local Storage
       localStorage.removeItem("authenticatedUser");
 
       // Initialize the Google Sign In Client
-      // initializeGoogleSignIn();
+      initializeGoogleSignIn();
       return;
     }
 
     // there is an "authenticatedUser" and the CustomJWT is still valid
     if (authenticatedUserLocalStorage && !isCustomJWTExpired) {
+      console.log("useEffect IF BLOCK 3️⃣ localStorage GOOD");
+
       // If there is an "authenticatedUser"
       // Update the authenticatedUser React State with that user
       setAuthenticatedUser(authenticatedUserLocalStorage);
       return;
     }
-  }, [initializeGoogleSignIn, promptGoogleSignIn]); // initializeGoogleSignIn
+  }, [promptGoogleSignIn, initializeGoogleSignIn]);
 
-  useEffect(() => {
-    // console.log("trigger first initial GSI");
-    initializeGoogleSignIn();
-  }, [initializeGoogleSignIn]);
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
