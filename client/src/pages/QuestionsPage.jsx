@@ -85,44 +85,46 @@ const QuestionsPage = () => {
       {/* {isPending && <Loading />} */}
       {/* {isError && <Error message={error.message} />} */}
       {questionsByCursorData && (
-        <Box>
-          <Box display={"flex"} justifyContent={"space-between"}>
-            <Typography variant={"pagetitle"}>
-              All Questions (
-              {questionsByCursorData.pages
-                .map((page) => page.data.length)
-                .reduce((acc, cv) => acc + cv, 0)}
-              )
-            </Typography>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => setShowAddQuestionForm((prev) => !prev)}
-              disabled={showAddQuestionForm}
-              sx={{ display: "flex", gap: 0.5 }}>
-              Add a Question
-            </Button>
-          </Box>
-          {showAddQuestionForm && (
-            <QuestionForm setShowAddQuestionForm={setShowAddQuestionForm} />
-          )}
-          <Box display={"grid"} gap={2} mt={1}>
-            {questionsByCursorData?.pages.map((page) =>
-              page?.data.map((questionData) => (
-                <Question key={questionData.id} questionData={questionData} />
-              ))
+        <>
+          <Box>
+            <Box display={"flex"} justifyContent={"space-between"}>
+              <Typography variant={"pagetitle"}>
+                All Questions (
+                {questionsByCursorData.pages
+                  .map((page) => page.data.length)
+                  .reduce((acc, cv) => acc + cv, 0)}
+                )
+              </Typography>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => setShowAddQuestionForm((prev) => !prev)}
+                disabled={showAddQuestionForm}
+                sx={{ display: "flex", gap: 0.5 }}>
+                Add a Question
+              </Button>
+            </Box>
+            {showAddQuestionForm && (
+              <QuestionForm setShowAddQuestionForm={setShowAddQuestionForm} />
             )}
+            <Box display={"grid"} gap={2} mt={1}>
+              {questionsByCursorData?.pages.map((page) =>
+                page?.data.map((questionData) => (
+                  <Question key={questionData.id} questionData={questionData} />
+                ))
+              )}
+            </Box>
           </Box>
-        </Box>
+          <Button
+            variant={"contained"}
+            onClick={fetchNextPage}
+            sx={{ marginTop: 2 }}>
+            {isFetchingNextPage // put in a conditional check about pages.length to display a third state "No More Questions To Load"
+              ? "Loading More Questions..."
+              : "Load More Questions"}
+          </Button>
+        </>
       )}
-      <Button
-        variant={"contained"}
-        onClick={fetchNextPage}
-        sx={{ marginTop: 2 }}>
-        {isFetchingNextPage // put in a conditional check about pages.length to display a third state "No More Questions To Load"
-          ? "Loading More Questions..."
-          : "Load More Questions"}
-      </Button>
     </Box>
   );
 };
