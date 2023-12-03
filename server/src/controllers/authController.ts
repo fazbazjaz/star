@@ -111,7 +111,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     });
 
     logger.info({
-      message: "authorizationCodeRedirectHandler res.getHeaders()",
+      message: "idTokenHandler res.getHeaders()",
       value: res.getHeaders()
     });
 
