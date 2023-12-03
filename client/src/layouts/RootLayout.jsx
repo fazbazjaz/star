@@ -30,7 +30,7 @@ const RootLayout = () => {
                 backgroundRepeat: "no-repeat",
                 overflow: "hidden",
               }}>
-              <Box maxWidth={1200} marginX={"auto"}>
+              <Box maxWidth={1200} mx={"auto"}>
                 <Outlet />
               </Box>
             </Box>
