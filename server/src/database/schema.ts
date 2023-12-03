@@ -25,8 +25,8 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   email: varchar("email").unique(),
   picture: varchar("picture"),
-  created_at: timestamp("created_at").defaultNow(),
-  updated_at: timestamp("updated_at").defaultNow()
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 
 // Relation for Users Table
