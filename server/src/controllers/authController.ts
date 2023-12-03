@@ -6,205 +6,74 @@ import { createUser, getUserByGoogleId } from "../helpers/users";
 import { logger } from "../logger";
 
 export const idTokenHandler = async (req: Request, res: Response) => {
+  logger.info({
+    message: "idTokenHandler req.headers.host",
+    value: req.headers["host"]
+  });
+
+  const oAuth2Client = new OAuth2Client();
+
+  const authorizationHeader = req.headers["authorization"];
+  logger.info({
+    message: "idTokenHandler authorizationHeader",
+    value: authorizationHeader
+  });
+
+  if (!authorizationHeader || typeof authorizationHeader !== "string") {
+    return res
+      .status(401)
+      .json({ error: "Authorization Header missing or invalid" });
+  }
+
+  const jwtTokenParts = authorizationHeader.split(" ");
+  logger.info({
+    message: "idTokenHandler jwtTokenParts",
+    value: jwtTokenParts
+  });
+
+  if (
+    jwtTokenParts.length !== 2 ||
+    jwtTokenParts[0].toLowerCase() !== "bearer"
+  ) {
+    return res
+      .status(401)
+      .json({ error: "Invalid Authorization Header format" });
+  }
+
+  const idToken = jwtTokenParts[1];
+  logger.info({ message: "idTokenHandler idToken", value: idToken });
+
+  let verifyIdToken;
+
   try {
-    const oAuth2Client = new OAuth2Client();
-
-    const authorizationHeader = req.headers["authorization"];
-    logger.info({
-      message: "idTokenHandler authorizationHeader",
-      value: authorizationHeader
-    });
-
-    if (!authorizationHeader || typeof authorizationHeader !== "string") {
-      return res
-        .status(401)
-        .json({ error: "Authorization Header missing or invalid" });
-    }
-
-    const jwtTokenParts = authorizationHeader.split(" ");
-    logger.info({
-      message: "idTokenHandler jwtTokenParts",
-      value: jwtTokenParts
-    });
-
-    if (
-      jwtTokenParts.length !== 2 ||
-      jwtTokenParts[0].toLowerCase() !== "bearer"
-    ) {
-      return res
-        .status(401)
-        .json({ error: "Invalid Authorization Header format" });
-    }
-
-    const idToken = jwtTokenParts[1];
-    logger.info({ message: "idTokenHandler idToken", value: idToken });
-
-    const verifyIdToken = await oAuth2Client.verifyIdToken({
+    verifyIdToken = await oAuth2Client.verifyIdToken({
       idToken,
       audience: process.env.GOOGLE_CLIENT_ID
     });
-
-    logger.info({
-      message: "idTokenHandler verifyIdToken",
-      value: verifyIdToken
-    });
-
-    if (!verifyIdToken) {
-      return res.status(401).json({ error: "Invalid ID Token" });
-    }
-
-    const idTokenPayload = verifyIdToken.getPayload();
-
-    if (!idTokenPayload) {
-      return res.status(401).json({ error: "Invalid ID Token Payload" });
-    }
-
-    const userGoogleId = idTokenPayload.sub;
-    const userFirstName = idTokenPayload.given_name;
-    const userLastName = idTokenPayload.family_name;
-    const userEmail = idTokenPayload.email;
-    const userPicture = idTokenPayload.picture;
-
-    let user = await getUserByGoogleId(userGoogleId);
-
-    if (!user || user.length === 0) {
-      user = await createUser({
-        googleId: userGoogleId,
-        firstName: userFirstName,
-        lastName: userLastName,
-        email: userEmail,
-        picture: userPicture
-      });
-    }
-    logger.info({ message: "idTokenHandler user", value: user });
-
-    const userId = user[0].id;
-    logger.info({ message: "idTokenHandler userId", value: userId });
-
-    const customJWTPayload: CustomJWTPayload = {
-      id: userId,
-      googleId: userGoogleId
-    };
-    logger.info({
-      message: "idTokenHandler customJWTPayload",
-      value: customJWTPayload
-    });
-
-    const customJWT = jwt.sign(
-      customJWTPayload,
-      process.env.JWT_SECRET as Secret,
-      {
-        expiresIn: "1h"
-      }
-    );
-    logger.info({ message: "idTokenHandler customJWT", value: customJWT });
-
-    if (!customJWT) {
-      return res.status(500).json({ error: "Error signing a new customJWT" });
-    }
-
-    res.cookie("customJWT", customJWT, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 3600000
-    });
-
-    res.sendStatus(200);
   } catch (error) {
-    logger.error(error);
-    res.status(500).json({ error: "Server Error" });
+    return res.status(401).json({ error: "Invalid ID Token" });
   }
-};
+  logger.info({
+    message: "idTokenHandler verifyIdToken",
+    value: verifyIdToken
+  });
 
-// ------------------------------------------------------------------
+  const idTokenPayload = verifyIdToken.getPayload();
 
-export const authorizationCodePopupHandler = async (
-  req: Request,
-  res: Response
-) => {
+  if (!idTokenPayload) {
+    return res.status(401).json({ error: "Invalid ID Token Payload" });
+  }
+
+  const userGoogleId = idTokenPayload.sub;
+  const userFirstName = idTokenPayload.given_name;
+  const userLastName = idTokenPayload.family_name;
+  const userEmail = idTokenPayload.email;
+  const userPicture = idTokenPayload.picture;
+
+  let user;
+
   try {
-    const oAuth2Client = new OAuth2Client(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      "postmessage"
-    );
-
-    const authorizationHeader = req.headers["authorization"];
-    logger.info({
-      message: "authorizationCodePopupHandler authorizationHeader",
-      value: authorizationHeader
-    });
-
-    if (!authorizationHeader || typeof authorizationHeader !== "string") {
-      return res
-        .status(401)
-        .json({ error: "Authorization Header missing or invalid" });
-    }
-
-    const authorizationCode = authorizationHeader.split(" ")[1] as string;
-    logger.info({
-      message: "authorizationCodePopupHandler authorizationCode",
-      value: authorizationCode
-    });
-
-    if (!authorizationCode) {
-      return res.status(401).json({ error: "No Authorization Code Provided" });
-    }
-
-    // exchange the AUTHORIZATION CODE for ACCESS TOKEN, REFRESH TOKEN, and ID TOKEN
-    const response = await oAuth2Client.getToken(authorizationCode);
-    logger.info({
-      message: "authorizationCodePopupHandler response",
-      value: response
-    });
-    logger.info({
-      message: "authorizationCodePopupHandler response.tokens",
-      value: response.tokens
-    });
-
-    // get the ACCESS TOKEN, REFRESH TOKEN, ID TOKEN, and Token Expiry Date
-    const {
-      // access_token: accessToken,
-      // refresh_token: refreshToken,
-      id_token: idToken
-      // expiry_date: tokenExpiryDate
-    } = response.tokens;
-    logger.info({
-      message: "authorizationCodePopupHandler idToken",
-      value: idToken
-    });
-
-    // verify the ID TOKEN
-    const verifyIdToken = await oAuth2Client.verifyIdToken({
-      idToken: idToken as string,
-      audience: process.env.GOOGLE_CLIENT_ID
-    });
-    console.log("authorizationCodePopupHandler verifyIdToken:", verifyIdToken);
-    logger.info({
-      message: "authorizationCodePopupHandler verifyIdToken",
-      value: verifyIdToken
-    });
-
-    // get the PAYLOAD from the ID TOKEN
-    const idTokenPayload = verifyIdToken.getPayload();
-    logger.info({
-      message: "authorizationCodePopupHandler tokenPayload",
-      value: idTokenPayload
-    });
-
-    if (!idTokenPayload) {
-      return res.status(401).json({ error: "Invalid ID Token Payload" });
-    }
-
-    const userGoogleId = idTokenPayload.sub;
-    const userFirstName = idTokenPayload.given_name;
-    const userLastName = idTokenPayload.family_name;
-    const userEmail = idTokenPayload.email;
-    const userPicture = idTokenPayload.picture;
-
-    let user = await getUserByGoogleId(userGoogleId);
-
+    user = await getUserByGoogleId(userGoogleId);
     if (!user || user.length === 0) {
       user = await createUser({
         googleId: userGoogleId,
@@ -214,204 +83,45 @@ export const authorizationCodePopupHandler = async (
         picture: userPicture
       });
     }
-    logger.info({
-      message: "authorizationCodePopupHandler user",
-      value: user
-    });
-
-    const userId = user[0].id;
-    logger.info({
-      message: "authorizationCodePopupHandler userId",
-      value: userId
-    });
-
-    const customJWTPayload: CustomJWTPayload = {
-      id: userId,
-      googleId: userGoogleId
-    };
-    logger.info({
-      message: "authorizationCodePopupHandler customJWTPayload",
-      value: customJWTPayload
-    });
-
-    const customJWT = jwt.sign(
-      customJWTPayload,
-      process.env.JWT_SECRET as Secret,
-      {
-        expiresIn: "1h"
-      }
-    );
-    logger.info({
-      message: "authorizationCodePopupHandler customJWT",
-      value: customJWT
-    });
-
-    if (!customJWT) {
-      return res.status(500).json({ error: "Error signing a new customJWT" });
-    }
-
-    res.cookie("customJWT", customJWT, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 3600000
-    });
-
-    logger.info({
-      message: "authorizationCodeRedirectHandler res.getHeaders()",
-      value: res.getHeaders()
-    });
-
-    res.sendStatus(200);
   } catch (error) {
-    logger.error(error);
     return res.status(500).json({ error: "Server Error" });
   }
-};
 
-// ------------------------------------------------------------------
+  logger.info({ message: "idTokenHandler user", value: user });
 
-export const authorizationCodeRedirectHandler = async (
-  req: Request,
-  res: Response
-) => {
-  try {
-    const oAuth2Client = new OAuth2Client(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_REDIRECT_URI
-    );
+  const userId = user[0].id;
 
-    const authorizationCode = req.query.code as string;
-    logger.info({
-      message: "authorizationCodeRedirectHandler authorizationCode",
-      value: authorizationCode
-    });
+  const customJWTPayload: CustomJWTPayload = {
+    id: userId,
+    googleId: userGoogleId
+  };
+  logger.info({
+    message: "idTokenHandler customJWTPayload",
+    value: customJWTPayload
+  });
 
-    if (!authorizationCode) {
-      return res
-        .status(401)
-        .json({ error: "Invalid Authorization Code Provided" });
+  const customJWT = jwt.sign(
+    customJWTPayload,
+    process.env.JWT_SECRET as Secret,
+    {
+      expiresIn: "1h"
     }
+  );
+  logger.info({ message: "idTokenHandler customJWT", value: customJWT });
 
-    // exchange the AUTHORIZATION CODE for ACCESS TOKEN, REFRESH TOKEN, and ID TOKEN
-    const response = await oAuth2Client.getToken(authorizationCode);
-    logger.info({
-      message: "authorizationCodeRedirectHandler response",
-      value: response
-    });
-    logger.info({
-      message: "authorizationCodeRedirectHandler response.tokens",
-      value: response.tokens
-    });
-
-    // get the ACCESS TOKEN, REFRESH TOKEN, ID TOKEN, and Token Expiry Date
-    const {
-      // access_token: accessToken,
-      // refresh_token: refreshToken,
-      id_token: idToken
-      // expiry_date: tokenExpiryDate
-    } = response.tokens;
-    logger.info({
-      message: "authorizationCodeRedirectHandler idToken",
-      value: idToken
-    });
-
-    // verify the ID TOKEN
-    const verifyIdToken = await oAuth2Client.verifyIdToken({
-      idToken: idToken as string,
-      audience: process.env.GOOGLE_CLIENT_ID
-    });
-    logger.info({
-      message: "authorizationCodeRedirectHandler verifyIdToken",
-      value: verifyIdToken
-    });
-
-    // get the PAYLOAD from the ID TOKEN
-    const idTokenPayload = verifyIdToken.getPayload();
-    logger.info({
-      message: "authorizationCodeRedirectHandler tokenPayload",
-      value: idTokenPayload
-    });
-
-    if (!idTokenPayload) {
-      return res.status(401).json({ error: "Invalid ID Token Payload" });
-    }
-
-    const userGoogleId = idTokenPayload.sub;
-    const userFirstName = idTokenPayload.given_name;
-    const userLastName = idTokenPayload.family_name;
-    const userEmail = idTokenPayload.email;
-    const userPicture = idTokenPayload.picture;
-
-    let user = await getUserByGoogleId(userGoogleId);
-
-    if (!user || user.length === 0) {
-      user = await createUser({
-        googleId: userGoogleId,
-        firstName: userFirstName,
-        lastName: userLastName,
-        email: userEmail,
-        picture: userPicture
-      });
-    }
-    logger.info({
-      message: "authorizationCodeRedirectHandler user",
-      value: user
-    });
-
-    const userId = user[0].id;
-    logger.info({
-      message: "authorizationCodeRedirectHandler userId",
-      value: userId
-    });
-
-    const customJWTPayload: CustomJWTPayload = {
-      id: userId,
-      googleId: userGoogleId
-    };
-    logger.info({
-      message: "authorizationCodeRedirectHandler customJWTPayload",
-      value: customJWTPayload
-    });
-
-    const customJWT = jwt.sign(
-      customJWTPayload,
-      process.env.JWT_SECRET as Secret,
-      {
-        expiresIn: "1h"
-      }
-    );
-    logger.info({
-      message: "authorizationCodeRedirectHandler customJWT",
-      value: customJWT
-    });
-
-    if (!customJWT) {
-      return res.status(500).json({ error: "Error signing a new customJWT" });
-    }
-
-    res.cookie("customJWT", customJWT, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 3600000
-    });
-
-    logger.info({
-      message: "authorizationCodeRedirectHandler res.getHeaders()",
-      value: res.getHeaders()
-    });
-
-    // redirect to the Client (with the HTTP-Only Cookie containing Custom JWT)
-    res.redirect(`http://localhost:3000/`);
-  } catch (error) {
-    logger.error(error);
-    return res.status(500).json({ error: "Server Error" });
+  if (!customJWT) {
+    return res.status(500).json({ error: "Error signing a new customJWT" });
   }
-};
 
-// ------------------------------------------------------------------
+  res.cookie("customJWT", customJWT, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 3600000
+  });
+
+  res.sendStatus(200);
+};
 
 export const userHandler = async (req: Request, res: Response) => {
   const cookies = req.cookies;
@@ -489,7 +199,10 @@ export const userHandler = async (req: Request, res: Response) => {
 
     res.status(200).json(user);
   } catch (error) {
-    logger.error(error);
+    logger.info({
+      message: "userHandler error",
+      value: error
+    });
     res.status(500).json({ error: "Server Error" });
   }
 };
