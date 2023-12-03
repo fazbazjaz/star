@@ -185,7 +185,6 @@ export const authorizationCodePopupHandler = async (
       idToken: idToken as string,
       audience: process.env.GOOGLE_CLIENT_ID
     });
-    console.log("authorizationCodePopupHandler verifyIdToken:", verifyIdToken);
     logger.info({
       message: "authorizationCodePopupHandler verifyIdToken",
       value: verifyIdToken
