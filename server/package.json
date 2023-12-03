@@ -13,13 +13,13 @@
     "prettier": "node node_modules/prettier/bin/prettier.cjs --config .prettierrc . --write",
     "lint:fix": "node node_modules/eslint/bin/eslint.js . --fix",
     "test": "cross-env NODE_ENV=test node node_modules/jest/bin/jest.js --runInBand",
-    "database:migration:check": "drizzle-kit check:pg --config=./src/database/drizzle.config.ts",
-    "database:update:metadata": "drizzle-kit up:pg --config=./src/database/drizzle.config.ts",
-    "database:migration:generate": "drizzle-kit generate:pg --config=./src/database/drizzle.config.ts",
+    "database:migration:check": "drizzle-kit check:pg --config=./src/database/config.ts",
+    "database:update:metadata": "drizzle-kit up:pg --config=./src/database/config.ts",
+    "database:migration:generate": "drizzle-kit generate:pg --config=./src/database/config.ts",
     "database:migration:apply": "ts-node src/database/applyMigration.ts",
     "database:migration": "npm run database:migration:check && npm run database:update:metadata && npm run database:migration:generate && npm run database:migration:apply && npm run database:seed",
     "database:seed": "ts-node src/database/seed.ts",
-    "database:studio": "drizzle-kit studio --config=./src/database/drizzle.config.ts"
+    "database:studio": "drizzle-kit studio --config=./src/database/config.ts"
   },
   "dependencies": {
     "cookie-parser": "^1.4.6",
