@@ -21,6 +21,9 @@ const theme = createTheme({
     secondary: {
       main: purple[600],
     },
+    text: {
+      primary: "rgba(255, 255, 255, 1)",
+    },
   },
   typography: {
     fontFamily: "Inter Variable",

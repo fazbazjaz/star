@@ -18,8 +18,7 @@ const RootLayout = () => {
           <Box
             minHeight={"100vh"}
             display={"grid"}
-            gridTemplateRows={"auto 1fr auto"}
-            color="white">
+            gridTemplateRows={"auto 1fr auto"}>
             <Header />
             {/* <AuthState /> */}
             <Box
