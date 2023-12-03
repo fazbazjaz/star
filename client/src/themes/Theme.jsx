@@ -71,6 +71,10 @@ const theme = createTheme({
       fontSize: "1.2rem",
       fontWeight: "500",
     },
+    tabletitle: {
+      fontSize: "1.1rem",
+      fontWeight: "500",
+    },
   },
 });
 

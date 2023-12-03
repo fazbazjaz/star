@@ -3,6 +3,13 @@ import { Box, Typography } from "@mui/material";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import User from "../components/User";
+import {
+  consistentBorder,
+  consistentBorderRadius,
+  consistentBgColor,
+  consistentBoxShadow,
+  consistentBackdropFilter,
+} from "../themes/ConsistentStyles";
 
 const UsersPage = () => {
   const fetchAllUsers = async () => {
@@ -38,18 +45,47 @@ const UsersPage = () => {
           <Box>
             <Typography variant={"pagetitle"}>Users Page</Typography>
           </Box>
-          <Box mt={1}>
-            <Box>
-              <Typography variant={"body"}>
-                users Table from the Database
-              </Typography>
-            </Box>
-            <Box display={"grid"} rowGap={1} mt={1}>
-              {usersData &&
-                usersData.length > 0 &&
-                usersData.map((userData) => {
-                  return <User key={userData.id} userData={userData} />;
-                })}
+          <Box
+            mt={1}
+            p={2}
+            border={consistentBorder}
+            borderRadius={consistentBorderRadius}
+            bgcolor={consistentBgColor}
+            boxShadow={consistentBoxShadow}
+            sx={{
+              backdropFilter: consistentBackdropFilter,
+            }}>
+            <Typography variant={"tabletitle"} color={"primary"}>
+              users Table from the Database
+            </Typography>
+            <Box
+              display={"grid"}
+              gridTemplateColumns={
+                "repeat(7, minmax(min-content, max-content))"
+              }
+              mt={1}>
+              {Object.values(usersData).map((userData) => {
+                return Object.keys(userData).map((key, index, array) => {
+                  if (key === "created_at" || key === "updated_at") {
+                    return;
+                  }
+                  return (
+                    <Box key={key}>
+                      <Typography
+                        p={1}
+                        borderRight={
+                          array.length - 3 !== index ? consistentBorder : null
+                        }
+                        borderBottom={consistentBorder}>
+                        {key}
+                      </Typography>
+                    </Box>
+                  );
+                });
+              })}
+              {usersData.map((userData) => (
+                <User key={userData.id} userData={userData} />
+              ))}
             </Box>
           </Box>
         </>
