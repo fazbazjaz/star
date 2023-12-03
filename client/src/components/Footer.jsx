@@ -4,6 +4,7 @@ import {
   consistentPrimaryBackgroundColor,
   consistentHeaderFooterBorder,
 } from "../themes/ConsistentStyles";
+import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import CodeIcon from "@mui/icons-material/Code";
 
 const Footer = () => {
@@ -28,7 +29,10 @@ const Footer = () => {
             target={"_blank"}
             underline={"hover"}
             variant={"body1"}>
-            CodeYourFuture
+            <Box display={"flex"} gap={0.5}>
+              <PeopleRoundedIcon />
+              <Typography>CodeYourFuture</Typography>
+            </Box>
           </Link>
         </Box>
         <Box display={"flex"} flexDirection={"column"}>
