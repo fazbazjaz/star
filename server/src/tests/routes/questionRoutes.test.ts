@@ -2,7 +2,7 @@ import supertest from "supertest";
 import { createUser } from "../../helpers/users";
 import { createQuestion } from "../../helpers/questions";
 import { cleanAll } from "../helpers/dbCleaner";
-import { disconnectFromDatabase } from "../../helpers/database";
+import { disconnectFromDatabase } from "../helpers/database";
 import { createAppWithQuestionRoutes } from "../helpers/appFactory";
 
 describe("Questions Routes", () => {

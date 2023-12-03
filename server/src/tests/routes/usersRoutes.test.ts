@@ -1,7 +1,7 @@
 import supertest from "supertest";
 import jwt, { Secret } from "jsonwebtoken";
 import { app } from "../../app";
-import { disconnectFromDatabase } from "../../helpers/database";
+import { disconnectFromDatabase } from "../helpers/database";
 import { createUser } from "../../helpers/users";
 import { cleanAll } from "../helpers/dbCleaner";
 import { CustomJWTPayload } from "../../types/types";
