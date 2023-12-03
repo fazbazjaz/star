@@ -3,7 +3,13 @@ import { Box, Typography } from "@mui/material";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import User from "../components/User";
-import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
+import {
+  consistentBorder,
+  consistentBorderRadius,
+  consistentBgColor,
+  consistentBoxShadow,
+  consistentBackdropFilter,
+} from "../themes/ConsistentStyles";
 
 const UsersPage = () => {
   const fetchAllUsers = async () => {
@@ -31,16 +37,7 @@ const UsersPage = () => {
   });
 
   return (
-    <Box
-      p={3}
-      color={"white"}
-      sx={{
-        backgroundImage: consistentPageBackgroundImage,
-        backgroundSize: "cover",
-        backgroundPosition: "center center",
-        backgroundRepeat: "no-repeat",
-        overflow: "hidden",
-      }}>
+    <Box py={2}>
       {isPending && <Loading />}
       {isError && <Error message={error.message} />}
       {usersData && (
@@ -48,18 +45,48 @@ const UsersPage = () => {
           <Box>
             <Typography variant={"pagetitle"}>Users Page</Typography>
           </Box>
-          <Box mt={1}>
-            <Box>
-              <Typography variant={"body"}>
-                users Table from the Database
-              </Typography>
-            </Box>
-            <Box display={"grid"} rowGap={1} mt={1}>
-              {usersData &&
-                usersData.length > 0 &&
-                usersData.map((userData) => {
-                  return <User key={userData.id} userData={userData} />;
-                })}
+          <Box
+            mt={1}
+            p={2}
+            border={consistentBorder}
+            borderRadius={consistentBorderRadius}
+            bgcolor={consistentBgColor}
+            boxShadow={consistentBoxShadow}
+            sx={{
+              backdropFilter: consistentBackdropFilter,
+            }}>
+            <Typography variant={"tabletitle"} color={"primary"}>
+              users Table from the Database
+            </Typography>
+            <Box
+              display={"grid"}
+              gridTemplateColumns={
+                "repeat(7, minmax(min-content, max-content))"
+              }
+              mt={1}>
+              {Object.keys(usersData[0]).map((columnHeading, index, array) => {
+                if (
+                  columnHeading === "createdAt" ||
+                  columnHeading === "updatedAt"
+                ) {
+                  return;
+                }
+                return (
+                  <Box key={columnHeading}>
+                    <Typography
+                      p={1}
+                      borderRight={
+                        array.length - 3 !== index ? consistentBorder : null
+                      }
+                      borderBottom={consistentBorder}>
+                      {columnHeading}
+                    </Typography>
+                  </Box>
+                );
+              })}
+              {usersData.map((userData) => (
+                <User key={userData.id} userData={userData} />
+              ))}
             </Box>
           </Box>
         </>

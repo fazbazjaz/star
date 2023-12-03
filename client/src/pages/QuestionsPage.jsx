@@ -7,7 +7,6 @@ import Question from "../components/Question";
 import QuestionForm from "../components/QuestionForm";
 // import getAllQuestions from "../api/getAllQuestions";
 import getQuestionsByCursor from "../api/getQuestionsByCursor";
-import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const QuestionsPage = () => {
   const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
@@ -82,16 +81,7 @@ const QuestionsPage = () => {
   // );
 
   return (
-    <Box
-      p={3}
-      color="white"
-      sx={{
-        backgroundImage: consistentPageBackgroundImage,
-        backgroundSize: "cover",
-        backgroundPosition: "center center",
-        backgroundRepeat: "no-repeat",
-        overflow: "hidden",
-      }}>
+    <Box py={2}>
       {/* {isPending && <Loading />} */}
       {/* {isError && <Error message={error.message} />} */}
       {questionsByCursorData && (

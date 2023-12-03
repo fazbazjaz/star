@@ -7,6 +7,7 @@ import Header from "../components/Header";
 // import AuthState from "../components/AuthState";
 import { Outlet } from "react-router-dom";
 import Footer from "../components/Footer";
+import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const RootLayout = () => {
   return (
@@ -20,7 +21,19 @@ const RootLayout = () => {
             gridTemplateRows={"auto 1fr auto"}>
             <Header />
             {/* <AuthState /> */}
-            <Outlet />
+            <Box
+              px={2}
+              sx={{
+                backgroundImage: consistentPageBackgroundImage,
+                backgroundSize: "cover",
+                backgroundPositionX: "center",
+                backgroundAttachment: "fixed",
+                backgroundRepeat: "no-repeat",
+              }}>
+              <Box maxWidth={1200} mx={"auto"}>
+                <Outlet />
+              </Box>
+            </Box>
             <Footer />
           </Box>
         </ThemeProvider>

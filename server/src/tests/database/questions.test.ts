@@ -1,4 +1,4 @@
-import { disconnectFromDatabase } from "../../helpers/database";
+import { disconnectFromDatabase } from "../helpers/database";
 import {
   createQuestion,
   getAllQuestions,

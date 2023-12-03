@@ -1,7 +1,7 @@
 import supertest from "supertest";
 import jwt, { Secret } from "jsonwebtoken";
 import { app } from "../../app";
-import { disconnectFromDatabase } from "../../helpers/database";
+import { disconnectFromDatabase } from "../helpers/database";
 import { createUser } from "../../helpers/users";
 import { cleanAll } from "../helpers/dbCleaner";
 import { CustomJWTPayload } from "../../types/types";
@@ -92,11 +92,11 @@ describe("User Routes", () => {
           expect(user.picture).toBeDefined();
           expect(typeof user.picture).toBe("string");
 
-          expect(user.created_at).toBeDefined();
-          expect(typeof user.created_at).toBe("string");
+          expect(user.createdAt).toBeDefined();
+          expect(typeof user.createdAt).toBe("string");
 
-          expect(user.updated_at).toBeDefined();
-          expect(typeof user.updated_at).toBe("string");
+          expect(user.updatedAt).toBeDefined();
+          expect(typeof user.updatedAt).toBe("string");
         });
       }
     });
@@ -146,7 +146,7 @@ describe("User Routes", () => {
       expect(response.body).toBeInstanceOf(Object);
 
       if (response.body) {
-        const user = response.body;
+        const user: SelectUserType = response.body;
 
         expect(user.id).toBeDefined();
         expect(typeof user.id).toBe("number");
@@ -166,11 +166,11 @@ describe("User Routes", () => {
         expect(user.picture).toBeDefined();
         expect(typeof user.picture).toBe("string");
 
-        expect(user.created_at).toBeDefined();
-        expect(typeof user.created_at).toBe("string");
+        expect(user.createdAt).toBeDefined();
+        expect(typeof user.createdAt).toBe("string");
 
-        expect(user.updated_at).toBeDefined();
-        expect(typeof user.updated_at).toBe("string");
+        expect(user.updatedAt).toBeDefined();
+        expect(typeof user.updatedAt).toBe("string");
       }
     });
   });
