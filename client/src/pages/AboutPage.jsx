@@ -13,28 +13,35 @@ const AboutPage = () => {
         alt={"Top Banner"}
       />
       <Box px={4} py={6}>
-        <Typography variant={"h2"} mt={4}>
+        <Typography variant={"h1"} mt={4}>
           About Us
         </Typography>
-        <Typography variant={"h3"} mt={4}>
+        <Typography variant={"h2"} mt={4}>
           Users and Roles
         </Typography>
-        <Typography mt={4}>
-          As a trainee, I am able to create an online diary that holds all of my
-          Star based entries
+        <Typography variant={"h5"} mt={4}>
+          🌐 Elevate Your Interview Game: Say goodbye to interview jitters and
+          hello to confidence! Our app is your secret weapon for mastering the
+          art of STAR - Situation, Task, Action, Result - ensuring you shine in
+          every interview scenario.
         </Typography>
-        <Typography mt={2}>
-          As a trainee, I am able to return, update and improve my entries as
-          well as answer general interview questions using them
+        <Typography variant={"h5"} mt={2}>
+          💻 Tech Interview Mastery: Dive into a world of personalized coaching
+          from industry experts and seasoned coders. We&apos;re not just an app;
+          we&apos;re your virtual mentor, guiding you through the intricacies of
+          tech interviews with real-world insights.
         </Typography>
-        <Typography mt={2}>
-          As a TA, I can check that trainees are regularly adding to their STAR
-          accounts and even suggest to them: hey, you should solve that, or
-          helped - add it to your STAR account.
+        <Typography variant={"h5"} mt={2}>
+          📖 Brag Diary Revolution: At CodeYourFuture, we believe in the power
+          of showcasing your skills. Say hello to your digital brag diary - a
+          repository of your achievements, skills, and knowledge. Let it be your
+          toolkit for success!
         </Typography>
-        <Typography mt={2}>
-          As a PD mentor, I am able to discuss their examples and help them
-          elaborate and celebrate both their CYF and non-CYF STAR examples
+        <Typography variant={"h5"} mt={2}>
+          👥 Community Support: Join a community that thrives on collaboration!
+          Connect with personal development coaches and seasoned coders
+          who&apos;ve been there, done that. Together, we&apos;re building
+          futures and forging connections that last a lifetime.
         </Typography>
       </Box>
       <CardMedia
