@@ -48,10 +48,58 @@ export const AuthProvider = ({ children }) => {
 
   // ----------------------------------------------------------------
 
+  const itpSupportBoolean = () => {
+    const userAgent = navigator.userAgent;
+    console.log("itpSupportBoolean userAgent:", userAgent);
+
+    let browser;
+
+    if (userAgent.indexOf("Chrome") !== 1) {
+      browser = "Chrome";
+    } else if (userAgent.indexOf("Firefox") !== -1) {
+      browser = "Firefox";
+    } else if (userAgent.indexOf("Safari") !== -1) {
+      browser = "Safari";
+    } else if (userAgent.indexOf("Edge") !== -1) {
+      browser = "Edge";
+    } else {
+      browser = "Unknown";
+    }
+    console.log("itpSupportBoolean browser:", browser);
+
+    let operatingSystem;
+
+    if (userAgent.indexOf("Win") !== -1) {
+      operatingSystem = "Windows";
+    } else if (userAgent.indexOf("MacOS") !== -1) {
+      operatingSystem = "MacOS";
+    } else if (userAgent.indexOf("iOS") !== -1) {
+      operatingSystem = "iOS";
+    } else if (userAgent.indexOf("Linux") !== -1) {
+      operatingSystem = "Linux";
+    } else if (userAgent.indexOf("Android") !== -1) {
+      operatingSystem = "Android";
+    } else {
+      operatingSystem = "Unknown";
+    }
+    console.log("itpSupportBoolean operatingSystem:", operatingSystem);
+
+    if (operatingSystem === "iOS") {
+      console.log("itpSupportBoolean Return True");
+      return true;
+    } else {
+      console.log("itpSupportBoolean Return False");
+      return false;
+    }
+  };
+
+  // ----------------------------------------------------------------
+
   // eslint-disable-next-line
   const googleAccountsIdInitializeFlow = useCallback(async () => {
     google.accounts.id.initialize({
       client_id: `${import.meta.env.VITE_GOOGLE_CLIENT_ID}`,
+      itp_support: itpSupportBoolean(),
       callback: async (googleIdTokenResponse) => {
         try {
           // Receive the Google ID Token from Google
@@ -102,11 +150,11 @@ export const AuthProvider = ({ children }) => {
 
     google.accounts.id.prompt((notification) => {
       console.log("googleAccountsIdPrompt notification:", notification);
-      // console.log(
-      //   "googleAccountsIdPrompt notification.getNotDisplayedReason():",
-      //   notification.getNotDisplayedReason()
-      // );
       if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+        console.log(
+          "googleAccountsIdPrompt notification.getNotDisplayedReason():",
+          notification.getNotDisplayedReason()
+        );
         // Remove the "g_state" Cookie that Google Sign In creates
         document.cookie =
           "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
