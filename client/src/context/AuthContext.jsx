@@ -54,13 +54,13 @@ export const AuthProvider = ({ children }) => {
 
     let browser;
 
-    if (userAgent.indexOf("Chrome") !== -1) {
+    if (userAgent.includes("Chrome")) {
       browser = "Chrome";
-    } else if (userAgent.indexOf("Firefox") !== -1) {
+    } else if (userAgent.includes("Firefox")) {
       browser = "Firefox";
-    } else if (userAgent.indexOf("Safari") !== -1) {
+    } else if (userAgent.includes("Safari")) {
       browser = "Safari";
-    } else if (userAgent.indexOf("Edge") !== -1) {
+    } else if (userAgent.includes("Edge")) {
       browser = "Edge";
     } else {
       browser = "Unknown";
@@ -69,15 +69,15 @@ export const AuthProvider = ({ children }) => {
 
     let operatingSystem;
 
-    if (userAgent.indexOf("Win") !== -1) {
+    if (userAgent.includes("Win")) {
       operatingSystem = "Windows";
-    } else if (userAgent.indexOf("Mac OS") !== -1) {
+    } else if (userAgent.includes("Mac OS")) {
       operatingSystem = "Mac OS";
-    } else if (userAgent.indexOf("iOS") !== -1) {
+    } else if (userAgent.includes("iOS")) {
       operatingSystem = "iOS";
-    } else if (userAgent.indexOf("Linux") !== -1) {
+    } else if (userAgent.includes("Linux")) {
       operatingSystem = "Linux";
-    } else if (userAgent.indexOf("Android") !== -1) {
+    } else if (userAgent.includes("Android")) {
       operatingSystem = "Android";
     } else {
       operatingSystem = "Unknown";
@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }) => {
   const googleAccountsIdInitializeFlow = useCallback(async () => {
     google.accounts.id.initialize({
       client_id: `${import.meta.env.VITE_GOOGLE_CLIENT_ID}`,
-      itp_support: itpSupportBoolean(),
+      // itp_support: itpSupportBoolean(),
       callback: async (googleIdTokenResponse) => {
         try {
           // Receive the Google ID Token from Google
@@ -165,8 +165,6 @@ export const AuthProvider = ({ children }) => {
         // Remove the "g_state" Cookie that Google Sign In creates
         document.cookie =
           "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        // Call the prompt again
-        google.accounts.id.prompt();
       }
     });
   }, [fetchUser, navigate]);
@@ -286,11 +284,18 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
   const login = useCallback(async () => {
-    // TURN ON ONE AT A TIME TO TEST:
-    googleAccountsIdInitializeFlow();
-    // googleAccountsOAuth2InitCodeClientPopupFlow();
+    const needsItp = itpSupportBoolean();
+
+    if (!needsItp) {
+      googleAccountsIdInitializeFlow();
+    } else {
+      googleAccountsOAuth2InitCodeClientPopupFlow();
+    }
     // googleAccountsOAuth2InitCodeClientRedirectFlow();
-  }, [googleAccountsIdInitializeFlow]);
+  }, [
+    googleAccountsIdInitializeFlow,
+    googleAccountsOAuth2InitCodeClientPopupFlow,
+  ]);
 
   const logout = useCallback(() => {
     // Remove the "g_state" Cookie that Google Sign In creates
