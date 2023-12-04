@@ -100,7 +100,18 @@ export const AuthProvider = ({ children }) => {
       },
     });
 
-    google.accounts.id.prompt();
+    google.accounts.id.prompt((notification) => {
+      console.log("googleAccountsIdPrompt notification:", notification);
+      // console.log(
+      //   "googleAccountsIdPrompt notification.getNotDisplayedReason():",
+      //   notification.getNotDisplayedReason()
+      // );
+      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+        // Remove the "g_state" Cookie that Google Sign In creates
+        document.cookie =
+          "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      }
+    });
   }, [fetchUser, navigate]);
 
   // ----------------------------------------------------------------
@@ -219,10 +230,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = useCallback(async () => {
     // TURN ON ONE AT A TIME TO TEST:
-    // googleAccountsIdInitializeFlow();
-    googleAccountsOAuth2InitCodeClientPopupFlow();
+    googleAccountsIdInitializeFlow();
+    // googleAccountsOAuth2InitCodeClientPopupFlow();
     // googleAccountsOAuth2InitCodeClientRedirectFlow();
-  }, [googleAccountsOAuth2InitCodeClientPopupFlow]);
+  }, [googleAccountsIdInitializeFlow]);
 
   const logout = useCallback(() => {
     // Remove the "g_state" Cookie that Google Sign In creates
