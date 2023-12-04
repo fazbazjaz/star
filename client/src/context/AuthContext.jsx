@@ -324,7 +324,6 @@ export const AuthProvider = ({ children }) => {
 
   const login = useCallback(async () => {
     // const needsItp = itpSupportBoolean();
-
     // if (!needsItp) {
     //   console.log("------ USING MODE [1]");
     //   googleAccountsIdInitializeFlow();
@@ -333,10 +332,10 @@ export const AuthProvider = ({ children }) => {
     //   // googleAccountsOAuth2InitCodeClientPopupFlow();
     //   googleAccountsOAuth2InitCodeClientRedirectFlow();
     // }
-    googleAccountsIdInitializeFlow();
+    googleAccountsOAuth2InitCodeClientPopupFlow();
   }, [
-    googleAccountsIdInitializeFlow,
-    // googleAccountsOAuth2InitCodeClientPopupFlow,
+    // googleAccountsIdInitializeFlow,
+    googleAccountsOAuth2InitCodeClientPopupFlow,
     // googleAccountsOAuth2InitCodeClientRedirectFlow,
   ]);
 

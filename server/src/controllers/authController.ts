@@ -115,6 +115,11 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       value: res.getHeaders()["set-cookie"]
     });
 
+    logger.info({
+      message: "👿 User-Agent:",
+      value: req.get("User-Agent")
+    });
+
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
@@ -266,6 +271,11 @@ export const authorizationCodePopupHandler = async (
       value: res.getHeaders()["set-cookie"]
     });
 
+    logger.info({
+      message: "👿 User-Agent:",
+      value: req.get("User-Agent")
+    });
+
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
@@ -405,6 +415,11 @@ export const authorizationCodeRedirectHandler = async (
     logger.info({
       message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
       value: res.getHeaders()["set-cookie"]
+    });
+
+    logger.info({
+      message: "👿 User-Agent:",
+      value: req.get("User-Agent")
     });
 
     // redirect to the Client (with the HTTP-Only Cookie containing Custom JWT)
