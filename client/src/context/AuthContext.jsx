@@ -48,63 +48,63 @@ export const AuthProvider = ({ children }) => {
 
   // ----------------------------------------------------------------
 
-  const itpSupportBoolean = () => {
-    const userAgent = navigator.userAgent;
-    console.log("itpSupportBoolean userAgent:", userAgent);
+  // const itpSupportBoolean = () => {
+  //   const userAgent = navigator.userAgent;
+  //   console.log("itpSupportBoolean userAgent:", userAgent);
 
-    // get the User's Operating System
-    let operatingSystem;
+  //   // get the User's Operating System
+  //   let operatingSystem;
 
-    if (userAgent.includes("Win")) {
-      operatingSystem = "Windows";
-    } else if (userAgent.includes("Mac OS")) {
-      operatingSystem = "Mac OS";
-    } else if (userAgent.includes("iOS")) {
-      operatingSystem = "iOS";
-    } else if (userAgent.includes("Linux")) {
-      operatingSystem = "Linux";
-    } else if (userAgent.includes("Android")) {
-      operatingSystem = "Android";
-    } else {
-      operatingSystem = "Unknown";
-    }
-    console.log("itpSupportBoolean operatingSystem:", operatingSystem);
+  //   if (userAgent.includes("Win")) {
+  //     operatingSystem = "Windows";
+  //   } else if (userAgent.includes("Mac OS")) {
+  //     operatingSystem = "Mac OS";
+  //   } else if (userAgent.includes("iOS")) {
+  //     operatingSystem = "iOS";
+  //   } else if (userAgent.includes("Linux")) {
+  //     operatingSystem = "Linux";
+  //   } else if (userAgent.includes("Android")) {
+  //     operatingSystem = "Android";
+  //   } else {
+  //     operatingSystem = "Unknown";
+  //   }
+  //   console.log("itpSupportBoolean operatingSystem:", operatingSystem);
 
-    // get the User's Browser
-    let browser;
+  //   // get the User's Browser
+  //   let browser;
 
-    if (userAgent.includes("Chrome")) {
-      browser = "Chrome";
-    } else if (userAgent.includes("Firefox")) {
-      browser = "Firefox";
-    } else if (userAgent.includes("Safari")) {
-      browser = "Safari";
-    } else if (userAgent.includes("Edge")) {
-      browser = "Edge";
-    } else {
-      browser = "Unknown";
-    }
-    console.log("itpSupportBoolean browser:", browser);
+  //   if (userAgent.includes("Chrome")) {
+  //     browser = "Chrome";
+  //   } else if (userAgent.includes("Firefox")) {
+  //     browser = "Firefox";
+  //   } else if (userAgent.includes("Safari")) {
+  //     browser = "Safari";
+  //   } else if (userAgent.includes("Edge")) {
+  //     browser = "Edge";
+  //   } else {
+  //     browser = "Unknown";
+  //   }
+  //   console.log("itpSupportBoolean browser:", browser);
 
-    // get the User's phone (if any)
-    let phone;
+  //   // get the User's phone (if any)
+  //   let phone;
 
-    if (userAgent.includes("iPhone")) {
-      phone = "iPhone";
-    } else {
-      phone = "Unknown";
-    }
-    console.log("itpSupportBoolean phone:", phone);
+  //   if (userAgent.includes("iPhone")) {
+  //     phone = "iPhone";
+  //   } else {
+  //     phone = "Unknown";
+  //   }
+  //   console.log("itpSupportBoolean phone:", phone);
 
-    // if the User is on IOS or has an iPhone then return true
-    if (operatingSystem === "iOS" || phone === "iPhone") {
-      console.log("itpSupportBoolean Return True");
-      return true;
-    } else {
-      console.log("itpSupportBoolean Return False");
-      return false;
-    }
-  };
+  //   // if the User is on IOS or has an iPhone then return true
+  //   if (operatingSystem === "iOS" || phone === "iPhone") {
+  //     console.log("itpSupportBoolean Return True");
+  //     return true;
+  //   } else {
+  //     console.log("itpSupportBoolean Return False");
+  //     return false;
+  //   }
+  // };
 
   // ----------------------------------------------------------------
 
