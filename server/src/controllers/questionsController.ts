@@ -616,34 +616,25 @@ export const editCommentHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const getQuestionsByCursorHandler = async (
+export const getQuestionsByPageHandler = async (
   req: Request,
   res: Response
 ) => {
   try {
-    // the route is /api/questions/infinite?cursor=X
-    // get the query parameter "cursor"
-    const cursor = parseInt(req.query.cursor as string, 10) || 0;
+    const limit = parseInt(req.query.limit as string);
+    const page = parseInt(req.query.page as string);
     logger.info({
       message: "getQuestionsByCursor cursor",
-      value: cursor
+      value: page
     });
-
-    const query = await getQuestionsByCursor(cursor);
+    const query = await getQuestionsByCursor(limit, page);
     logger.info({
       message: "getQuestionsByCursorHandler query",
       value: query
     });
 
-    const nextCursor = query.length > 0 ? query[query.length - 1].id : cursor;
-    logger.info({
-      message: "getQuestionsByCursorHandler nextCursor",
-      value: nextCursor
-    });
-
     res.status(200).json({
-      data: query,
-      nextCursor: nextCursor
+      data: query
     });
   } catch (error) {
     logger.error(error);

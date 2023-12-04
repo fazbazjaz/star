@@ -1,17 +1,16 @@
-const getQuestionsByCursor = async (cursor) => {
+const getQuestionsByPage = async ({ pageParam }) => {
+  const limit = 5;
   const response = await fetch(
     `${
       import.meta.env.VITE_SERVER_URL
-    }/api/questions/infinite?cursor=${cursor}`,
+    }/api/questions/infinite?limit=${limit}&page=${pageParam}`,
     { credentials: "include" }
   );
-  console.log("getQuestionsByCursor response:", response);
   if (!response.ok) {
     throw new Error("getQuestionsByCursor failed");
   }
   const data = await response.json();
-  console.log("getQuestionsByCursor data:", data);
   return data;
 };
 
-export default getQuestionsByCursor;
+export default getQuestionsByPage;
