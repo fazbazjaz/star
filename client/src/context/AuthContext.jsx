@@ -323,20 +323,21 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
   const login = useCallback(async () => {
-    const needsItp = itpSupportBoolean();
+    // const needsItp = itpSupportBoolean();
 
-    if (!needsItp) {
-      console.log("------ USING MODE [1]");
-      googleAccountsIdInitializeFlow();
-    } else {
-      console.log("------ USING MODE [3]");
-      // googleAccountsOAuth2InitCodeClientPopupFlow();
-      googleAccountsOAuth2InitCodeClientRedirectFlow();
-    }
+    // if (!needsItp) {
+    //   console.log("------ USING MODE [1]");
+    //   googleAccountsIdInitializeFlow();
+    // } else {
+    //   console.log("------ USING MODE [3]");
+    //   // googleAccountsOAuth2InitCodeClientPopupFlow();
+    //   googleAccountsOAuth2InitCodeClientRedirectFlow();
+    // }
+    googleAccountsIdInitializeFlow();
   }, [
     googleAccountsIdInitializeFlow,
     // googleAccountsOAuth2InitCodeClientPopupFlow,
-    googleAccountsOAuth2InitCodeClientRedirectFlow,
+    // googleAccountsOAuth2InitCodeClientRedirectFlow,
   ]);
 
   const logout = useCallback(() => {
