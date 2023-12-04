@@ -1,7 +1,7 @@
 import supertest from "supertest";
 import jwt, { Secret } from "jsonwebtoken";
 import { app } from "../../app";
-import { disconnectFromDatabase } from "../../helpers/database";
+import { disconnectFromDatabase } from "../helpers/database";
 import { createUser } from "../../helpers/users";
 import { cleanAll } from "../helpers/dbCleaner";
 import { CustomJWTPayload } from "../../types/types";
@@ -19,13 +19,13 @@ describe("User Routes", () => {
   });
 
   describe("/api/users GET", () => {
-    it("returns 401 error when no JWT is provided from an HTTP-Only Cookie", async () => {
+    it("returns 401 error when no customJWT is provided", async () => {
       const response = await request.get("/api/users");
 
       expect(response.statusCode).toBe(401);
       expect(response.type).toBe("application/json");
       expect(response.body).toEqual({
-        error: "Unauthorized - No Cookie with JWT Provided"
+        error: "Authorization Header Missing or Invalid"
       });
     });
 
@@ -66,7 +66,7 @@ describe("User Routes", () => {
 
       const response = await request
         .get("/api/users")
-        .set("Cookie", `customJWT=${customJWT}`);
+        .set("Authorization", `Bearer ${customJWT}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.type).toBe("application/json");
@@ -92,11 +92,11 @@ describe("User Routes", () => {
           expect(user.picture).toBeDefined();
           expect(typeof user.picture).toBe("string");
 
-          expect(user.created_at).toBeDefined();
-          expect(typeof user.created_at).toBe("string");
+          expect(user.createdAt).toBeDefined();
+          expect(typeof user.createdAt).toBe("string");
 
-          expect(user.updated_at).toBeDefined();
-          expect(typeof user.updated_at).toBe("string");
+          expect(user.updatedAt).toBeDefined();
+          expect(typeof user.updatedAt).toBe("string");
         });
       }
     });
@@ -109,7 +109,7 @@ describe("User Routes", () => {
       expect(response.statusCode).toBe(401);
       expect(response.type).toBe("application/json");
       expect(response.body).toEqual({
-        error: "Unauthorized - No Cookie with JWT Provided"
+        error: "Authorization Header Missing or Invalid"
       });
     });
 
@@ -139,14 +139,14 @@ describe("User Routes", () => {
 
       const response = await request
         .get(`/api/users/${createdUserId}`)
-        .set("Cookie", `customJWT=${customJWT}`);
+        .set("Authorization", `Bearer ${customJWT}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.type).toBe("application/json");
       expect(response.body).toBeInstanceOf(Object);
 
       if (response.body) {
-        const user = response.body;
+        const user: SelectUserType = response.body;
 
         expect(user.id).toBeDefined();
         expect(typeof user.id).toBe("number");
@@ -166,11 +166,11 @@ describe("User Routes", () => {
         expect(user.picture).toBeDefined();
         expect(typeof user.picture).toBe("string");
 
-        expect(user.created_at).toBeDefined();
-        expect(typeof user.created_at).toBe("string");
+        expect(user.createdAt).toBeDefined();
+        expect(typeof user.createdAt).toBe("string");
 
-        expect(user.updated_at).toBeDefined();
-        expect(typeof user.updated_at).toBe("string");
+        expect(user.updatedAt).toBeDefined();
+        expect(typeof user.updatedAt).toBe("string");
       }
     });
   });

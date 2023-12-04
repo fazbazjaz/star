@@ -1,5 +1,5 @@
 import { createUser, getAllUsers, getUserById } from "../helpers/users";
-import { disconnectFromDatabase } from "../helpers/database";
+import { disconnectFromDatabase } from "./helpers/database";
 import { cleanAll } from "./helpers/dbCleaner";
 
 describe("Users", () => {

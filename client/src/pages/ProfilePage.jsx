@@ -6,7 +6,6 @@ import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import Question from "../components/Question";
 import getAllQuestionsByUserId from "../api/getAllQuestionsByUserId";
-import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const ProfilePage = () => {
   const { authenticatedUser } = useContext(AuthContext);
@@ -19,21 +18,12 @@ const ProfilePage = () => {
     error,
     data: userQuestionsData,
   } = useQuery({
-    queryKey: ["questions", "user", userId],
+    queryKey: [`questions-userId-${userId}`],
     queryFn: () => getAllQuestionsByUserId(userId),
   });
 
   return (
-    <Box
-      p={3}
-      color="white"
-      sx={{
-        backgroundImage: consistentPageBackgroundImage,
-        backgroundSize: "cover",
-        backgroundPosition: "center center",
-        backgroundRepeat: "no-repeat",
-        overflow: "hidden",
-      }}>
+    <Box py={2}>
       {isPending && <Loading />}
       {isError && <Error message={error.message} />}
       {userQuestionsData && (
