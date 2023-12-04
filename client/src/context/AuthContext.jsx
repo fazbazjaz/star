@@ -143,6 +143,7 @@ export const AuthProvider = ({ children }) => {
                   "Content-Type": "application/json",
                   Authorization: `Bearer ${googleAuthorizationCode}`,
                 },
+                credentials: "include",
               }
             );
             console.log(
@@ -218,10 +219,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = useCallback(async () => {
     // TURN ON ONE AT A TIME TO TEST:
-    googleAccountsIdInitializeFlow();
-    // googleAccountsOAuth2InitCodeClientPopupFlow();
+    // googleAccountsIdInitializeFlow();
+    googleAccountsOAuth2InitCodeClientPopupFlow();
     // googleAccountsOAuth2InitCodeClientRedirectFlow();
-  }, [googleAccountsIdInitializeFlow]);
+  }, [googleAccountsOAuth2InitCodeClientPopupFlow]);
 
   const logout = useCallback(() => {
     // Remove the "g_state" Cookie that Google Sign In creates
