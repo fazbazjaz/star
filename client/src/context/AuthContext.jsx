@@ -102,8 +102,17 @@ export const AuthProvider = ({ children }) => {
       // itp_support: itpSupportBoolean(),
       callback: async (googleIdTokenResponse) => {
         try {
+          console.log(
+            "googleAccountsIdInitializeFlow googleIdTokenResponse:",
+            JSON.stringify(googleIdTokenResponse)
+          );
+
           // Receive the Google ID Token from Google
           const googleIdToken = googleIdTokenResponse.credential;
+          console.log(
+            "googleAccountsIdInitializeFlow googleIdToken:",
+            JSON.stringify(googleIdTokenResponse.credential)
+          );
 
           // Send the Google ID Token to the backend in the Request Header
           // and Receive back an HTTP-Only Cookie with a CustomJWT inside
@@ -118,7 +127,17 @@ export const AuthProvider = ({ children }) => {
               credentials: "include",
             }
           );
-          // console.log("googleAccountsIdInitializeFlow response:", response);
+          console.log("googleAccountsIdInitializeFlow response:", response);
+
+          console.log(
+            "googleAccountsIdInitializeFlow response.status",
+            response.status
+          );
+
+          console.log(
+            "googleAccountsIdInitializeFlow response.statusText",
+            response.statusText
+          );
 
           if (!response.ok) {
             throw new Error(
@@ -129,6 +148,10 @@ export const AuthProvider = ({ children }) => {
           // Send a GET Request to /api/auth/user including our CustomJWT
           // Receive back a JSON body of User Information
           const user = await fetchUser();
+          console.log(
+            "googleAccountsIdInitializeFlow user",
+            JSON.stringify(user)
+          );
 
           if (!user) {
             throw new Error("googleAccountsIdInitializeFlow no user");
