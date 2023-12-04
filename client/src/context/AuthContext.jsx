@@ -6,7 +6,6 @@ import {
   useMemo,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import getAuthenticatedUser from "../api/getAuthenticatedUser";
 
 export const AuthContext = createContext();
 
