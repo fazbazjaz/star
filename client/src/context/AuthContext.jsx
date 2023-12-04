@@ -23,6 +23,39 @@ export const AuthProvider = ({ children }) => {
 
   // ----------------------------------------------------------------
 
+  const getAuthenticatedUser = useCallback(async (customJWT) => {
+    try {
+      console.log("getAuthenticatedUser customJWT", customJWT);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/api/auth/user`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${customJWT}`,
+          },
+          // credentials: "include",
+        }
+      );
+      console.log("getAuthenticatedUser response:", response);
+
+      if (!response.ok) {
+        throw new Error(
+          `getAuthenticatedUser failed ${response.status} ${response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+      console.log("getAuthenticatedUser data:", data);
+
+      return data;
+    } catch (error) {
+      console.error("getAuthenticatedUser error:", error);
+    }
+  }, []);
+
+  // ----------------------------------------------------------------
+
   const googleAccountsOAuth2InitCodeClientPopupFlow = useCallback(async () => {
     // AUTHORIZATION CODE FLOW EXAMPLE:
     // Google Identity Services POPUP UX
@@ -60,10 +93,10 @@ export const AuthProvider = ({ children }) => {
               }
             );
 
-            console.log(
-              "googleAccountsOAuth2InitCodeClientPopupFlow response:",
-              response
-            );
+            // console.log(
+            //   "googleAccountsOAuth2InitCodeClientPopupFlow response:",
+            //   response
+            // );
 
             if (!response.ok) {
               throw new Error(
@@ -72,10 +105,10 @@ export const AuthProvider = ({ children }) => {
             }
 
             const customJWT = await response.json();
-            console.log(
-              "googleAccountsOAuth2InitCodeClientPopupFlow customJWT:",
-              customJWT
-            );
+            // console.log(
+            //   "googleAccountsOAuth2InitCodeClientPopupFlow customJWT:",
+            //   customJWT
+            // );
 
             // set the "customJWT" into Local Storage
             localStorage.setItem("customJWT", customJWT);
@@ -83,10 +116,10 @@ export const AuthProvider = ({ children }) => {
             // Send a GET Request to /api/auth/user with our CustomJWT
             // Receive back a JSON Body with User Information
             const user = await getAuthenticatedUser(customJWT);
-            console.log(
-              "googleAccountsOAuth2InitCodeClientPopupFlow user",
-              user
-            );
+            // console.log(
+            //   "googleAccountsOAuth2InitCodeClientPopupFlow user",
+            //   user
+            // );
 
             if (!user) {
               throw new Error(
@@ -112,7 +145,7 @@ export const AuthProvider = ({ children }) => {
       });
 
     googleAccountsOAuth2InitCodeClientPopupClient.requestCode();
-  }, [navigate]);
+  }, [getAuthenticatedUser, navigate]);
 
   // ----------------------------------------------------------------
 
@@ -133,10 +166,10 @@ export const AuthProvider = ({ children }) => {
 
           // Receive the Google ID Token from Google
           const googleIdToken = googleIdTokenResponse.credential;
-          console.log(
-            "googleAccountsIdInitializeFlow googleIdToken:",
-            JSON.stringify(googleIdTokenResponse.credential)
-          );
+          // console.log(
+          //   "googleAccountsIdInitializeFlow googleIdToken:",
+          //   googleIdTokenResponse.credential
+          // );
 
           // Send the "Authorization Code" to the backend in the Request Header
           // Receive back a JSON Body with CustomJWT
@@ -151,7 +184,7 @@ export const AuthProvider = ({ children }) => {
               // credentials: "include",
             }
           );
-          console.log("googleAccountsIdInitializeFlow response:", response);
+          // console.log("googleAccountsIdInitializeFlow response:", response);
 
           if (!response.ok) {
             throw new Error(
@@ -160,13 +193,13 @@ export const AuthProvider = ({ children }) => {
           }
 
           const customJWT = await response.json();
-          console.log("googleAccountsIdInitializeFlow customJWT:", customJWT);
+          // console.log("googleAccountsIdInitializeFlow customJWT:", customJWT);
 
           // Set "customJWT" into LocalStorage
           localStorage.setItem("customJWT", customJWT);
 
           const user = await getAuthenticatedUser(customJWT);
-          console.log("googleAccountsIdInitializeFlow user", user);
+          // console.log("googleAccountsIdInitializeFlow user", user);
 
           if (!user) {
             throw new Error("googleAccountsIdInitializeFlow no user");
@@ -191,14 +224,11 @@ export const AuthProvider = ({ children }) => {
     // Once the user has signed in, the callback function specified in the initialize method will be called.
     // The callback function will be passed an object containing information about the signed-in user.
     google.accounts.id.prompt((notification) => {
-      console.log(
-        "googleAccountsIdPrompt notification:",
-        JSON.stringify(notification)
-      );
+      console.log("googleAccountsIdPrompt notification:", notification);
       if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
         console.log(
           "googleAccountsIdPrompt notification.getNotDisplayedReason():",
-          JSON.stringify(notification.getNotDisplayedReason())
+          notification.getNotDisplayedReason()
         );
 
         // Remove the "g_state" Cookie that Google Sign In creates
@@ -220,7 +250,11 @@ export const AuthProvider = ({ children }) => {
         }
       }
     });
-  }, [navigate, googleAccountsOAuth2InitCodeClientPopupFlow]);
+  }, [
+    getAuthenticatedUser,
+    navigate,
+    googleAccountsOAuth2InitCodeClientPopupFlow,
+  ]);
 
   // ----------------------------------------------------------------
 
