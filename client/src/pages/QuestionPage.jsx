@@ -11,6 +11,7 @@ import getQuestionById from "../api/getQuestionById";
 
 const QuestionPage = () => {
   const { id } = useParams();
+
   const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
 
   const {
@@ -19,7 +20,7 @@ const QuestionPage = () => {
     error,
     data: questionData,
   } = useQuery({
-    queryKey: ["question", id],
+    queryKey: [`question-${id}`],
     queryFn: () => getQuestionById(id),
   });
 

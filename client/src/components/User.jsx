@@ -6,13 +6,15 @@ const User = ({ userData }) => {
     <>
       {Object.entries(userData).map(([key, value], index, array) => {
         if (key === "googleId") {
-          value = `~${value.slice(-6)}`;
+          value = value ? `~${value.slice(-6)}` : "~";
         } else if (key === "lastName") {
-          value = `${value.slice(0, 3)}~`;
+          value = value ? `${value.slice(0, 3)}~` : "~";
         } else if (key === "email") {
-          value = `${value.split("@")[0].slice(0, 3)}~@${value.split("@")[1]}`;
+          value = value
+            ? `${value.split("@")[0].slice(0, 3)}~@${value.split("@")[1]}`
+            : "~";
         } else if (key === "picture") {
-          value = `~${value.slice(-10)}`;
+          value = value ? `~${value.slice(-10)}` : "~";
         } else if (key === "createdAt" || key === "updatedAt") {
           return;
         }
