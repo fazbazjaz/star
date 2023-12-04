@@ -52,21 +52,7 @@ export const AuthProvider = ({ children }) => {
     const userAgent = navigator.userAgent;
     console.log("itpSupportBoolean userAgent:", userAgent);
 
-    let browser;
-
-    if (userAgent.includes("Chrome")) {
-      browser = "Chrome";
-    } else if (userAgent.includes("Firefox")) {
-      browser = "Firefox";
-    } else if (userAgent.includes("Safari")) {
-      browser = "Safari";
-    } else if (userAgent.includes("Edge")) {
-      browser = "Edge";
-    } else {
-      browser = "Unknown";
-    }
-    console.log("itpSupportBoolean browser:", browser);
-
+    // get the User's Operating System
     let operatingSystem;
 
     if (userAgent.includes("Win")) {
@@ -84,7 +70,34 @@ export const AuthProvider = ({ children }) => {
     }
     console.log("itpSupportBoolean operatingSystem:", operatingSystem);
 
-    if (operatingSystem === "iOS") {
+    // get the User's Browser
+    let browser;
+
+    if (userAgent.includes("Chrome")) {
+      browser = "Chrome";
+    } else if (userAgent.includes("Firefox")) {
+      browser = "Firefox";
+    } else if (userAgent.includes("Safari")) {
+      browser = "Safari";
+    } else if (userAgent.includes("Edge")) {
+      browser = "Edge";
+    } else {
+      browser = "Unknown";
+    }
+    console.log("itpSupportBoolean browser:", browser);
+
+    // get the User's phone (if any)
+    let phone;
+
+    if (userAgent.includes("iPhone")) {
+      phone = "iPhone";
+    } else {
+      phone = "Unknown";
+    }
+    console.log("itpSupportBoolean phone:", phone);
+
+    // if the User is on IOS or has an iPhone then return true
+    if (operatingSystem === "iOS" || phone === "iPhone") {
       console.log("itpSupportBoolean Return True");
       return true;
     } else {
@@ -127,7 +140,10 @@ export const AuthProvider = ({ children }) => {
               credentials: "include",
             }
           );
-          console.log("googleAccountsIdInitializeFlow response:", response);
+          console.log(
+            "googleAccountsIdInitializeFlow response:",
+            JSON.stringify(response)
+          );
 
           console.log(
             "googleAccountsIdInitializeFlow response.status",
