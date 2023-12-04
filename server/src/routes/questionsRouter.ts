@@ -2,18 +2,18 @@ import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware";
 import {
   getAllQuestionsHandler,
+  getQuestionsByPageHandler,
+  getOneQuestionHandler,
+  getAllQuestionsByUserHandler,
   createQuestionHandler,
-  deleteQuestionHandler,
-  findAllQuestionsByUserHandler,
-  findOneQuestionHandler,
   createAnswerHandler,
   createCommentHandler,
   editQuestionHandler,
-  deleteAnswerHandler,
-  deleteCommentHandler,
   editAnswerHandler,
   editCommentHandler,
-  getQuestionsByPageHandler
+  deleteQuestionHandler,
+  deleteAnswerHandler,
+  deleteCommentHandler
 } from "../controllers/questionsController";
 
 export const questionsRouter = express.Router();
@@ -22,20 +22,20 @@ export const questionsRouter = express.Router();
 questionsRouter.use(authMiddleware);
 
 // Questions
-questionsRouter.route("/user/:id").get(findAllQuestionsByUserHandler);
-
-questionsRouter.route("/infinite").get(getQuestionsByPageHandler);
-
-questionsRouter
-  .route("/:id")
-  .get(findOneQuestionHandler)
-  .put(editQuestionHandler)
-  .delete(deleteQuestionHandler);
-
 questionsRouter
   .route("/")
   .get(getAllQuestionsHandler)
   .post(createQuestionHandler);
+
+questionsRouter
+  .route("/:id")
+  .get(getOneQuestionHandler)
+  .put(editQuestionHandler)
+  .delete(deleteQuestionHandler);
+
+questionsRouter.route("/user/:id").get(getAllQuestionsByUserHandler);
+
+questionsRouter.route("/infinite").get(getQuestionsByPageHandler);
 
 // Answers
 questionsRouter.route("/:id/answers").post(createAnswerHandler);

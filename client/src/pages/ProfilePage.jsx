@@ -18,7 +18,7 @@ const ProfilePage = () => {
     error,
     data: userQuestionsData,
   } = useQuery({
-    queryKey: ["questions", "user", userId],
+    queryKey: [`questions-userId-${userId}`],
     queryFn: () => getAllQuestionsByUserId(userId),
   });
 

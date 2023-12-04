@@ -7,7 +7,7 @@ const getQuestionsByPage = async ({ pageParam }) => {
     { credentials: "include" }
   );
   if (!response.ok) {
-    throw new Error("getQuestionsByCursor failed");
+    throw new Error("getQuestionsByPage failed");
   }
   const data = await response.json();
   return data;
