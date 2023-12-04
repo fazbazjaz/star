@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
 
     let browser;
 
-    if (userAgent.indexOf("Chrome") !== 1) {
+    if (userAgent.indexOf("Chrome") !== -1) {
       browser = "Chrome";
     } else if (userAgent.indexOf("Firefox") !== -1) {
       browser = "Firefox";
