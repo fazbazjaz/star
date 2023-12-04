@@ -290,7 +290,7 @@ export const AuthProvider = ({ children }) => {
       console.log("------ USING MODE [1]");
       googleAccountsIdInitializeFlow();
     } else {
-      console.log("------- USING MODE [2]");
+      console.log("------ USING MODE [2]");
       googleAccountsOAuth2InitCodeClientPopupFlow();
     }
     // googleAccountsOAuth2InitCodeClientRedirectFlow();
