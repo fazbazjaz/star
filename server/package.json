@@ -1,15 +1,15 @@
 {
   "name": "star-server",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "build/server.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "star-server",
   "scripts": {
-    "start": "node build/index.js",
+    "start": "node build/server.js",
     "build": "tsc",
-    "dev": "ts-node-dev src/index.ts",
+    "dev": "ts-node-dev src/server.ts",
     "prettier": "node node_modules/prettier/bin/prettier.cjs --config .prettierrc . --write",
     "lint:fix": "node node_modules/eslint/bin/eslint.js . --fix",
     "test": "cross-env NODE_ENV=test node node_modules/jest/bin/jest.js --runInBand",

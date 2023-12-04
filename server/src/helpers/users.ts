@@ -1,5 +1,5 @@
 import { database } from "../database/connection";
-import { users, InsertUserType, SelectUserType } from "../database/schema";
+import { users, SelectUserType, InsertUserType } from "../database/schema";
 import { eq } from "drizzle-orm";
 
 export const getAllUsers = async () => {
