@@ -408,7 +408,7 @@ export const authorizationCodeRedirectHandler = async (
     });
 
     // redirect to the Client (with the HTTP-Only Cookie containing Custom JWT)
-    res.redirect(`http://localhost:3000/`);
+    res.redirect(process.env.CLIENT_URL as string);
   } catch (error) {
     logger.error(error);
     return res.status(500).json({ error: "Server Error" });
