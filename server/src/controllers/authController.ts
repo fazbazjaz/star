@@ -18,7 +18,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     if (!authorizationHeader || typeof authorizationHeader !== "string") {
       return res
         .status(401)
-        .json({ error: "Authorization Header missing or invalid" });
+        .json({ error: "Authorization Header Missing or Invalid" });
     }
 
     const jwtTokenParts = authorizationHeader.split(" ");
@@ -154,7 +154,7 @@ export const authorizationCodePopupHandler = async (
     if (!authorizationHeader || typeof authorizationHeader !== "string") {
       return res
         .status(401)
-        .json({ error: "Authorization Header missing or invalid" });
+        .json({ error: "Authorization Header Missing or Invalid" });
     }
 
     const authorizationCode = authorizationHeader.split(" ")[1] as string;
@@ -467,7 +467,7 @@ export const userHandler = async (req: Request, res: Response) => {
   if (!authorizationHeader || typeof authorizationHeader !== "string") {
     return res
       .status(401)
-      .json({ error: "Authorization Header missing or invalid" });
+      .json({ error: "Authorization Header Missing or Invalid" });
   }
 
   const jwtTokenParts = authorizationHeader.split(" ");

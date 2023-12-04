@@ -39,7 +39,7 @@ export const authMiddleware = (
     if (!authorizationHeader || typeof authorizationHeader !== "string") {
       return res
         .status(401)
-        .json({ error: "Authorization Header missing or invalid" });
+        .json({ error: "Authorization Header Missing or Invalid" });
     }
 
     const jwtTokenParts = authorizationHeader.split(" ");

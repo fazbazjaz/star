@@ -19,13 +19,13 @@ describe("User Routes", () => {
   });
 
   describe("/api/users GET", () => {
-    it("returns 401 error when no JWT is provided from an HTTP-Only Cookie", async () => {
+    it("returns 401 error when no customJWT is provided", async () => {
       const response = await request.get("/api/users");
 
       expect(response.statusCode).toBe(401);
       expect(response.type).toBe("application/json");
       expect(response.body).toEqual({
-        error: "Unauthorized - No Cookie with JWT Provided"
+        error: "Authorization Header Missing or Invalid"
       });
     });
 
@@ -66,7 +66,7 @@ describe("User Routes", () => {
 
       const response = await request
         .get("/api/users")
-        .set("Cookie", `customJWT=${customJWT}`);
+        .set("Authorization", `Bearer ${customJWT}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.type).toBe("application/json");
@@ -109,7 +109,7 @@ describe("User Routes", () => {
       expect(response.statusCode).toBe(401);
       expect(response.type).toBe("application/json");
       expect(response.body).toEqual({
-        error: "Unauthorized - No Cookie with JWT Provided"
+        error: "Authorization Header Missing or Invalid"
       });
     });
 
@@ -139,7 +139,7 @@ describe("User Routes", () => {
 
       const response = await request
         .get(`/api/users/${createdUserId}`)
-        .set("Cookie", `customJWT=${customJWT}`);
+        .set("Authorization", `Bearer ${customJWT}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.type).toBe("application/json");
