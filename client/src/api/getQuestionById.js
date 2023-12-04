@@ -1,7 +1,13 @@
 const getQuestionById = async (questionId) => {
   const response = await fetch(
     `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}`,
-    { credentials: "include" }
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("customJWT")}`,
+      },
+      // { credentials: "include" }
+    }
   );
   // console.log("fetchQuestionData response:", response);
   if (!response.ok) {

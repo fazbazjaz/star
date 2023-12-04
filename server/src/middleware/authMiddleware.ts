@@ -15,58 +15,57 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  // [1] HTTP ONLY COOKIE VERSION
-  // const cookies = req.cookies;
-  // logger.info({
-  //   message: "authMiddleware cookies",
-  //   value: cookies
-  // });
-
-  // [1] HTTP ONLY COOKIE VERSION
-  // const customJWT = cookies.customJWT;
-  // logger.info({
-  //   message: "authMiddleware customJWT",
-  //   value: customJWT
-  // });
-
-  // [2] JWT IN BODY VERSION
-  const authorizationHeader = req.headers["authorization"];
-  // logger.info({
-  //   message: "userHandler authorizationHeader",
-  //   value: authorizationHeader
-  // });
-
-  if (!authorizationHeader || typeof authorizationHeader !== "string") {
-    return res
-      .status(401)
-      .json({ error: "Authorization Header missing or invalid" });
-  }
-
-  const jwtTokenParts = authorizationHeader.split(" ");
-  // logger.info({
-  //   message: "userHandler jwtTokenParts",
-  //   value: jwtTokenParts
-  // });
-
-  if (
-    jwtTokenParts.length !== 2 ||
-    jwtTokenParts[0].toLowerCase() !== "bearer"
-  ) {
-    return res
-      .status(401)
-      .json({ error: "Invalid Authorization Header format" });
-  }
-
-  const customJWT = jwtTokenParts[1];
-  // logger.info({ message: "userHandler customJWT", value: customJWT });
-
-  if (!customJWT || typeof customJWT === "undefined") {
-    return res
-      .status(401)
-      .json({ error: "Unauthorized - No Cookie with JWT Provided" });
-  }
-
   try {
+    // [1] HTTP ONLY COOKIE VERSION
+    // const cookies = req.cookies;
+    // logger.info({
+    //   message: "authMiddleware cookies",
+    //   value: cookies
+    // });
+
+    // const customJWT = cookies.customJWT;
+    // logger.info({
+    //   message: "authMiddleware customJWT",
+    //   value: customJWT
+    // });
+
+    // [2] AUTH HEADER JWT VERSION
+    const authorizationHeader = req.headers["authorization"];
+    // logger.info({
+    //   message: "authMiddleware authorizationHeader",
+    //   value: authorizationHeader
+    // });
+
+    if (!authorizationHeader || typeof authorizationHeader !== "string") {
+      return res
+        .status(401)
+        .json({ error: "Authorization Header missing or invalid" });
+    }
+
+    const jwtTokenParts = authorizationHeader.split(" ");
+    // logger.info({
+    //   message: "authMiddleware jwtTokenParts",
+    //   value: jwtTokenParts
+    // });
+
+    if (
+      jwtTokenParts.length !== 2 ||
+      jwtTokenParts[0].toLowerCase() !== "bearer"
+    ) {
+      return res
+        .status(401)
+        .json({ error: "Invalid Authorization Header format" });
+    }
+
+    const customJWT = jwtTokenParts[1];
+    // logger.info({ message: "authMiddleware customJWT", value: customJWT });
+
+    if (!customJWT || typeof customJWT === "undefined") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - No Cookie with JWT Provided" });
+    }
+
     const verifiedCustomJWT = jwt.verify(
       customJWT,
       process.env.JWT_SECRET as Secret

@@ -6,6 +6,7 @@ import {
   useMemo,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import getAuthenticatedUser from "../api/getAuthenticatedUser";
 
 export const AuthContext = createContext();
 
@@ -22,105 +23,104 @@ export const AuthProvider = ({ children }) => {
 
   // ----------------------------------------------------------------
 
-  // [1] HTTP ONLY COOKIE VERSION
-  // const fetchUser = useCallback(async () => {
+  const googleAccountsOAuth2InitCodeClientPopupFlow = useCallback(async () => {
+    // AUTHORIZATION CODE FLOW EXAMPLE:
+    // Google Identity Services POPUP UX
+    // This example shows only the Google Identity Service JavaScript library using
+    // the AUTHORIZATION CODE model a POPUP dialog for user consent and callback handler
+    // to receive the authorization code from Google.
+    // It is provided to illustrate the minimal number of steps required to
+    // configure a client, obtain consent and send an authorization code to your backend platform.
+    const googleAccountsOAuth2InitCodeClientPopupClient =
+      google.accounts.oauth2.initCodeClient({
+        client_id: `${import.meta.env.VITE_GOOGLE_CLIENT_ID}`,
+        scope: "profile email openid",
+        ux_mode: "popup",
+        callback: async (googleAuthorizationCodeResponse) => {
+          try {
+            const googleAuthorizationCode =
+              googleAuthorizationCodeResponse.code;
+            console.log(
+              "googleAccountsOAuth2InitCodeClientPopupFlow googleAuthorizationCode:",
+              googleAuthorizationCode
+            );
 
-  // [2] JWT IN BODY VERSION
-  const fetchUser = useCallback(async (customJWT) => {
-    try {
-      // Send a Request to the backend with the HTTP-Only Cookie (and CustomJWT inside) automatically included
-      // Receive back the User's Information
-      // [1] HTTP ONLY COOKIE VERSION
-      // const response = await fetch(
-      //   `${import.meta.env.VITE_SERVER_URL}/api/auth/user`,
-      //   {
-      //     credentials: "include",
-      //   }
-      // );
+            // Send the "Authorization Code" to the backend in the Request Header
+            // Receive back a JSON Body with CustomJWT
+            const response = await fetch(
+              `${
+                import.meta.env.VITE_SERVER_URL
+              }/api/auth/google/authorizationcode`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${googleAuthorizationCode}`,
+                },
+              }
+            );
 
-      console.log("fetchUser customJWT", customJWT, typeof customJWT);
+            console.log(
+              "googleAccountsOAuth2InitCodeClientPopupFlow response:",
+              response
+            );
 
-      // [2] JWT IN BODY VERSION
-      const response = await fetch(
-        `${import.meta.env.VITE_SERVER_URL}/api/auth/user`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${customJWT}`,
-          },
-        }
-      );
-      console.log("fetchUser response:", JSON.stringify(response));
+            if (!response.ok) {
+              throw new Error(
+                `googleAccountsOAuth2InitCodeClientPopupFlow response failed ${response.status} ${response.statusText}`
+              );
+            }
 
-      if (!response.ok) {
-        throw new Error(
-          `Error: ${response.status} ${response.statusText} : fetchUser failed`
-        );
-      }
+            const customJWT = await response.json();
+            console.log(
+              "googleAccountsOAuth2InitCodeClientPopupFlow customJWT:",
+              customJWT
+            );
 
-      const data = await response.json();
-      console.log("fetchUser data:", JSON.stringify(data));
+            // set the "customJWT" into Local Storage
+            localStorage.setItem("customJWT", customJWT);
 
-      return data;
-    } catch (error) {
-      console.error("AuthProvider fetchUser error:", error);
-    }
-  }, []);
+            // Send a GET Request to /api/auth/user with our CustomJWT
+            // Receive back a JSON Body with User Information
+            const user = await getAuthenticatedUser(customJWT);
+            console.log(
+              "googleAccountsOAuth2InitCodeClientPopupFlow user",
+              user
+            );
 
-  // ----------------------------------------------------------------
+            if (!user) {
+              throw new Error(
+                "googleAccountsOAuth2InitCodeClientPopupFlow no user"
+              );
+            }
 
-  // const checkUserEnvironment = () => {
-  //   const userAgent = navigator.userAgent;
-  //   console.log("itpSupportBoolean userAgent:", userAgent);
+            // Set "authenticatedUser" into Local Storage
+            localStorage.setItem("authenticatedUser", JSON.stringify(user));
 
-  //   // get the User's Operating System
-  //   let operatingSystem;
+            // Set the user React State
+            setAuthenticatedUser(user);
 
-  //   if (userAgent.includes("Win")) {
-  //     operatingSystem = "Windows";
-  //   } else if (userAgent.includes("Mac OS")) {
-  //     operatingSystem = "Mac OS";
-  //   } else if (userAgent.includes("iOS")) {
-  //     operatingSystem = "iOS";
-  //   } else if (userAgent.includes("Linux")) {
-  //     operatingSystem = "Linux";
-  //   } else if (userAgent.includes("Android")) {
-  //     operatingSystem = "Android";
-  //   } else {
-  //     operatingSystem = "Unknown";
-  //   }
-  //   console.log("itpSupportBoolean operatingSystem:", operatingSystem);
+            // Navigate to the Profile Page
+            navigate("/profile");
+          } catch (error) {
+            console.error(
+              "googleAccountsOAuth2InitCodeClientPopupFlow callback error",
+              error
+            );
+          }
+        },
+      });
 
-  //   // get the User's Browser
-  //   let browser;
-
-  //   if (userAgent.includes("Chrome")) {
-  //     browser = "Chrome";
-  //   } else if (userAgent.includes("Firefox")) {
-  //     browser = "Firefox";
-  //   } else if (userAgent.includes("Safari")) {
-  //     browser = "Safari";
-  //   } else if (userAgent.includes("Edge")) {
-  //     browser = "Edge";
-  //   } else {
-  //     browser = "Unknown";
-  //   }
-  //   console.log("itpSupportBoolean browser:", browser);
-
-  //   // if the User is on IOS or has an iPhone then return true
-  //   if (browser === "Chrome" && operatingSystem !== "Mac OS") {
-  //     console.log("itpSupportBoolean Return True");
-  //     return true;
-  //   } else {
-  //     console.log("itpSupportBoolean Return False");
-  //     return false;
-  //   }
-  // };
+    googleAccountsOAuth2InitCodeClientPopupClient.requestCode();
+  }, [navigate]);
 
   // ----------------------------------------------------------------
 
-  // eslint-disable-next-line
   const googleAccountsIdInitializeFlow = useCallback(async () => {
+    // This method initializes the Google Sign-In client instance.
+    // This instance is responsible for managing the sign-in process
+    // and providing callbacks for when the user signs in or signs out.
+    // The initialize method takes an object as an argument, which is used to configure the client.
     google.accounts.id.initialize({
       client_id: `${import.meta.env.VITE_GOOGLE_CLIENT_ID}`,
       // itp_support: itpSupportBoolean(),
@@ -138,8 +138,8 @@ export const AuthProvider = ({ children }) => {
             JSON.stringify(googleIdTokenResponse.credential)
           );
 
-          // Send the Google ID Token to the backend in the Request Header
-          // and Receive back an HTTP-Only Cookie with a CustomJWT inside
+          // Send the "Authorization Code" to the backend in the Request Header
+          // Receive back a JSON Body with CustomJWT
           const response = await fetch(
             `${import.meta.env.VITE_SERVER_URL}/api/auth/google/idtoken`,
             {
@@ -148,21 +148,10 @@ export const AuthProvider = ({ children }) => {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${googleIdToken}`,
               },
-              // [1] HTTP ONLY COOKIE VERSION
               // credentials: "include",
             }
           );
           console.log("googleAccountsIdInitializeFlow response:", response);
-
-          // console.log(
-          //   "googleAccountsIdInitializeFlow response.status",
-          //   response.status
-          // );
-
-          // console.log(
-          //   "googleAccountsIdInitializeFlow response.statusText",
-          //   response.statusText
-          // );
 
           if (!response.ok) {
             throw new Error(
@@ -170,27 +159,14 @@ export const AuthProvider = ({ children }) => {
             );
           }
 
-          // Send a GET Request to /api/auth/user including our CustomJWT
-          // Receive back a JSON body of User Information
-
-          // [1] HTTP ONLY COOKIE VERSION
-          // const user = await fetchUser();
-
-          // [2] JWT IN BODY VERSION
-          // get the CustomJWT from the Response Body
           const customJWT = await response.json();
           console.log("googleAccountsIdInitializeFlow customJWT:", customJWT);
 
-          localStorage.setItem("CustomJWT", customJWT);
+          // Set "customJWT" into LocalStorage
+          localStorage.setItem("customJWT", customJWT);
 
-          // [2] JWT IN BODY VERSION
-          // send the CustomJWT from the Fetch User function
-          const user = await fetchUser(customJWT);
-
-          console.log(
-            "googleAccountsIdInitializeFlow user",
-            JSON.stringify(user)
-          );
+          const user = await getAuthenticatedUser(customJWT);
+          console.log("googleAccountsIdInitializeFlow user", user);
 
           if (!user) {
             throw new Error("googleAccountsIdInitializeFlow no user");
@@ -199,7 +175,7 @@ export const AuthProvider = ({ children }) => {
           // Set "authenticatedUser" into LocalStorage
           localStorage.setItem("authenticatedUser", JSON.stringify(user));
 
-          // Set the authenticatedUser React State
+          // Set the user React State
           setAuthenticatedUser(user);
 
           // Navigate to the Profile Page
@@ -210,6 +186,10 @@ export const AuthProvider = ({ children }) => {
       },
     });
 
+    // This method triggers the Google Sign-In prompt.
+    // This prompt will display a modal window that allows the user to sign in to their Google account.
+    // Once the user has signed in, the callback function specified in the initialize method will be called.
+    // The callback function will be passed an object containing information about the signed-in user.
     google.accounts.id.prompt((notification) => {
       console.log(
         "googleAccountsIdPrompt notification:",
@@ -234,118 +214,13 @@ export const AuthProvider = ({ children }) => {
         // unregistered_origin;
         // unknown_reason;
         if (notDisplayedReason === "opt_out_or_no_session") {
+          // If we reach here we cannot login with One Tap...
+          // So we have to use another flow...
           googleAccountsOAuth2InitCodeClientPopupFlow();
         }
       }
     });
-  }, [fetchUser, navigate, googleAccountsOAuth2InitCodeClientPopupFlow]);
-
-  // ----------------------------------------------------------------
-
-  // eslint-disable-next-line
-  const googleAccountsOAuth2InitCodeClientPopupFlow = useCallback(async () => {
-    // AUTHORIZATION CODE FLOW EXAMPLE:
-
-    // GIS POPUP UX
-
-    // This example shows only the Google Identity Service JavaScript library using
-    // the AUTHORIZATION CODE model a POPUP dialog for user consent and callback handler
-    // to receive the authorization code from Google.
-    // It is provided to illustrate the minimal number of steps required to
-    // configure a client, obtain consent and send an authorization code to your backend platform.
-
-    const googleAccountsOAuth2InitCodeClientPopupClient =
-      google.accounts.oauth2.initCodeClient({
-        client_id: `${import.meta.env.VITE_GOOGLE_CLIENT_ID}`,
-        scope: "profile email openid",
-        ux_mode: "popup",
-        callback: async (googleAuthorizationCodeResponse) => {
-          try {
-            const googleAuthorizationCode =
-              googleAuthorizationCodeResponse.code;
-            console.log(
-              "googleAccountsOAuth2InitCodeClientPopupFlow googleAuthorizationCode:",
-              googleAuthorizationCode
-            );
-
-            // send the "Authorization Code" to the backend in the Request Header
-            // and Receive back an HTTP-Only Cookie with a CustomJWT inside
-
-            // [1] HTTP ONLY COOKIE VERSION
-            // const response = await fetch(
-            //   `${
-            //     import.meta.env.VITE_SERVER_URL
-            //   }/api/auth/google/authorizationcode`,
-            //   {
-            //     method: "POST",
-            //     headers: {
-            //       "Content-Type": "application/json",
-            //       Authorization: `Bearer ${googleAuthorizationCode}`,
-            //     },
-            //     credentials: "include",
-            //   }
-            // );
-
-            const response = await fetch(
-              `${
-                import.meta.env.VITE_SERVER_URL
-              }/api/auth/google/authorizationcode`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${googleAuthorizationCode}`,
-                },
-              }
-            );
-
-            console.log(
-              "googleAccountsOAuth2InitCodeClientPopupFlow response:",
-              response
-            );
-
-            if (!response.ok) {
-              throw new Error(
-                `Error: ${response.status} ${response.statusText} : googleAccountsOAuth2InitCodeClientPopupFlow response failed`
-              );
-            }
-
-            // [2] JWT IN BODY VERSION
-            const data = await response.json();
-            console.log(
-              "googleAccountsOAuth2InitCodeClientPopupFlow data:",
-              data
-            );
-
-            // Send a GET Request to /api/auth/user including our CustomJWT
-            // Receive back a JSON body of User Information
-            const user = await fetchUser();
-
-            if (!user) {
-              throw new Error(
-                "googleAccountsOAuth2InitCodeClientPopupFlow no user"
-              );
-            }
-
-            // Set "authenticatedUser" into LocalStorage
-            localStorage.setItem("authenticatedUser", JSON.stringify(user));
-
-            // Set the authenticatedUser React State
-            setAuthenticatedUser(user);
-
-            // Navigate to the Profile Page
-            navigate("/profile");
-          } catch (error) {
-            console.error(
-              "googleAccountsOAuth2InitCodeClientPopupFlow callback error",
-              error
-            );
-          }
-        },
-      });
-
-    googleAccountsOAuth2InitCodeClientPopupClient.requestCode();
-  }, [fetchUser, navigate]);
+  }, [navigate, googleAccountsOAuth2InitCodeClientPopupFlow]);
 
   // ----------------------------------------------------------------
 
@@ -353,13 +228,10 @@ export const AuthProvider = ({ children }) => {
   const googleAccountsOAuth2InitCodeClientRedirectFlow =
     useCallback(async () => {
       // AUTHORIZATION CODE FLOW EXAMPLE:
-
-      // GIS REDIRECT UX
-
+      // Google Identity Services REDIRECT UX
       // Authorization Code model supports the "popup" and "redirect" UX modes
       // to send a per user authorization code to the endpoint hosted by your platform.
       // The redirect UX mode is shown here:
-
       const googleAccountsOAuth2InitCodeClientRedirect =
         google.accounts.oauth2.initCodeClient({
           client_id: `${import.meta.env.VITE_GOOGLE_CLIENT_ID}`,
@@ -377,28 +249,21 @@ export const AuthProvider = ({ children }) => {
       // (?) Or change the specific authController Handler to redirect to the other route /api/auth/user and then finally redirect back to the client...(?)
     }, []);
 
+  // ----------------------------------------------------------------
+
   const login = useCallback(async () => {
-    // const needsItp = itpSupportBoolean();
-    // if (!needsItp) {
-    //   console.log("------ USING MODE [1]");
-    //   googleAccountsIdInitializeFlow();
-    // } else {
-    //   console.log("------ USING MODE [3]");
-    //   // googleAccountsOAuth2InitCodeClientPopupFlow();
-    //   googleAccountsOAuth2InitCodeClientRedirectFlow();
-    // }
     googleAccountsIdInitializeFlow();
-    // googleAccountsOAuth2InitCodeClientPopupFlow();
-  }, [
-    googleAccountsIdInitializeFlow,
-    // googleAccountsOAuth2InitCodeClientPopupFlow,
-    // googleAccountsOAuth2InitCodeClientRedirectFlow,
-  ]);
+  }, [googleAccountsIdInitializeFlow]);
+
+  // ----------------------------------------------------------------
 
   const logout = useCallback(() => {
     // Remove the "g_state" Cookie that Google Sign In creates
     document.cookie =
       "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+    // Clear the "customJWT" from Local Storage
+    localStorage.removeItem("customJWT");
 
     // Clear the "authenticatedUser" from Local Storage
     localStorage.removeItem("authenticatedUser");
@@ -410,6 +275,8 @@ export const AuthProvider = ({ children }) => {
     navigate("/");
   }, [navigate]);
 
+  // ----------------------------------------------------------------
+
   const contextValue = useMemo(
     () => ({
       login,
@@ -419,6 +286,8 @@ export const AuthProvider = ({ children }) => {
     [login, logout, authenticatedUser]
   );
 
+  // ----------------------------------------------------------------
+
   useEffect(() => {
     // Get "authenticatedUser" from LocalStorage
     const authenticatedUserLocalStorage = JSON.parse(
@@ -427,6 +296,8 @@ export const AuthProvider = ({ children }) => {
 
     // If there is no "authenticatedUser"
     if (!authenticatedUserLocalStorage) {
+      // Remove the "customJWT" from Local Storage
+      localStorage.removeItem("customJWT");
       return;
     }
 
@@ -439,6 +310,8 @@ export const AuthProvider = ({ children }) => {
     if (authenticatedUserLocalStorage && isCustomJWTExpired) {
       // Remove the "authenticatedUser" from Local Storage
       localStorage.removeItem("authenticatedUser");
+      // Remove the "customJWT" from Local Storage
+      localStorage.removeItem("customJWT");
       return;
     }
 
@@ -450,6 +323,8 @@ export const AuthProvider = ({ children }) => {
       return;
     }
   }, []);
+
+  // ----------------------------------------------------------------
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

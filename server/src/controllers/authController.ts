@@ -103,27 +103,28 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       return res.status(500).json({ error: "Error signing a new customJWT" });
     }
 
-    // [1] HTTP ONLY COOKIE VERSION:
+    // [1] HTTP ONLY COOKIE VERSION
     // res.cookie("customJWT", customJWT, {
     //   httpOnly: true,
     //   secure: true,
     //   sameSite: "none",
     //   maxAge: 3600000
     // });
+
     // logger.info({
     //   message: `idTokenHandler res.getHeaders()["set-cookie"]`,
     //   value: res.getHeaders()["set-cookie"]
     // });
 
     logger.info({
-      message: "👿 User-Agent:",
+      message: "idTokenHandler User-Agent",
       value: req.get("User-Agent")
     });
 
-    // [1] HTTP ONLY COOKIE VERSION:
+    // [1] HTTP ONLY COOKIE VERSION
     // res.sendStatus(200);
 
-    // [2] JWT IN BODY VERSION
+    // [2] AUTH HEADER JWT VERSION
     res.status(200).json(customJWT);
   } catch (error) {
     logger.error(error);
@@ -263,24 +264,29 @@ export const authorizationCodePopupHandler = async (
       return res.status(500).json({ error: "Error signing a new customJWT" });
     }
 
-    res.cookie("customJWT", customJWT, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 3600000
-    });
+    // [1] HTTP ONLY COOKIE VERSION
+    // res.cookie("customJWT", customJWT, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: "none",
+    //   maxAge: 3600000
+    // });
+
+    // logger.info({
+    //   message: `authorizationCodePopupHandler res.getHeaders()["set-cookie"]`,
+    //   value: res.getHeaders()["set-cookie"]
+    // });
 
     logger.info({
-      message: `authorizationCodePopupHandler res.getHeaders()["set-cookie"]`,
-      value: res.getHeaders()["set-cookie"]
-    });
-
-    logger.info({
-      message: "👿 User-Agent:",
+      message: "authorizationCodePopupHandler User-Agent",
       value: req.get("User-Agent")
     });
 
-    res.sendStatus(200);
+    // [1] HTTP ONLY COOKIE VERSION
+    // res.sendStatus(200);
+
+    // [2] AUTH HEADER JWT VERSION
+    res.status(200).json(customJWT);
   } catch (error) {
     logger.error(error);
     return res.status(500).json({ error: "Server Error" });
@@ -409,24 +415,25 @@ export const authorizationCodeRedirectHandler = async (
       return res.status(500).json({ error: "Error signing a new customJWT" });
     }
 
-    res.cookie("customJWT", customJWT, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 3600000
-    });
+    // [1] HTTP ONLY COOKIE VERSION
+    // res.cookie("customJWT", customJWT, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: "none",
+    //   maxAge: 3600000
+    // });
+
+    // logger.info({
+    //   message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
+    //   value: res.getHeaders()["set-cookie"]
+    // });
 
     logger.info({
-      message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
-      value: res.getHeaders()["set-cookie"]
-    });
-
-    logger.info({
-      message: "👿 User-Agent:",
+      message: "authorizationCodeRedirectHandler User-Agent",
       value: req.get("User-Agent")
     });
 
-    // redirect to the Client (with the HTTP-Only Cookie containing Custom JWT)
+    // Can you return the customJWT to the client at the same time as a redirect???
     res.redirect(process.env.CLIENT_URL as string);
   } catch (error) {
     logger.error(error);
@@ -450,8 +457,7 @@ export const userHandler = async (req: Request, res: Response) => {
   //   value: customJWT
   // });
 
-  // [2] JWT IN BODY VERSION
-
+  // [2] AUTH HEADER JWT VERSION
   const authorizationHeader = req.headers["authorization"];
   logger.info({
     message: "userHandler authorizationHeader",
@@ -482,12 +488,9 @@ export const userHandler = async (req: Request, res: Response) => {
   const customJWT = jwtTokenParts[1];
   logger.info({ message: "userHandler customJWT", value: customJWT });
 
-  // [1] HTTP ONLY COOKIE VERSION
-  // if (!customJWT || typeof customJWT === "undefined") {
-  //   return res
-  //     .status(401)
-  //     .json({ error: "Unauthorized - No Cookie with JWT Provided" });
-  // }
+  if (!customJWT || typeof customJWT === "undefined") {
+    return res.status(401).json({ error: "Unauthorized - Invalid JWT" });
+  }
 
   try {
     const verifiedCustomJWT = jwt.verify(
