@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
 
   // ----------------------------------------------------------------
 
-  // const itpSupportBoolean = () => {
+  // const checkUserEnvironment = () => {
   //   const userAgent = navigator.userAgent;
   //   console.log("itpSupportBoolean userAgent:", userAgent);
 
@@ -107,18 +107,8 @@ export const AuthProvider = ({ children }) => {
   //   }
   //   console.log("itpSupportBoolean browser:", browser);
 
-  //   // get the User's phone (if any)
-  //   let phone;
-
-  //   if (userAgent.includes("iPhone")) {
-  //     phone = "iPhone";
-  //   } else {
-  //     phone = "Unknown";
-  //   }
-  //   console.log("itpSupportBoolean phone:", phone);
-
   //   // if the User is on IOS or has an iPhone then return true
-  //   if (operatingSystem === "iOS" || phone === "iPhone") {
+  //   if (browser === "Chrome" && operatingSystem !== "Mac OS") {
   //     console.log("itpSupportBoolean Return True");
   //     return true;
   //   } else {
@@ -225,21 +215,30 @@ export const AuthProvider = ({ children }) => {
         "googleAccountsIdPrompt notification:",
         JSON.stringify(notification)
       );
-      console.log(
-        "googleAccountsIdPrompt notification.getNotDisplayedReason():",
-        JSON.stringify(notification.getNotDisplayedReason())
-      );
       if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
         console.log(
           "googleAccountsIdPrompt notification.getNotDisplayedReason():",
           JSON.stringify(notification.getNotDisplayedReason())
         );
+
         // Remove the "g_state" Cookie that Google Sign In creates
         document.cookie =
           "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+        const notDisplayedReason = notification.getNotDisplayedReason();
+        // browser_not_supported;
+        // invalid_client;
+        // missing_client_id;
+        // opt_out_or_no_session * secure_http_required;
+        // suppressed_by_user;
+        // unregistered_origin;
+        // unknown_reason;
+        if (notDisplayedReason === "opt_out_or_no_session") {
+          googleAccountsOAuth2InitCodeClientPopupFlow();
+        }
       }
     });
-  }, [fetchUser, navigate]);
+  }, [fetchUser, navigate, googleAccountsOAuth2InitCodeClientPopupFlow]);
 
   // ----------------------------------------------------------------
 
