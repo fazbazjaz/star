@@ -32,14 +32,14 @@ export const AuthProvider = ({ children }) => {
           credentials: "include",
         }
       );
-      // console.log("fetchUser response:", response);
+      console.log("fetchUser response:", response);
       if (!response.ok) {
         throw new Error(
           `Error: ${response.status} ${response.statusText} : fetchUser failed`
         );
       }
       const data = await response.json();
-      // console.log("fetchUser data:", data);
+      console.log("fetchUser data:", data);
       return data;
     } catch (error) {
       console.error("AuthProvider fetchUser error:", error);
