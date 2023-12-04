@@ -1,36 +1,153 @@
-// version1 my code
-import { useState } from "react";
-import SearchBar from "./SearchBar";
-// import { debouncedSearchQuestions } from "../helpers/questions";
+// version3
+import { useState, useEffect } from "react";
 import { debouncedSearchQuestions } from "../questions";
 
-const Question = () => {
+const SearchBar = () => {
   const [searchResult, setSearchResult] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
 
-  const handleSearch = async (searchValue) => {
-    try {
-      const result = await debouncedSearchQuestions(searchValue);
-      setSearchResult(result);
-    } catch (error) {
-      console.error(error);
-    }
+  useEffect(() => {
+    const debouncedSearch = debounce(async () => {
+      try {
+        const result = await debouncedSearchQuestions(searchValue);
+        setSearchResult(result);
+      } catch (error) {
+        console.error(error);
+      }
+    }, 1000);
+
+    debouncedSearch();
+
+    return () => clearTimeout(debouncedSearch);
+  }, [searchValue]);
+
+  const handleSearchChange = (event) => {
+    const { value } = event.target;
+    setSearchValue(value);
   };
 
   return (
     <div>
-      <SearchBar onSearch={handleSearch} />
+      {/* Add the input field for search */}
+      <input
+        type="text"
+        placeholder="Search..."
+        value={searchValue}
+        onChange={handleSearchChange}
+      />
       {/* Display your search results, e.g., using Result component */}
       {searchResult.map((result) => (
-        // Render your search result components here
-        // Example: <Result key={result.id} {...result} />
         <div key={result.id}>{result.question}</div>
       ))}
-      {/* Add your existing Question component code here */}
     </div>
   );
 };
 
-export default Question;
+// Debounce function used to be below export default SearchBar.
+function debounce(func, delay) {
+  let timeoutId;
+  return function () {
+    const args = arguments;
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(null, args), delay);
+  };
+}
+
+export default SearchBar;
+
+// version2 my code
+// import { useState, useEffect } from "react";
+// // import Question from "./Question"; // Replace with the correct path
+
+// // Import your debouncedSearchQuestions function
+// import { debouncedSearch } from "../questions";
+
+// const Question = () => {
+//   const [searchResult, setSearchResult] = useState([]);
+//   const [searchValue, setSearchValue] = useState("");
+
+//   useEffect(() => {
+//     // Define a debounced function to handle the search
+//     const debouncedSearch = debounce(async () => {
+//       try {
+//         const result = await debouncedSearch(searchValue);
+//         setSearchResult(result);
+//       } catch (error) {
+//         console.error(error);
+//       }
+//     }, 1000);
+
+//     // Call the debounced function when the searchValue changes
+//     debouncedSearch();
+
+//     // Cleanup function to clear the timeout on unmount or when searchValue changes
+//     return () => clearTimeout(debouncedSearch);
+//   }, [searchValue]);
+
+//   const handleSearchChange = (event) => {
+//     const { value } = event.target;
+//     setSearchValue(value);
+//   };
+
+//   return (
+//     <div>
+//       <SearchBar onSearchChange={handleSearchChange} />
+//       {/* Display your search results, e.g., using Result component */}
+//       {searchResult.map((result) => (
+//         // Render your search result components here
+//         // Example: <Result key={result.id} {...result} />
+//         <div key={result.id}>{result.question}</div>
+//       ))}
+//       {/* Add your existing Question component code here */}
+//     </div>
+//   );
+// };
+
+// export default SearchBar;
+
+// // Debounce function
+// function debounce(func, delay) {
+//   let timeoutId;
+//   return function () {
+//     const args = arguments;
+//     clearTimeout(timeoutId);
+//     timeoutId = setTimeout(() => func.apply(null, args), delay);
+//   };
+// }
+
+// version1 my code
+// import { useState } from "react";
+
+// // import { debouncedSearchQuestions } from "../helpers/questions";
+// import { debouncedSearchQuestions } from "../questions";
+
+// const Question = () => {
+//   const [searchResult, setSearchResult] = useState([]);
+
+//   const handleSearch = async (searchValue) => {
+//     try {
+//       const result = await debouncedSearchQuestions(searchValue);
+//       setSearchResult(result);
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
+
+//   return (
+//     <div>
+//       <SearchBar onSearch={handleSearch} />
+//       {/* Display your search results, e.g., using Result component */}
+//       {searchResult.map((result) => (
+//         // Render your search result components here
+//         // Example: <Result key={result.id} {...result} />
+//         <div key={result.id}>{result.question}</div>
+//       ))}
+//       {/* Add your existing Question component code here */}
+//     </div>
+//   );
+// };
+
+// export default SearchBar;
 
 // version pasted in from internet to modify
 // import { useState, useEffect } from "react";
