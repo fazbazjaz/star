@@ -22,24 +22,45 @@ export const AuthProvider = ({ children }) => {
 
   // ----------------------------------------------------------------
 
-  const fetchUser = useCallback(async () => {
+  // [1] HTTP ONLY COOKIE VERSION
+  // const fetchUser = useCallback(async () => {
+
+  // [2] JWT IN BODY VERSION
+  const fetchUser = useCallback(async (customJWT) => {
     try {
       // Send a Request to the backend with the HTTP-Only Cookie (and CustomJWT inside) automatically included
       // Receive back the User's Information
+      // [1] HTTP ONLY COOKIE VERSION
+      // const response = await fetch(
+      //   `${import.meta.env.VITE_SERVER_URL}/api/auth/user`,
+      //   {
+      //     credentials: "include",
+      //   }
+      // );
+
+      console.log("fetchUser customJWT", customJWT, typeof customJWT);
+
+      // [2] JWT IN BODY VERSION
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_URL}/api/auth/user`,
         {
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${customJWT}`,
+          },
         }
       );
       console.log("fetchUser response:", JSON.stringify(response));
+
       if (!response.ok) {
         throw new Error(
           `Error: ${response.status} ${response.statusText} : fetchUser failed`
         );
       }
+
       const data = await response.json();
       console.log("fetchUser data:", JSON.stringify(data));
+
       return data;
     } catch (error) {
       console.error("AuthProvider fetchUser error:", error);
@@ -137,23 +158,21 @@ export const AuthProvider = ({ children }) => {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${googleIdToken}`,
               },
-              credentials: "include",
+              // [1] HTTP ONLY COOKIE VERSION
+              // credentials: "include",
             }
           );
-          console.log(
-            "googleAccountsIdInitializeFlow response:",
-            JSON.stringify(response)
-          );
+          console.log("googleAccountsIdInitializeFlow response:", response);
 
-          console.log(
-            "googleAccountsIdInitializeFlow response.status",
-            response.status
-          );
+          // console.log(
+          //   "googleAccountsIdInitializeFlow response.status",
+          //   response.status
+          // );
 
-          console.log(
-            "googleAccountsIdInitializeFlow response.statusText",
-            response.statusText
-          );
+          // console.log(
+          //   "googleAccountsIdInitializeFlow response.statusText",
+          //   response.statusText
+          // );
 
           if (!response.ok) {
             throw new Error(
@@ -163,7 +182,21 @@ export const AuthProvider = ({ children }) => {
 
           // Send a GET Request to /api/auth/user including our CustomJWT
           // Receive back a JSON body of User Information
-          const user = await fetchUser();
+
+          // [1] HTTP ONLY COOKIE VERSION
+          // const user = await fetchUser();
+
+          // [2] JWT IN BODY VERSION
+          // get the CustomJWT from the Response Body
+          const customJWT = await response.json();
+          console.log("googleAccountsIdInitializeFlow customJWT:", customJWT);
+
+          localStorage.setItem("CustomJWT", customJWT);
+
+          // [2] JWT IN BODY VERSION
+          // send the CustomJWT from the Fetch User function
+          const user = await fetchUser(customJWT);
+
           console.log(
             "googleAccountsIdInitializeFlow user",
             JSON.stringify(user)
@@ -238,6 +271,22 @@ export const AuthProvider = ({ children }) => {
 
             // send the "Authorization Code" to the backend in the Request Header
             // and Receive back an HTTP-Only Cookie with a CustomJWT inside
+
+            // [1] HTTP ONLY COOKIE VERSION
+            // const response = await fetch(
+            //   `${
+            //     import.meta.env.VITE_SERVER_URL
+            //   }/api/auth/google/authorizationcode`,
+            //   {
+            //     method: "POST",
+            //     headers: {
+            //       "Content-Type": "application/json",
+            //       Authorization: `Bearer ${googleAuthorizationCode}`,
+            //     },
+            //     credentials: "include",
+            //   }
+            // );
+
             const response = await fetch(
               `${
                 import.meta.env.VITE_SERVER_URL
@@ -248,9 +297,9 @@ export const AuthProvider = ({ children }) => {
                   "Content-Type": "application/json",
                   Authorization: `Bearer ${googleAuthorizationCode}`,
                 },
-                credentials: "include",
               }
             );
+
             console.log(
               "googleAccountsOAuth2InitCodeClientPopupFlow response:",
               response
@@ -261,6 +310,13 @@ export const AuthProvider = ({ children }) => {
                 `Error: ${response.status} ${response.statusText} : googleAccountsOAuth2InitCodeClientPopupFlow response failed`
               );
             }
+
+            // [2] JWT IN BODY VERSION
+            const data = await response.json();
+            console.log(
+              "googleAccountsOAuth2InitCodeClientPopupFlow data:",
+              data
+            );
 
             // Send a GET Request to /api/auth/user including our CustomJWT
             // Receive back a JSON body of User Information
