@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
 
     if (userAgent.indexOf("Win") !== -1) {
       operatingSystem = "Windows";
-    } else if (userAgent.indexOf("MacOS") !== -1) {
+    } else if (userAgent.indexOf("Mac OS") !== -1) {
       operatingSystem = "Mac OS";
     } else if (userAgent.indexOf("iOS") !== -1) {
       operatingSystem = "iOS";
