@@ -149,12 +149,19 @@ export const AuthProvider = ({ children }) => {
     });
 
     google.accounts.id.prompt((notification) => {
-      console.log("googleAccountsIdPrompt notification:", notification);
+      console.log(
+        "googleAccountsIdPrompt notification:",
+        JSON.stringify(notification)
+      );
       console.log(
         "googleAccountsIdPrompt notification.getNotDisplayedReason():",
-        notification.getNotDisplayedReason()
+        JSON.stringify(notification.getNotDisplayedReason())
       );
       if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+        console.log(
+          "googleAccountsIdPrompt notification.getNotDisplayedReason():",
+          JSON.stringify(notification.getNotDisplayedReason())
+        );
         // Remove the "g_state" Cookie that Google Sign In creates
         document.cookie =
           "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
