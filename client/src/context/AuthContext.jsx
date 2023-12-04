@@ -287,8 +287,10 @@ export const AuthProvider = ({ children }) => {
     const needsItp = itpSupportBoolean();
 
     if (!needsItp) {
+      console.log("------ USING MODE [1]");
       googleAccountsIdInitializeFlow();
     } else {
+      console.log("------- USING MODE [2]");
       googleAccountsOAuth2InitCodeClientPopupFlow();
     }
     // googleAccountsOAuth2InitCodeClientRedirectFlow();
