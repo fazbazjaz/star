@@ -332,10 +332,11 @@ export const AuthProvider = ({ children }) => {
     //   // googleAccountsOAuth2InitCodeClientPopupFlow();
     //   googleAccountsOAuth2InitCodeClientRedirectFlow();
     // }
-    googleAccountsOAuth2InitCodeClientPopupFlow();
+    googleAccountsIdInitializeFlow();
+    // googleAccountsOAuth2InitCodeClientPopupFlow();
   }, [
-    // googleAccountsIdInitializeFlow,
-    googleAccountsOAuth2InitCodeClientPopupFlow,
+    googleAccountsIdInitializeFlow,
+    // googleAccountsOAuth2InitCodeClientPopupFlow,
     // googleAccountsOAuth2InitCodeClientRedirectFlow,
   ]);
 
