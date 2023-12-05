@@ -24,8 +24,7 @@ const QuestionsPage = () => {
     initialPageParam: 1,
 
     getNextPageParam: (lastPage, allPages) => {
-      const nextPage =
-        lastPage.data.length < 5 ? undefined : allPages.length + 1;
+      const nextPage = lastPage.length < 5 ? undefined : allPages.length + 1;
       return nextPage;
     },
   });
@@ -60,7 +59,7 @@ const QuestionsPage = () => {
               <Typography variant={"pagetitle"}>
                 All Questions (
                 {questionsByPageData.pages
-                  .map((page) => page.data.length)
+                  .map((page) => page.length)
                   .reduce((acc, cv) => acc + cv, 0)}
                 )
               </Typography>
@@ -78,7 +77,7 @@ const QuestionsPage = () => {
             )}
             <Box display={"grid"} gap={2} mt={1}>
               {questionsByPageData?.pages.map((page) =>
-                page?.data.map((questionData) => (
+                page?.map((questionData) => (
                   <div key={questionData.id} className="each-question">
                     <Question questionData={questionData} />
                   </div>

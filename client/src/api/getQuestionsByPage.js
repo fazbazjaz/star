@@ -12,10 +12,15 @@ const getQuestionsByPage = async ({ pageParam }) => {
       // { credentials: "include" }
     }
   );
+  // console.log("getQuestionsByPage response:", response);
+
   if (!response.ok) {
     throw new Error("getQuestionsByPage failed");
   }
+
   const data = await response.json();
+  // console.log("getQuestionsByPage data:", data);
+
   return data;
 };
 

@@ -39,9 +39,13 @@ export const getQuestionsByPageHandler = async (
       value: query
     });
 
-    res.status(200).json({
-      data: query
+    const data = query;
+    logger.info({
+      message: "getQuestionsByPageHandler data",
+      value: data
     });
+
+    res.status(200).json(data);
   } catch (error) {
     logger.error(error);
     res.status(500).json({ error: "Server Error" });
