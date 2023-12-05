@@ -3,6 +3,7 @@ import { Box, Typography } from "@mui/material";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import User from "../components/User";
+import getAllUsers from "../api/getAllUsers";
 import {
   consistentBorder,
   consistentBorderRadius,
@@ -12,20 +13,6 @@ import {
 } from "../themes/ConsistentStyles";
 
 const UsersPage = () => {
-  const fetchAllUsers = async () => {
-    const response = await fetch(
-      `${import.meta.env.VITE_SERVER_URL}/api/users`,
-      { credentials: "include" }
-    );
-    // console.log("fetchAllUsers response:", response);
-    if (!response.ok) {
-      throw new Error("fetchAllUsers failed");
-    }
-    const data = await response.json();
-    // console.log("fetchAllUsers data:", data);
-    return data;
-  };
-
   const {
     isPending,
     isError,
@@ -33,7 +20,7 @@ const UsersPage = () => {
     data: usersData,
   } = useQuery({
     queryKey: ["users"],
-    queryFn: fetchAllUsers,
+    queryFn: getAllUsers,
   });
 
   return (

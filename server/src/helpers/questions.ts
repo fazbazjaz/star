@@ -6,7 +6,7 @@ export const getAllQuestions = async () => {
   return await database.select().from(questions);
 };
 
-export const getQuestionsByCursor = async (limit: number, page: number) => {
+export const getQuestionsByPage = async (limit: number, page: number) => {
   return await database.query.questions.findMany({
     with: {
       answers: {
