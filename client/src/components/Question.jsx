@@ -7,7 +7,7 @@ import {
   Button,
   Link,
   IconButton,
-  CardMedia,
+  Avatar,
 } from "@mui/material";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
@@ -91,23 +91,21 @@ const Question = ({
           }}>
           <Box display={"flex"} alignItems={"center"}>
             <Box>
-              <Box display={"flex"} alignItems={"center"} gap={0.5}>
-                <CardMedia
-                  component={"img"}
-                  image={questionData?.user?.picture}
-                  sx={{
-                    height: 20,
-                    width: 20,
-                    borderRadius: "0.5rem",
-                  }}
+              <Box display={"flex"} alignItems={"center"} gap={0.75}>
+                <HelpOutlineOutlinedIcon
+                  fontSize={"medium"}
+                  color="primary"
+                  sx={{ alignSelf: "center" }}
                 />
-                <HelpOutlineOutlinedIcon fontSize={"medium"} color="primary" />
                 <Typography variant={"questiontitle"} color="primary">
-                  Question
+                  Question ({questionData?.id})
                 </Typography>
-                <Typography variant={"body2"}>by</Typography>
+                <Avatar
+                  src={questionData?.user?.picture}
+                  sx={{ height: 24, width: 24 }}
+                />
                 <Typography variant={"body2"}>
-                  {questionData?.user?.firstName}
+                  by {questionData?.user?.firstName}
                 </Typography>
               </Box>
               <Box
@@ -115,9 +113,6 @@ const Question = ({
                 alignItems={"center"}
                 flexWrap={"wrap"}
                 gap={1}>
-                <Typography variant={"body2"}>
-                  id: {questionData?.id}
-                </Typography>
                 <Typography variant={"body2"}>
                   Answers ({questionData?.answers?.length})
                 </Typography>

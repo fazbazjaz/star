@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "../context/AuthContext";
-import { Box, Typography, IconButton } from "@mui/material";
+import { Box, Typography, IconButton, Avatar } from "@mui/material";
 import MessageRoundedIcon from "@mui/icons-material/MessageRounded";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -58,16 +58,32 @@ const Comment = ({ commentData, questionId }) => {
         sx={{
           backdropFilter: consistentBackdropFilter,
         }}>
-        <Box display={"flex"} alignItems={"center"} gap={0.5}>
-          <MessageRoundedIcon fontSize={"0.75rem"} color="primary" />
-          <Typography variant={"commentitle"} color={"primary"}>
-            Comment
-          </Typography>
-          <Typography variant={"body2"}>(id: {commentData.id})</Typography>
-          <Typography variant={"body2"}>
-            by userId: {commentData.userId}
-          </Typography>
-          <Box marginLeft={"auto"}>
+        <Box display={"flex"} alignItems={"center"}>
+          <Box>
+            <Box display={"flex"} alignItems={"center"} gap={0.75}>
+              <MessageRoundedIcon fontSize={"small"} color="primary" />
+              <Typography variant={"commenttitle"} color="primary">
+                Comment ({commentData?.id})
+              </Typography>
+              <Avatar
+                src={commentData?.user?.picture}
+                sx={{ height: 22, width: 22 }}
+              />
+              <Typography variant={"body2"}>
+                by {commentData?.user?.firstName}
+              </Typography>
+            </Box>
+            <Box
+              display={"flex"}
+              alignItems={"center"}
+              flexWrap={"wrap"}
+              gap={1}></Box>
+          </Box>
+          <Box
+            marginLeft={"auto"}
+            display={"flex"}
+            alignItems={"center"}
+            gap={0.5}>
             {commentData.userId === authenticatedUser.id && (
               <>
                 <IconButton onClick={handleEdit} color="primary">
