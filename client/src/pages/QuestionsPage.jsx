@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useInView } from "react-intersection-observer";
 import { Box, Typography, Button } from "@mui/material";
 import Loading from "../components/Loading";
 import Error from "../components/Error";
@@ -10,13 +9,11 @@ import getQuestionsByPage from "../api/getQuestionsByPage";
 
 const QuestionsPage = () => {
   const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
-  const { ref, inView } = useInView({});
 
   const {
     data: questionsByPageData,
     error,
     fetchNextPage,
-    hasNextPage,
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
@@ -34,10 +31,23 @@ const QuestionsPage = () => {
   });
 
   useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage();
+    const allQuestions = document.querySelectorAll(".each-question");
+    const lastQuestion = allQuestions[allQuestions.length - 1];
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          fetchNextPage();
+        }
+      });
+    });
+    if (lastQuestion) {
+      observer.observe(lastQuestion);
+      return () => {
+        observer.unobserve(lastQuestion);
+      };
     }
-  }, [inView, hasNextPage, fetchNextPage]);
+  }, [questionsByPageData, fetchNextPage]);
 
   return (
     <Box py={2}>
@@ -69,7 +79,7 @@ const QuestionsPage = () => {
             <Box display={"grid"} gap={2} mt={1}>
               {questionsByPageData?.pages.map((page) =>
                 page?.data.map((questionData) => (
-                  <div key={questionData.id} ref={ref}>
+                  <div key={questionData.id} className="each-question">
                     <Question questionData={questionData} />
                   </div>
                 ))
