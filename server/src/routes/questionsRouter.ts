@@ -27,6 +27,8 @@ questionsRouter
   .get(getAllQuestionsHandler)
   .post(createQuestionHandler);
 
+questionsRouter.route("/infinite").get(getQuestionsByPageHandler);
+
 questionsRouter
   .route("/:id")
   .get(getOneQuestionHandler)
@@ -34,8 +36,6 @@ questionsRouter
   .delete(deleteQuestionHandler);
 
 questionsRouter.route("/user/:id").get(getAllQuestionsByUserHandler);
-
-questionsRouter.route("/infinite").get(getQuestionsByPageHandler);
 
 // Answers
 questionsRouter.route("/:id/answers").post(createAnswerHandler);

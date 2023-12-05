@@ -4,7 +4,13 @@ const getQuestionsByPage = async ({ pageParam }) => {
     `${
       import.meta.env.VITE_SERVER_URL
     }/api/questions/infinite?limit=${limit}&page=${pageParam}`,
-    { credentials: "include" }
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("customJWT")}`,
+      },
+      // { credentials: "include" }
+    }
   );
   if (!response.ok) {
     throw new Error("getQuestionsByPage failed");
