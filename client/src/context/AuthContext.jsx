@@ -297,7 +297,7 @@ export const AuthProvider = ({ children }) => {
       "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
     // Clear the "customJWT" from Local Storage
-    localStorage.removeItem("customJWT");
+    // localStorage.removeItem("customJWT");
 
     // Clear the "authenticatedUser" from Local Storage
     localStorage.removeItem("authenticatedUser");
@@ -331,7 +331,7 @@ export const AuthProvider = ({ children }) => {
     // If there is no "authenticatedUser"
     if (!authenticatedUserLocalStorage) {
       // Remove the "customJWT" from Local Storage
-      localStorage.removeItem("customJWT");
+      // localStorage.removeItem("customJWT");
       return;
     }
 
@@ -342,10 +342,10 @@ export const AuthProvider = ({ children }) => {
 
     // If there is an "authenticatedUser" but the CustomJWT has expired
     if (authenticatedUserLocalStorage && isCustomJWTExpired) {
+      // Remove the "customJWT" from Local Storage
+      // localStorage.removeItem("customJWT");
       // Remove the "authenticatedUser" from Local Storage
       localStorage.removeItem("authenticatedUser");
-      // Remove the "customJWT" from Local Storage
-      localStorage.removeItem("customJWT");
       return;
     }
 
