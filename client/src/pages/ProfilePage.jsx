@@ -47,12 +47,6 @@ const ProfilePage = () => {
               }}
             />
             <Box>
-              <Typography variant={"body2"}>User ID:</Typography>
-              <Typography fontWeight={"bold"}>
-                {authenticatedUser.id}
-              </Typography>
-            </Box>
-            <Box>
               <Typography variant={"body2"}>Name:</Typography>
               <Typography fontWeight={"bold"}>
                 {authenticatedUser.firstName} {authenticatedUser.lastName}

@@ -111,7 +111,7 @@ const Question = ({
                   display={"flex"}
                   alignItems={"center"}
                   flexWrap={"wrap"}
-                  gap={1}>
+                  gap={0.5}>
                   <Typography variant={"body2"}>
                     ({questionData?.answers?.length}) Answers
                   </Typography>
