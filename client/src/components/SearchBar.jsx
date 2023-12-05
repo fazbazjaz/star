@@ -1,59 +1,142 @@
-// version3
+// version4 my code attempts to solve debounce issues. does not display my searches
 import { useState, useEffect } from "react";
-import { debouncedSearchQuestions } from "../questions";
+import { Box, TextField } from "@mui/material";
 
 const SearchBar = () => {
   const [searchResult, setSearchResult] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-
-  useEffect(() => {
-    const debouncedSearch = debounce(async () => {
-      try {
-        const result = await debouncedSearchQuestions(searchValue);
-        setSearchResult(result);
-      } catch (error) {
-        console.error(error);
-      }
-    }, 1000);
-
-    debouncedSearch();
-
-    return () => clearTimeout(debouncedSearch);
-  }, [searchValue]);
 
   const handleSearchChange = (event) => {
     const { value } = event.target;
     setSearchValue(value);
   };
 
+  useEffect(() => {
+    const debouncedSearch = setTimeout(async () => {
+      try {
+        if (searchValue.trim() === "") {
+          // If search value is empty, clear results
+          setSearchResult([]);
+          return;
+        }
+
+        const response = await fetch(
+          `${
+            import.meta.env.VITE_SERVER_URL
+          }/api/questions/search?q=${searchValue}`,
+          { credentials: "include" }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setSearchResult(data);
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+      }
+    }, 2000);
+
+    // Clear timeout on unmount or when searchValue changes
+    return () => clearTimeout(debouncedSearch);
+  }, [searchValue]);
+
   return (
-    <div>
-      {/* Add the input field for search */}
-      <input
+    <Box>
+      <TextField
+        variant="outlined"
+        sx={{ bgcolor: "rgba(255,255,255,0.8)" }}
         type="text"
         placeholder="Search..."
         value={searchValue}
         onChange={handleSearchChange}
       />
-      {/* Display your search results, e.g., using Result component */}
-      {searchResult.map((result) => (
-        <div key={result.id}>{result.question}</div>
-      ))}
-    </div>
+      {searchResult &&
+        searchResult.length > 0 &&
+        searchResult.map((result) => (
+          <Box key={result.id}>{result.question}</Box>
+        ))}
+    </Box>
   );
 };
 
-// Debounce function used to be below export default SearchBar.
-function debounce(func, delay) {
-  let timeoutId;
-  return function () {
-    const args = arguments;
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func.apply(null, args), delay);
-  };
-}
-
 export default SearchBar;
+
+// version3 my code this version works but gives multiple queries during 2 seconds
+// import { useState, useEffect } from "react";
+// import { Box, TextField } from "@mui/material";
+
+// // Debounce function used to be below export default SearchBar.
+// function debounce(func, delay) {
+//   let timeoutId;
+//   return function () {
+//     const args = arguments;
+//     clearTimeout(timeoutId);
+//     timeoutId = setTimeout(() => func.apply(null, args), delay);
+//   };
+// }
+
+// const SearchBar = () => {
+//   const [searchResult, setSearchResult] = useState([]);
+//   const [searchValue, setSearchValue] = useState("");
+
+//   const handleSearchChange = (event) => {
+//     console.log("handleSearchChange RAN");
+//     const { value } = event.target;
+//     console.log("handleSearchChange value", value);
+//     setSearchValue(value);
+//   };
+
+//   useEffect(() => {
+//     const debouncedSearch = debounce(async () => {
+//       try {
+//         console.log("debouncedSearch RAN");
+//         // here you have to make a request to the backend
+//         // on a route you have created
+//         // give it the search term
+//         const response = await fetch(
+//           `${
+//             import.meta.env.VITE_SERVER_URL
+//           }/api/questions/search?q=${searchValue}`,
+//           { credentials: "include" }
+//         );
+//         // get back all questions that contain that search term
+//         const data = await response.json();
+//         // set them into React state "searchResults"
+//         setSearchResult(data);
+//       } catch (error) {
+//         console.error(error);
+//       }
+//     }, 2000);
+
+//     debouncedSearch();
+
+//     return () => clearTimeout(debouncedSearch);
+//   }, [searchValue]);
+
+//   return (
+//     <Box>
+//       {/* Add the input field for search */}
+//       <TextField
+//         variant="outlined"
+//         sx={{ bgcolor: "rgba(255,255,255,0.8)" }}
+//         type="text"
+//         placeholder="Search..."
+//         value={searchValue}
+//         onChange={handleSearchChange}
+//       />
+//       {/* Display your search results, e.g., using Result component */}
+//       {searchResult &&
+//         searchResult.length > 0 &&
+//         searchResult.map((result) => (
+//           <Box key={result.id}>{result.question}</Box>
+//         ))}
+//     </Box>
+//   );
+// };
+
+// export default SearchBar;
 
 // version2 my code
 // import { useState, useEffect } from "react";

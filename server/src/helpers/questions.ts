@@ -2,6 +2,7 @@
 import { database } from "../database/connection";
 import { questions, answers, comments } from "../database/schema";
 import { eq, and, sql, placeholder } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 import { debounce } from "lodash";
 
 export const getAllQuestions = async () => {
@@ -45,6 +46,39 @@ export const getAllQuestionsByUser = async (userId: number) => {
     .from(questions)
     .where(eq(questions.userId, userId));
 };
+
+export const getQuestionsBySearch = async (searchTerm: string) => {
+  try {
+    const result = await database
+      .select({
+        id: questions.id,
+        question: questions.question
+      })
+      .from(questions)
+      .where(
+        sql`lower(${
+          questions.question
+        }) like lower('%' || ${sql`${searchTerm}`}) || '%')`
+      )
+      .orderBy(desc(questions.createdAt))
+      .execute();
+
+    return result;
+  } catch (error) {
+    console.error("Error fetching questions:", error);
+    throw error;
+  }
+};
+
+// export const getQuestionsBySearch = async (searchTerm: string) => {
+//   // search the questions table of the database
+
+//   // find all questions that MATCH the searchTerm (from the above parameter) in the database
+
+//   // look in the "questions" TABLE and then the "question" COLUMN
+
+//   return await database.
+// };
 
 export const createQuestion = async (userId: number, question: string) => {
   return await database

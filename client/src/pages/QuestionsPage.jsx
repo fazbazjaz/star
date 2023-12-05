@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Box, Typography, Button } from "@mui/material";
 import Loading from "../components/Loading";
-import Error from "../components/Loading";
+import Error from "../components/Error";
+import SearchBar from "../components/SearchBar";
 import Question from "../components/Question";
 import QuestionForm from "../components/QuestionForm";
 import getAllQuestions from "../api/getAllQuestions";
@@ -52,6 +53,9 @@ const QuestionsPage = () => {
           {showAddQuestionForm && (
             <QuestionForm setShowAddQuestionForm={setShowAddQuestionForm} />
           )}
+          <Box>
+            <SearchBar />
+          </Box>
           <Box display={"grid"} gap={2} mt={1}>
             {allQuestionsData.map((questionData) => (
               <Question key={questionData.id} questionData={questionData} />

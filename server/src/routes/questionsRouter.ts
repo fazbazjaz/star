@@ -12,7 +12,8 @@ import {
   deleteAnswerHandler,
   deleteCommentHandler,
   editAnswerHandler,
-  editCommentHandler
+  editCommentHandler,
+  getQuestionsBySearchHandler
 } from "../controllers/questionsController";
 
 export const questionsRouter = express.Router();
@@ -22,6 +23,10 @@ questionsRouter
   .route("/")
   .get(authMiddleware, getAllQuestionsHandler)
   .post(authMiddleware, createQuestionHandler);
+
+questionsRouter
+  .route("/search")
+  .get(authMiddleware, getQuestionsBySearchHandler);
 
 questionsRouter
   .route("/:id")

@@ -3,9 +3,13 @@
     "codepaths",
     "commentbody",
     "commentitle",
+    "firstname",
+    "lastname",
     "questionbody",
     "questiontitle",
     "tanstack",
-    "tsbuildinfo"
+    "tsbuildinfo",
+    "tsquery",
+    "tsvector"
   ]
 }
