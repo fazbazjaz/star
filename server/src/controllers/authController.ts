@@ -104,13 +104,20 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     }
 
     // [1] HTTP ONLY COOKIE VERSION
-    res.cookie("customJWT", customJWT, {
-      // path: "/",
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 3600000
+    // res.cookie("customJWT", customJWT, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: "none",
+    //   maxAge: 3600000,
+    //   // domain: ".onrender.com",
+    //   path: "/"
+    // });
+
+    // Pete Glitch
+    res.writeHead(200, {
+      "Set-Cookie": `customJWT=${customJWT}; path=/; Secure; HttpOnly; SameSite=None; Max-Age=3600000`
     });
+    // .end("cookie set");
 
     logger.info({
       message: `idTokenHandler res.getHeaders()["set-cookie"]`,
@@ -266,17 +273,19 @@ export const authorizationCodePopupHandler = async (
     }
 
     // [1] HTTP ONLY COOKIE VERSION
-    // res.cookie("customJWT", customJWT, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: "none",
-    //   maxAge: 3600000
-    // });
+    res.cookie("customJWT", customJWT, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 3600000,
+      // domain: ".onrender.com",
+      path: "/"
+    });
 
     // Pete Glitch
-    res.writeHead(200, {
-      "Set-Cookie": `customJWT=${customJWT}; path=/; Secure; HttpOnly; SameSite=None; Max-Age=3600000`
-    });
+    // res.writeHead(200, {
+    //   "Set-Cookie": `customJWT=${customJWT}; path=/; Secure; HttpOnly; SameSite=None; Max-Age=3600000`
+    // });
     // .end("cookie set");
 
     logger.info({
@@ -427,8 +436,16 @@ export const authorizationCodeRedirectHandler = async (
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      maxAge: 3600000
+      maxAge: 3600000,
+      // domain: ".onrender.com",
+      path: "/"
     });
+
+    // Pete Glitch
+    // res.writeHead(200, {
+    //   "Set-Cookie": `customJWT=${customJWT}; path=/; Secure; HttpOnly; SameSite=None; Max-Age=3600000`
+    // });
+    // .end("cookie set");
 
     logger.info({
       message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
