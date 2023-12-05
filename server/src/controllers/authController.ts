@@ -109,28 +109,25 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     //   secure: true,
     //   sameSite: "none",
     //   maxAge: 3600000,
-    //   // domain: ".onrender.com",
+    //   domain: ".onrender.com",
     //   path: "/"
     // });
+
+    // logger.info({
+    //   message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
+    //   value: res.getHeaders()["set-cookie"]
+    // });
+
+    logger.info({
+      message: "authorizationCodeRedirectHandler User-Agent",
+      value: req.get("User-Agent")
+    });
 
     // Pete Glitch
     res.writeHead(200, {
       "Set-Cookie": `customJWT=${customJWT}; path=/; Secure; HttpOnly; SameSite=None; Max-Age=3600000`
     });
-    // .end("cookie set");
-
-    logger.info({
-      message: `idTokenHandler res.getHeaders()["set-cookie"]`,
-      value: res.getHeaders()["set-cookie"]
-    });
-
-    logger.info({
-      message: "idTokenHandler User-Agent",
-      value: req.get("User-Agent")
-    });
-
-    // [1] HTTP ONLY COOKIE VERSION
-    res.sendStatus(200);
+    res.end();
 
     // [2] AUTH HEADER JWT VERSION
     // res.status(200).json(customJWT);
@@ -273,33 +270,30 @@ export const authorizationCodePopupHandler = async (
     }
 
     // [1] HTTP ONLY COOKIE VERSION
-    res.cookie("customJWT", customJWT, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 3600000,
-      // domain: ".onrender.com",
-      path: "/"
-    });
-
-    // Pete Glitch
-    // res.writeHead(200, {
-    //   "Set-Cookie": `customJWT=${customJWT}; path=/; Secure; HttpOnly; SameSite=None; Max-Age=3600000`
+    // res.cookie("customJWT", customJWT, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: "none",
+    //   maxAge: 3600000,
+    //   domain: ".onrender.com",
+    //   path: "/"
     // });
-    // .end("cookie set");
+
+    // logger.info({
+    //   message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
+    //   value: res.getHeaders()["set-cookie"]
+    // });
 
     logger.info({
-      message: `authorizationCodePopupHandler res.getHeaders()["set-cookie"]`,
-      value: res.getHeaders()["set-cookie"]
-    });
-
-    logger.info({
-      message: "authorizationCodePopupHandler User-Agent",
+      message: "authorizationCodeRedirectHandler User-Agent",
       value: req.get("User-Agent")
     });
 
-    // [1] HTTP ONLY COOKIE VERSION
-    res.sendStatus(200);
+    // Pete Glitch
+    res.writeHead(200, {
+      "Set-Cookie": `customJWT=${customJWT}; path=/; Secure; HttpOnly; SameSite=None; Max-Age=3600000`
+    });
+    res.end();
 
     // [2] AUTH HEADER JWT VERSION
     // res.status(200).json(customJWT);
@@ -432,30 +426,30 @@ export const authorizationCodeRedirectHandler = async (
     }
 
     // [1] HTTP ONLY COOKIE VERSION
-    res.cookie("customJWT", customJWT, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 3600000,
-      // domain: ".onrender.com",
-      path: "/"
-    });
-
-    // Pete Glitch
-    // res.writeHead(200, {
-    //   "Set-Cookie": `customJWT=${customJWT}; path=/; Secure; HttpOnly; SameSite=None; Max-Age=3600000`
+    // res.cookie("customJWT", customJWT, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: "none",
+    //   maxAge: 3600000,
+    //   domain: ".onrender.com",
+    //   path: "/"
     // });
-    // .end("cookie set");
 
-    logger.info({
-      message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
-      value: res.getHeaders()["set-cookie"]
-    });
+    // logger.info({
+    //   message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
+    //   value: res.getHeaders()["set-cookie"]
+    // });
 
     logger.info({
       message: "authorizationCodeRedirectHandler User-Agent",
       value: req.get("User-Agent")
     });
+
+    // Pete Glitch
+    res.writeHead(200, {
+      "Set-Cookie": `customJWT=${customJWT}; path=/; Secure; HttpOnly; SameSite=None; Max-Age=3600000`
+    });
+    // res.end();
 
     res.redirect(process.env.CLIENT_URL as string);
   } catch (error) {
