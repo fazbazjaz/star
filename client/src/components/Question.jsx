@@ -124,7 +124,6 @@ const Question = ({
                       answer.comments &&
                       answer.comments.length > 0
                     ) {
-                      console.log("FARZANEH:", answer.comments.length);
                       return answer.comments.length + acc;
                     }
                     return acc;
