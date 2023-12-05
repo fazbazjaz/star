@@ -1,7 +1,7 @@
 import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware";
 import {
-  getAllQuestionsHandler,
+  getQuestionsByPageHandler,
   getOneQuestionHandler,
   getAllQuestionsByUserHandler,
   createQuestionHandler,
@@ -17,12 +17,13 @@ import {
 
 export const questionsRouter = express.Router();
 
+// Apply authMiddleware to all Routes
 questionsRouter.use(authMiddleware);
 
 // Questions
 questionsRouter
   .route("/")
-  .get(getAllQuestionsHandler)
+  .get(getQuestionsByPageHandler)
   .post(createQuestionHandler);
 
 questionsRouter

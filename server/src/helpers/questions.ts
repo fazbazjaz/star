@@ -2,8 +2,18 @@ import { database } from "../database/connection";
 import { questions, answers, comments } from "../database/schema";
 import { eq, and } from "drizzle-orm";
 
-export const getAllQuestions = async () => {
-  return await database.select().from(questions);
+export const getQuestionsByPage = async (limit: number, page: number) => {
+  return await database.query.questions.findMany({
+    with: {
+      answers: {
+        with: {
+          comments: true
+        }
+      }
+    },
+    limit,
+    offset: (page - 1) * limit
+  });
 };
 
 export const getOneQuestion = async (questionId: number) => {
