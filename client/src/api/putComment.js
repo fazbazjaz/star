@@ -7,9 +7,9 @@ const putComment = async (questionId, answerId, commentId, comment) => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("customJWT")}`,
+        // Authorization: `Bearer ${localStorage.getItem("customJWT")}`,
       },
-      // credentials: "include",
+      credentials: "include",
       body: JSON.stringify({ comment }),
     }
   );

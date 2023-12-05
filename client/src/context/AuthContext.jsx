@@ -22,7 +22,8 @@ export const AuthProvider = ({ children }) => {
 
   // ----------------------------------------------------------------
 
-  const getAuthenticatedUser = useCallback(async (customJWT) => {
+  const getAuthenticatedUser = useCallback(async () => {
+    // (!)removed parameter customJWT
     try {
       // console.log("getAuthenticatedUser customJWT", customJWT);
 
@@ -31,12 +32,12 @@ export const AuthProvider = ({ children }) => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${customJWT}`,
+            // Authorization: `Bearer ${customJWT}`,
           },
-          // credentials: "include",
+          credentials: "include",
         }
       );
-      // console.log("getAuthenticatedUser response:", response);
+      console.log("getAuthenticatedUser response:", response);
 
       if (!response.ok) {
         throw new Error(
@@ -45,7 +46,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       const data = await response.json();
-      // console.log("getAuthenticatedUser data:", data);
+      console.log("getAuthenticatedUser data:", data);
 
       return data;
     } catch (error) {
@@ -103,18 +104,18 @@ export const AuthProvider = ({ children }) => {
               );
             }
 
-            const customJWT = await response.json();
+            // const customJWT = await response.json();
             // console.log(
             //   "googleAccountsOAuth2InitCodeClientPopupFlow customJWT:",
             //   customJWT
             // );
 
             // set the "customJWT" into Local Storage
-            localStorage.setItem("customJWT", customJWT);
+            // localStorage.setItem("customJWT", customJWT);
 
             // Send a GET Request to /api/auth/user with our CustomJWT
             // Receive back a JSON Body with User Information
-            const user = await getAuthenticatedUser(customJWT);
+            const user = await getAuthenticatedUser(); // removed argument customJWT
             // console.log(
             //   "googleAccountsOAuth2InitCodeClientPopupFlow user",
             //   user
@@ -165,10 +166,10 @@ export const AuthProvider = ({ children }) => {
 
           // Receive the Google ID Token from Google
           const googleIdToken = googleIdTokenResponse.credential;
-          // console.log(
-          //   "googleAccountsIdInitializeFlow googleIdToken:",
-          //   googleIdTokenResponse.credential
-          // );
+          console.log(
+            "googleAccountsIdInitializeFlow googleIdToken:",
+            googleIdTokenResponse.credential
+          );
 
           // Send the "Authorization Code" to the backend in the Request Header
           // Receive back a JSON Body with CustomJWT
@@ -180,10 +181,10 @@ export const AuthProvider = ({ children }) => {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${googleIdToken}`,
               },
-              // credentials: "include",
+              credentials: "include",
             }
           );
-          // console.log("googleAccountsIdInitializeFlow response:", response);
+          console.log("googleAccountsIdInitializeFlow response:", response);
 
           if (!response.ok) {
             throw new Error(
@@ -191,14 +192,14 @@ export const AuthProvider = ({ children }) => {
             );
           }
 
-          const customJWT = await response.json();
+          // const customJWT = await response.json();
           // console.log("googleAccountsIdInitializeFlow customJWT:", customJWT);
 
           // Set "customJWT" into LocalStorage
-          localStorage.setItem("customJWT", customJWT);
+          // localStorage.setItem("customJWT", customJWT);
 
-          const user = await getAuthenticatedUser(customJWT);
-          // console.log("googleAccountsIdInitializeFlow user", user);
+          const user = await getAuthenticatedUser(); // removed argument customJWT
+          console.log("googleAccountsIdInitializeFlow user", user);
 
           if (!user) {
             throw new Error("googleAccountsIdInitializeFlow no user");

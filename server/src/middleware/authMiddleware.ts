@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { Secret, JwtPayload } from "jsonwebtoken";
 import { CustomJWTPayload } from "../types/types";
-// import { logger } from "../logger";
+import { logger } from "../logger";
 
 // Add a new key to the Express Request interface
 declare module "express" {
@@ -17,47 +17,47 @@ export const authMiddleware = (
 ) => {
   try {
     // [1] HTTP ONLY COOKIE VERSION
-    // const cookies = req.cookies;
-    // logger.info({
-    //   message: "authMiddleware cookies",
-    //   value: cookies
-    // });
+    const cookies = req.cookies;
+    logger.info({
+      message: "authMiddleware cookies",
+      value: cookies
+    });
 
-    // const customJWT = cookies.customJWT;
-    // logger.info({
-    //   message: "authMiddleware customJWT",
-    //   value: customJWT
-    // });
+    const customJWT = cookies.customJWT;
+    logger.info({
+      message: "authMiddleware customJWT",
+      value: customJWT
+    });
 
     // [2] AUTH HEADER JWT VERSION
-    const authorizationHeader = req.headers["authorization"];
+    // const authorizationHeader = req.headers["authorization"];
     // logger.info({
     //   message: "authMiddleware authorizationHeader",
     //   value: authorizationHeader
     // });
 
-    if (!authorizationHeader || typeof authorizationHeader !== "string") {
-      return res
-        .status(401)
-        .json({ error: "Authorization Header Missing or Invalid" });
-    }
+    // if (!authorizationHeader || typeof authorizationHeader !== "string") {
+    //   return res
+    //     .status(401)
+    //     .json({ error: "Authorization Header Missing or Invalid" });
+    // }
 
-    const jwtTokenParts = authorizationHeader.split(" ");
+    // const jwtTokenParts = authorizationHeader.split(" ");
     // logger.info({
     //   message: "authMiddleware jwtTokenParts",
     //   value: jwtTokenParts
     // });
 
-    if (
-      jwtTokenParts.length !== 2 ||
-      jwtTokenParts[0].toLowerCase() !== "bearer"
-    ) {
-      return res
-        .status(401)
-        .json({ error: "Invalid Authorization Header format" });
-    }
+    // if (
+    //   jwtTokenParts.length !== 2 ||
+    //   jwtTokenParts[0].toLowerCase() !== "bearer"
+    // ) {
+    //   return res
+    //     .status(401)
+    //     .json({ error: "Invalid Authorization Header format" });
+    // }
 
-    const customJWT = jwtTokenParts[1];
+    // const customJWT = jwtTokenParts[1];
     // logger.info({ message: "authMiddleware customJWT", value: customJWT });
 
     if (!customJWT || typeof customJWT === "undefined") {
@@ -83,6 +83,7 @@ export const authMiddleware = (
 
     next();
   } catch (error) {
+    logger.error(error);
     return res.status(401).json({ error: "Unauthorized - Invalid JWT" });
   }
 };

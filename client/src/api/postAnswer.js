@@ -5,9 +5,9 @@ const postAnswer = async (questionId, answer) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("customJWT")}`,
+        // Authorization: `Bearer ${localStorage.getItem("customJWT")}`,
       },
-      // credentials: "include",
+      credentials: "include",
       body: JSON.stringify(answer),
     }
   );

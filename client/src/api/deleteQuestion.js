@@ -5,9 +5,9 @@ const deleteQuestion = async (questionId) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("customJWT")}`,
+        // Authorization: `Bearer ${localStorage.getItem("customJWT")}`,
       },
-      // credentials: "include",
+      credentials: "include",
     }
   );
   // console.log("deleteQuestion response", response);
