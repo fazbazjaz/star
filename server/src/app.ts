@@ -15,7 +15,9 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: true,
+    exposedHeaders: ["set-cookie"],
+    // origin: true,
+    origin: "https://*.onrender.com",
     credentials: true // Server will accept Cookies from the Client
   })
 );

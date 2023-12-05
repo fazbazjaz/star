@@ -273,10 +273,16 @@ export const authorizationCodePopupHandler = async (
     //   maxAge: 3600000
     // });
 
-    // logger.info({
-    //   message: `authorizationCodePopupHandler res.getHeaders()["set-cookie"]`,
-    //   value: res.getHeaders()["set-cookie"]
-    // });
+    // Pete Glitch
+    res.writeHead(200, {
+      "Set-Cookie": `customJWT=${customJWT}; path=/; Secure; HttpOnly; SameSite=None; Max-Age=3600000`
+    });
+    // .end("cookie set");
+
+    logger.info({
+      message: `authorizationCodePopupHandler res.getHeaders()["set-cookie"]`,
+      value: res.getHeaders()["set-cookie"]
+    });
 
     logger.info({
       message: "authorizationCodePopupHandler User-Agent",
@@ -284,10 +290,10 @@ export const authorizationCodePopupHandler = async (
     });
 
     // [1] HTTP ONLY COOKIE VERSION
-    // res.sendStatus(200);
+    res.sendStatus(200);
 
     // [2] AUTH HEADER JWT VERSION
-    res.status(200).json(customJWT);
+    // res.status(200).json(customJWT);
   } catch (error) {
     logger.error(error);
     return res.status(500).json({ error: "Server Error" });
@@ -417,24 +423,23 @@ export const authorizationCodeRedirectHandler = async (
     }
 
     // [1] HTTP ONLY COOKIE VERSION
-    // res.cookie("customJWT", customJWT, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: "none",
-    //   maxAge: 3600000
-    // });
+    res.cookie("customJWT", customJWT, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 3600000
+    });
 
-    // logger.info({
-    //   message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
-    //   value: res.getHeaders()["set-cookie"]
-    // });
+    logger.info({
+      message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
+      value: res.getHeaders()["set-cookie"]
+    });
 
     logger.info({
       message: "authorizationCodeRedirectHandler User-Agent",
       value: req.get("User-Agent")
     });
 
-    // Can you return the customJWT to the client at the same time as a redirect???
     res.redirect(process.env.CLIENT_URL as string);
   } catch (error) {
     logger.error(error);
