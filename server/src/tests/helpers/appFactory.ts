@@ -1,9 +1,9 @@
 import {
-  getAllQuestionsHandler,
   createQuestionHandler,
   deleteQuestionHandler,
   getAllQuestionsByUserHandler,
-  getOneQuestionHandler
+  getOneQuestionHandler,
+  getQuestionsByPageHandler
 } from "../../controllers/questionsController";
 import express from "express";
 
@@ -12,7 +12,7 @@ export function createAppWithQuestionRoutes() {
   app.use(express.json());
   const questionsRouter = express.Router();
 
-  questionsRouter.get("/", getAllQuestionsHandler);
+  questionsRouter.get("/", getQuestionsByPageHandler);
   questionsRouter.post("/add", createQuestionHandler);
   questionsRouter.delete("/:id", deleteQuestionHandler);
   questionsRouter.get("/user/:id", getAllQuestionsByUserHandler);
