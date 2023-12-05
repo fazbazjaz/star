@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import {
-  getAllQuestions,
+  getQuestionsByPage,
   getOneQuestion,
   getAllQuestionsByUser,
   getAnswer,
@@ -16,14 +16,31 @@ import {
 } from "../helpers/questions";
 import { logger } from "../logger";
 
-export const getAllQuestionsHandler = async (req: Request, res: Response) => {
+export const getQuestionsByPageHandler = async (
+  req: Request,
+  res: Response
+) => {
   try {
-    const query = await getAllQuestions();
-    logger.info("getAllQuestionsHandler query", query);
+    const limit = parseInt(req.query.limit as string);
+    const page = parseInt(req.query.page as string);
+    logger.info({
+      message: "getQuestionsByPageHandler limit",
+      value: limit
+    });
+    logger.info({
+      message: "getQuestionsByPageHandler page",
+      value: page
+    });
+
+    const query = await getQuestionsByPage(limit, page);
+    logger.info({
+      message: "getQuestionsByPageHandler query",
+      value: query
+    });
 
     const data = query;
     logger.info({
-      message: "getAllQuestionsHandler data",
+      message: "getQuestionsByPageHandler data",
       value: data
     });
 

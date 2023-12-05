@@ -1,7 +1,7 @@
 import { disconnectFromDatabase } from "../helpers/database";
 import {
   createQuestion,
-  getAllQuestions,
+  getQuestionsByPage,
   getOneQuestion
 } from "../../helpers/questions";
 import { createUser } from "../../helpers/users";
@@ -41,7 +41,7 @@ describe("Get From Questions Table", () => {
   });
 
   test("The questionId should be same as the id from getAllQuestion", async () => {
-    expect((await getAllQuestions())[0].id).toStrictEqual(questionId);
+    expect((await getQuestionsByPage(5, 1))[0].id).toStrictEqual(questionId);
   });
 
   test("The question should be same as the question from getOneQuestion", async () => {
@@ -62,8 +62,8 @@ describe("Get From Questions Table", () => {
     );
   });
 
-  test("The question from getAllQuestions should be 'This is a question'", async () => {
-    expect((await getAllQuestions())[0].question).toStrictEqual(
+  test("The question from getQuestionsByPage should be 'This is a question'", async () => {
+    expect((await getQuestionsByPage(5, 1))[0].question).toStrictEqual(
       "This is a question"
     );
   });

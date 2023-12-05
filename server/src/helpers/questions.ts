@@ -2,7 +2,7 @@ import { database } from "../database/connection";
 import { questions, answers, comments } from "../database/schema";
 import { eq, and } from "drizzle-orm";
 
-export const getAllQuestions = async () => {
+export const getQuestionsByPage = async (limit: number, page: number) => {
   return await database.query.questions.findMany({
     with: {
       user: {
@@ -31,7 +31,9 @@ export const getAllQuestions = async () => {
           }
         }
       }
-    }
+    },
+    limit,
+    offset: (page - 1) * limit
   });
 };
 
