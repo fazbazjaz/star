@@ -18,24 +18,6 @@ import {
 } from "../helpers/questions";
 import { logger } from "../logger";
 
-export const getAllQuestionsHandler = async (req: Request, res: Response) => {
-  try {
-    const query = await getAllQuestions();
-    logger.info("getAllQuestionsHandler query", query);
-
-    const data = query;
-    logger.info({
-      message: "getAllQuestionsHandler data",
-      value: data
-    });
-
-    res.status(200).json(data);
-  } catch (error) {
-    logger.error(error);
-    res.status(500).json({ error: "Server Error" });
-  }
-};
-
 export const getQuestionsByPageHandler = async (
   req: Request,
   res: Response

@@ -1,7 +1,6 @@
 import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware";
 import {
-  getAllQuestionsHandler,
   getQuestionsByPageHandler,
   getOneQuestionHandler,
   getAllQuestionsByUserHandler,
@@ -24,10 +23,8 @@ questionsRouter.use(authMiddleware);
 // Questions
 questionsRouter
   .route("/")
-  .get(getAllQuestionsHandler)
+  .get(getQuestionsByPageHandler)
   .post(createQuestionHandler);
-
-questionsRouter.route("/infinite").get(getQuestionsByPageHandler);
 
 questionsRouter
   .route("/:id")

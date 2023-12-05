@@ -3,7 +3,7 @@ const getQuestionsByPage = async ({ pageParam }) => {
   const response = await fetch(
     `${
       import.meta.env.VITE_SERVER_URL
-    }/api/questions/infinite?limit=${limit}&page=${pageParam}`,
+    }/api/questions/?limit=${limit}&page=${pageParam}`,
     {
       headers: {
         "Content-Type": "application/json",
