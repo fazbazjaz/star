@@ -1,7 +1,14 @@
 import { useContext, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate, Link as RouterLink } from "react-router-dom";
-import { Box, Typography, Button, Link, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Link,
+  IconButton,
+  CardMedia,
+} from "@mui/material";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -59,7 +66,7 @@ const Question = ({
       if (currentPage === "allQuestionsPage" || currentPage === "profilePage") {
         queryClient.refetchQueries(["questions"]);
       } else if (currentPage === "individualQuestionPage") {
-        queryClient.removeQueries(["question", questionId]);
+        queryClient.removeQueries([`question-${questionId}`]);
         navigate("/questions");
       }
     },
@@ -82,30 +89,56 @@ const Question = ({
           sx={{
             backdropFilter: consistentBackdropFilter,
           }}>
-          <Box display={"flex"} alignItems={"center"} gap={0.5}>
-            <HelpOutlineOutlinedIcon fontSize={"medium"} color="primary" />
-            <Typography variant={"questiontitle"} color="primary">
-              Question
-            </Typography>
-            <Typography variant={"body2"}>| id: {questionData.id}</Typography>
-            <Typography variant={"body2"}>
-              | by userId: {questionData.userId}
-            </Typography>
-            <Typography variant={"body2"}>
-              | Answers (
-              {questionData?.answers?.length
-                ? questionData.answers.length
-                : "x"}
-              )
-            </Typography>
-            <Typography variant={"body2"}>
-              | Comments (
-              {questionData?.answers?.comments?.length
-                ? questionData?.answers?.comments?.length
-                : "x"}
-              )
-            </Typography>
-            <Box marginLeft={"auto"}>
+          <Box display={"flex"} alignItems={"center"}>
+            <Box>
+              <Box display={"flex"} alignItems={"center"} gap={0.5}>
+                <CardMedia
+                  component={"img"}
+                  image={questionData?.user?.picture}
+                  sx={{
+                    height: 20,
+                    width: 20,
+                    borderRadius: "0.5rem",
+                  }}
+                />
+                <HelpOutlineOutlinedIcon fontSize={"medium"} color="primary" />
+                <Typography variant={"questiontitle"} color="primary">
+                  Question
+                </Typography>
+                <Typography variant={"body2"}>by</Typography>
+                <Typography variant={"body2"}>
+                  {questionData?.user?.firstName}
+                </Typography>
+              </Box>
+              <Box
+                display={"flex"}
+                alignItems={"center"}
+                flexWrap={"wrap"}
+                gap={1}>
+                <Typography variant={"body2"}>
+                  id: {questionData?.id}
+                </Typography>
+                <Typography variant={"body2"}>
+                  Answers (
+                  {currentPage === "individualQuestionPage"
+                    ? questionData?.answers?.length || 0
+                    : questionData?.answersLength}
+                  )
+                </Typography>
+                <Typography variant={"body2"}>
+                  Comments (
+                  {currentPage === "individualQuestionPage"
+                    ? questionData?.answers?.comments?.length || 0
+                    : questionData?.commentsLength}
+                  )
+                </Typography>
+              </Box>
+            </Box>
+            <Box
+              marginLeft={"auto"}
+              display={"flex"}
+              alignItems={"center"}
+              gap={0.5}>
               {questionData.userId === authenticatedUser.id && (
                 <IconButton onClick={handleEdit} color="primary">
                   <EditOutlinedIcon />
@@ -120,7 +153,7 @@ const Question = ({
               )}
             </Box>
           </Box>
-          <Box mt={1}>
+          <Box my={1}>
             {!showUpdateQuestionForm &&
               (currentPage === "allQuestionsPage" ||
                 currentPage === "profilePage") && (
@@ -153,21 +186,21 @@ const Question = ({
             gap={1}>
             <Box>
               {currentPage === "individualQuestionPage" && (
-                <Box mt={1}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<RateReviewOutlinedIcon />}
-                    onClick={() => setShowAddAnswerForm((prev) => !prev)}
-                    disabled={showAddAnswerForm}>
-                    Add an Answer
-                  </Button>
-                </Box>
+                <Button
+                  variant="outlined"
+                  startIcon={<RateReviewOutlinedIcon />}
+                  onClick={() => setShowAddAnswerForm((prev) => !prev)}
+                  disabled={showAddAnswerForm}>
+                  Add an Answer
+                </Button>
               )}
             </Box>
             <Box
+              marginLeft={"auto"}
               display={"flex"}
               flexDirection={"column"}
               justifyContent={"flex-end"}
+              justifySelf={"flex-end"}
               alignItems={"flex-end"}>
               <Typography variant={"body2"}>
                 updated {formatDate(questionData.updatedAt)}

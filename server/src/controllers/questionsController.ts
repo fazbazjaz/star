@@ -49,12 +49,12 @@ export const getOneQuestionHandler = async (req: Request, res: Response) => {
       value: query
     });
 
-    if (!query || query.length === 0) {
+    if (!query) {
       res.status(404).json({ error: "No Question Found" });
       return;
     }
 
-    const data = query[0];
+    const data = query;
     logger.info({
       message: "getOneQuestionHandler data",
       value: data

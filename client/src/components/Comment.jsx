@@ -33,7 +33,7 @@ const Comment = ({ commentData, questionId }) => {
       console.error(error);
     },
     onSuccess: () => {
-      queryClient.refetchQueries(["questions", questionId]);
+      queryClient.refetchQueries([`question-${questionId}`]);
     },
   });
 

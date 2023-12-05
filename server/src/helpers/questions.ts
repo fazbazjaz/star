@@ -1,10 +1,29 @@
 import { database } from "../database/connection";
 import { questions, answers, comments } from "../database/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 
 export const getAllQuestions = async () => {
-  return await database.select().from(questions);
+  // give me: user firstName, user picture
+  // give me: answers COUNT
+  // give me: comments COUNT
+  return await database.query.questions.findMany({
+    with: {
+      user: {
+        columns: {
+          firstName: true,
+          picture: true
+        }
+      }, //commentSize: sql<number>`length(${comments.content})`.as('comment_size'),
+      answers: {
+        extras: {
+          countAnswer: sql`count('*')`.mapWith(Number)
+        }
+      }
+    }
+  });
 };
+
+// answers table add a column | answerCount | commentsCount |
 
 export const getOneQuestion = async (questionId: number) => {
   return await database
@@ -25,15 +44,36 @@ export const getOneQuestionWithAnswers = async (questionId: number) => {
 export const getOneQuestionWithAnswersAndComments = async (
   questionId: number
 ) => {
-  return await database.query.questions.findMany({
+  return await database.query.questions.findFirst({
+    where: eq(questions.id, questionId),
     with: {
+      user: {
+        columns: {
+          firstName: true,
+          picture: true
+        }
+      },
       answers: {
         with: {
-          comments: true
+          user: {
+            columns: {
+              firstName: true,
+              picture: true
+            }
+          },
+          comments: {
+            with: {
+              user: {
+                columns: {
+                  firstName: true,
+                  picture: true
+                }
+              }
+            }
+          }
         }
       }
-    },
-    where: eq(questions.id, questionId)
+    }
   });
 };
 

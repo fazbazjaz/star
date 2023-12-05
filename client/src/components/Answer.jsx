@@ -43,7 +43,7 @@ const Answer = ({ answerData }) => {
       console.error(error);
     },
     onSuccess: () => {
-      queryClient.refetchQueries(["questions", questionId]);
+      queryClient.refetchQueries([`question-${questionId}`]);
     },
   });
 

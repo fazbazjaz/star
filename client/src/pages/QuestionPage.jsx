@@ -10,7 +10,7 @@ import Answer from "../components/Answer";
 import getQuestionById from "../api/getQuestionById";
 
 const QuestionPage = () => {
-  const { id } = useParams();
+  const { id: questionId } = useParams();
 
   const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
 
@@ -20,8 +20,8 @@ const QuestionPage = () => {
     error,
     data: questionData,
   } = useQuery({
-    queryKey: [`question-${id}`],
-    queryFn: () => getQuestionById(id),
+    queryKey: [`question-${questionId}`],
+    queryFn: () => getQuestionById(questionId),
   });
 
   return (
@@ -33,7 +33,7 @@ const QuestionPage = () => {
           <Typography variant={"pagetitle"}>
             Individual Question (id: {questionData.id})
           </Typography>
-          <Box display={"grid"} gap={2}>
+          <Box display={"grid"} gap={2} mt={2}>
             <Question
               questionData={questionData}
               showAddAnswerForm={showAddAnswerForm}
