@@ -38,7 +38,7 @@ const theme = createTheme({
       fontWeight: "500",
     },
     questiontitle: {
-      fontSize: "1.15rem",
+      fontSize: "1.2rem",
       fontWeight: "500",
     },
     questionbody: {
@@ -50,7 +50,7 @@ const theme = createTheme({
       fontWeight: "500",
     },
     answertitle: {
-      fontSize: "1.25rem",
+      fontSize: "1.2rem",
       fontWeight: "500",
     },
     answerbody: {

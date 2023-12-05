@@ -5,9 +5,30 @@ import { eq, and } from "drizzle-orm";
 export const getQuestionsByPage = async (limit: number, page: number) => {
   return await database.query.questions.findMany({
     with: {
+      user: {
+        columns: {
+          firstName: true,
+          picture: true
+        }
+      },
       answers: {
         with: {
-          comments: true
+          user: {
+            columns: {
+              firstName: true,
+              picture: true
+            }
+          },
+          comments: {
+            with: {
+              user: {
+                columns: {
+                  firstName: true,
+                  picture: true
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -17,41 +38,71 @@ export const getQuestionsByPage = async (limit: number, page: number) => {
 };
 
 export const getOneQuestion = async (questionId: number) => {
-  return await database
-    .select()
-    .from(questions)
-    .where(eq(questions.id, questionId));
-};
-
-export const getOneQuestionWithAnswers = async (questionId: number) => {
-  return await database.query.questions.findMany({
+  return await database.query.questions.findFirst({
+    where: eq(questions.id, questionId),
     with: {
-      answers: true
-    },
-    where: eq(questions.id, questionId)
-  });
-};
-
-export const getOneQuestionWithAnswersAndComments = async (
-  questionId: number
-) => {
-  return await database.query.questions.findMany({
-    with: {
+      user: {
+        columns: {
+          firstName: true,
+          picture: true
+        }
+      },
       answers: {
         with: {
-          comments: true
+          user: {
+            columns: {
+              firstName: true,
+              picture: true
+            }
+          },
+          comments: {
+            with: {
+              user: {
+                columns: {
+                  firstName: true,
+                  picture: true
+                }
+              }
+            }
+          }
         }
       }
-    },
-    where: eq(questions.id, questionId)
+    }
   });
 };
 
 export const getAllQuestionsByUser = async (userId: number) => {
-  return await database
-    .select()
-    .from(questions)
-    .where(eq(questions.userId, userId));
+  return await database.query.questions.findMany({
+    where: eq(questions.userId, userId),
+    with: {
+      user: {
+        columns: {
+          firstName: true,
+          picture: true
+        }
+      },
+      answers: {
+        with: {
+          user: {
+            columns: {
+              firstName: true,
+              picture: true
+            }
+          },
+          comments: {
+            with: {
+              user: {
+                columns: {
+                  firstName: true,
+                  picture: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
 };
 
 export const createQuestion = async (userId: number, question: string) => {

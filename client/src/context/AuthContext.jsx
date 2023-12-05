@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
 
   const getAuthenticatedUser = useCallback(async (customJWT) => {
     try {
-      console.log("getAuthenticatedUser customJWT", customJWT);
+      // console.log("getAuthenticatedUser customJWT", customJWT);
 
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_URL}/api/auth/user`,
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
           // credentials: "include",
         }
       );
-      console.log("getAuthenticatedUser response:", response);
+      // console.log("getAuthenticatedUser response:", response);
 
       if (!response.ok) {
         throw new Error(
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       const data = await response.json();
-      console.log("getAuthenticatedUser data:", data);
+      // console.log("getAuthenticatedUser data:", data);
 
       return data;
     } catch (error) {
@@ -72,10 +72,10 @@ export const AuthProvider = ({ children }) => {
           try {
             const googleAuthorizationCode =
               googleAuthorizationCodeResponse.code;
-            console.log(
-              "googleAccountsOAuth2InitCodeClientPopupFlow googleAuthorizationCode:",
-              googleAuthorizationCode
-            );
+            // console.log(
+            //   "googleAccountsOAuth2InitCodeClientPopupFlow googleAuthorizationCode:",
+            //   googleAuthorizationCode
+            // );
 
             // Send the "Authorization Code" to the backend in the Request Header
             // Receive back a JSON Body with CustomJWT
@@ -158,10 +158,10 @@ export const AuthProvider = ({ children }) => {
       // itp_support: itpSupportBoolean(),
       callback: async (googleIdTokenResponse) => {
         try {
-          console.log(
-            "googleAccountsIdInitializeFlow googleIdTokenResponse:",
-            JSON.stringify(googleIdTokenResponse)
-          );
+          // console.log(
+          //   "googleAccountsIdInitializeFlow googleIdTokenResponse:",
+          //   JSON.stringify(googleIdTokenResponse)
+          // );
 
           // Receive the Google ID Token from Google
           const googleIdToken = googleIdTokenResponse.credential;

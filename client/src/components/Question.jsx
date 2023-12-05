@@ -1,7 +1,14 @@
 import { useContext, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate, Link as RouterLink } from "react-router-dom";
-import { Box, Typography, Button, Link, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Link,
+  IconButton,
+  Avatar,
+} from "@mui/material";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -59,7 +66,7 @@ const Question = ({
       if (currentPage === "allQuestionsPage" || currentPage === "profilePage") {
         queryClient.refetchQueries(["questions"]);
       } else if (currentPage === "individualQuestionPage") {
-        queryClient.removeQueries(["question", questionId]);
+        queryClient.removeQueries([`question-${questionId}`]);
         navigate("/questions");
       }
     },
@@ -82,30 +89,54 @@ const Question = ({
           sx={{
             backdropFilter: consistentBackdropFilter,
           }}>
-          <Box display={"flex"} alignItems={"center"} gap={0.5}>
-            <HelpOutlineOutlinedIcon fontSize={"medium"} color="primary" />
-            <Typography variant={"questiontitle"} color="primary">
-              Question
-            </Typography>
-            <Typography variant={"body2"}>| id: {questionData.id}</Typography>
-            <Typography variant={"body2"}>
-              | by userId: {questionData.userId}
-            </Typography>
-            <Typography variant={"body2"}>
-              | Answers (
-              {questionData?.answers?.length
-                ? questionData.answers.length
-                : "x"}
-              )
-            </Typography>
-            <Typography variant={"body2"}>
-              | Comments (
-              {questionData?.answers?.comments?.length
-                ? questionData?.answers?.comments?.length
-                : "x"}
-              )
-            </Typography>
-            <Box marginLeft={"auto"}>
+          <Box display={"flex"} alignItems={"center"}>
+            <Box>
+              <Box display={"flex"} alignItems={"center"} gap={0.75}>
+                <HelpOutlineOutlinedIcon
+                  fontSize={"medium"}
+                  color="primary"
+                  sx={{ alignSelf: "center" }}
+                />
+                <Typography variant={"questiontitle"} color="primary">
+                  Question ({questionData?.id})
+                </Typography>
+                <Avatar
+                  src={questionData?.user?.picture}
+                  sx={{ height: 24, width: 24 }}
+                />
+                <Typography variant={"body2"}>
+                  by {questionData?.user?.firstName}
+                </Typography>
+                <Box
+                  display={"flex"}
+                  alignItems={"center"}
+                  flexWrap={"wrap"}
+                  gap={0.5}>
+                  <Typography variant={"body2"}>
+                    ({questionData?.answers?.length}) Answers
+                  </Typography>
+                  <Typography variant={"body2"}>
+                    (
+                    {questionData?.answers?.reduce((acc, answer) => {
+                      if (
+                        answer &&
+                        answer.comments &&
+                        answer.comments.length > 0
+                      ) {
+                        return answer.comments.length + acc;
+                      }
+                      return acc;
+                    }, 0)}
+                    ) Comments
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              marginLeft={"auto"}
+              display={"flex"}
+              alignItems={"center"}
+              gap={0.5}>
               {questionData.userId === authenticatedUser.id && (
                 <IconButton onClick={handleEdit} color="primary">
                   <EditOutlinedIcon />
@@ -120,7 +151,7 @@ const Question = ({
               )}
             </Box>
           </Box>
-          <Box mt={1}>
+          <Box my={1}>
             {!showUpdateQuestionForm &&
               (currentPage === "allQuestionsPage" ||
                 currentPage === "profilePage") && (
@@ -153,21 +184,21 @@ const Question = ({
             gap={1}>
             <Box>
               {currentPage === "individualQuestionPage" && (
-                <Box mt={1}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<RateReviewOutlinedIcon />}
-                    onClick={() => setShowAddAnswerForm((prev) => !prev)}
-                    disabled={showAddAnswerForm}>
-                    Add an Answer
-                  </Button>
-                </Box>
+                <Button
+                  variant="outlined"
+                  startIcon={<RateReviewOutlinedIcon />}
+                  onClick={() => setShowAddAnswerForm((prev) => !prev)}
+                  disabled={showAddAnswerForm}>
+                  Add an Answer
+                </Button>
               )}
             </Box>
             <Box
+              marginLeft={"auto"}
               display={"flex"}
               flexDirection={"column"}
               justifyContent={"flex-end"}
+              justifySelf={"flex-end"}
               alignItems={"flex-end"}>
               <Typography variant={"body2"}>
                 updated {formatDate(questionData.updatedAt)}

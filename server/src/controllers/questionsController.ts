@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import {
   getQuestionsByPage,
   getOneQuestion,
-  getOneQuestionWithAnswersAndComments,
   getAllQuestionsByUser,
   getAnswer,
   createQuestion,
@@ -60,18 +59,18 @@ export const getOneQuestionHandler = async (req: Request, res: Response) => {
   });
 
   try {
-    const query = await getOneQuestionWithAnswersAndComments(questionId);
+    const query = await getOneQuestion(questionId);
     logger.info({
       message: "getOneQuestionHandler query",
       value: query
     });
 
-    if (!query || query.length === 0) {
+    if (!query) {
       res.status(404).json({ error: "No Question Found" });
       return;
     }
 
-    const data = query[0];
+    const data = query;
     logger.info({
       message: "getOneQuestionHandler data",
       value: data
@@ -193,7 +192,7 @@ export const createAnswerHandler = async (req: Request, res: Response) => {
       value: questionIdQuery
     });
 
-    if (!questionIdQuery || questionIdQuery.length === 0) {
+    if (!questionIdQuery) {
       return res
         .status(404)
         .json({ error: `There is no Question with ID ${questionId}` });
