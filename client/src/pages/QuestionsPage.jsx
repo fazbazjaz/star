@@ -64,7 +64,7 @@ const QuestionsPage = () => {
                 )
               </Typography>
               <Button
-                variant="outlined"
+                variant="contained"
                 color="primary"
                 onClick={() => setShowAddQuestionForm((prev) => !prev)}
                 disabled={showAddQuestionForm}

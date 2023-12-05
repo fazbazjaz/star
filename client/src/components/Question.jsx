@@ -107,29 +107,29 @@ const Question = ({
                 <Typography variant={"body2"}>
                   by {questionData?.user?.firstName}
                 </Typography>
-              </Box>
-              <Box
-                display={"flex"}
-                alignItems={"center"}
-                flexWrap={"wrap"}
-                gap={1}>
-                <Typography variant={"body2"}>
-                  Answers ({questionData?.answers?.length})
-                </Typography>
-                <Typography variant={"body2"}>
-                  Comments (
-                  {questionData?.answers?.reduce((acc, answer) => {
-                    if (
-                      answer &&
-                      answer.comments &&
-                      answer.comments.length > 0
-                    ) {
-                      return answer.comments.length + acc;
-                    }
-                    return acc;
-                  }, 0)}
-                  )
-                </Typography>
+                <Box
+                  display={"flex"}
+                  alignItems={"center"}
+                  flexWrap={"wrap"}
+                  gap={1}>
+                  <Typography variant={"body2"}>
+                    ({questionData?.answers?.length}) Answers
+                  </Typography>
+                  <Typography variant={"body2"}>
+                    (
+                    {questionData?.answers?.reduce((acc, answer) => {
+                      if (
+                        answer &&
+                        answer.comments &&
+                        answer.comments.length > 0
+                      ) {
+                        return answer.comments.length + acc;
+                      }
+                      return acc;
+                    }, 0)}
+                    ) Comments
+                  </Typography>
+                </Box>
               </Box>
             </Box>
             <Box

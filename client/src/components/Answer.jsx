@@ -81,15 +81,15 @@ const Answer = ({ answerData }) => {
                 <Typography variant={"body2"}>
                   by {answerData?.user?.firstName}
                 </Typography>
-              </Box>
-              <Box
-                display={"flex"}
-                alignItems={"center"}
-                flexWrap={"wrap"}
-                gap={1}>
-                <Typography variant={"body2"}>
-                  Comments ({answerData?.comments?.length})
-                </Typography>
+                <Box
+                  display={"flex"}
+                  alignItems={"center"}
+                  flexWrap={"wrap"}
+                  gap={1}>
+                  <Typography variant={"body2"}>
+                    ({answerData?.comments?.length}) Comments
+                  </Typography>
+                </Box>
               </Box>
             </Box>
             <Box
