@@ -90,6 +90,7 @@ export const AuthProvider = ({ children }) => {
                   "Content-Type": "application/json",
                   Authorization: `Bearer ${googleAuthorizationCode}`,
                 },
+                credentials: "include",
               }
             );
 
