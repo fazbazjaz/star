@@ -119,17 +119,21 @@ const Question = ({
                   id: {questionData?.id}
                 </Typography>
                 <Typography variant={"body2"}>
-                  Answers (
-                  {currentPage === "individualQuestionPage"
-                    ? questionData?.answers?.length || 0
-                    : questionData?.answersLength}
-                  )
+                  Answers ({questionData?.answers?.length})
                 </Typography>
                 <Typography variant={"body2"}>
                   Comments (
-                  {currentPage === "individualQuestionPage"
-                    ? questionData?.answers?.comments?.length || 0
-                    : questionData?.commentsLength}
+                  {questionData?.answers?.reduce((acc, answer) => {
+                    if (
+                      answer &&
+                      answer.comments &&
+                      answer.comments.length > 0
+                    ) {
+                      console.log("FARZANEH:", answer.comments.length);
+                      return answer.comments.length + acc;
+                    }
+                    return acc;
+                  }, 0)}
                   )
                 </Typography>
               </Box>

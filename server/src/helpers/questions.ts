@@ -1,11 +1,8 @@
 import { database } from "../database/connection";
 import { questions, answers, comments } from "../database/schema";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 export const getAllQuestions = async () => {
-  // give me: user firstName, user picture
-  // give me: answers COUNT
-  // give me: comments COUNT
   return await database.query.questions.findMany({
     with: {
       user: {
@@ -13,37 +10,32 @@ export const getAllQuestions = async () => {
           firstName: true,
           picture: true
         }
-      }, //commentSize: sql<number>`length(${comments.content})`.as('comment_size'),
+      },
       answers: {
-        extras: {
-          countAnswer: sql`count('*')`.mapWith(Number)
+        with: {
+          user: {
+            columns: {
+              firstName: true,
+              picture: true
+            }
+          },
+          comments: {
+            with: {
+              user: {
+                columns: {
+                  firstName: true,
+                  picture: true
+                }
+              }
+            }
+          }
         }
       }
     }
   });
 };
 
-// answers table add a column | answerCount | commentsCount |
-
 export const getOneQuestion = async (questionId: number) => {
-  return await database
-    .select()
-    .from(questions)
-    .where(eq(questions.id, questionId));
-};
-
-export const getOneQuestionWithAnswers = async (questionId: number) => {
-  return await database.query.questions.findMany({
-    with: {
-      answers: true
-    },
-    where: eq(questions.id, questionId)
-  });
-};
-
-export const getOneQuestionWithAnswersAndComments = async (
-  questionId: number
-) => {
   return await database.query.questions.findFirst({
     where: eq(questions.id, questionId),
     with: {
@@ -78,10 +70,37 @@ export const getOneQuestionWithAnswersAndComments = async (
 };
 
 export const getAllQuestionsByUser = async (userId: number) => {
-  return await database
-    .select()
-    .from(questions)
-    .where(eq(questions.userId, userId));
+  return await database.query.questions.findMany({
+    where: eq(questions.userId, userId),
+    with: {
+      user: {
+        columns: {
+          firstName: true,
+          picture: true
+        }
+      },
+      answers: {
+        with: {
+          user: {
+            columns: {
+              firstName: true,
+              picture: true
+            }
+          },
+          comments: {
+            with: {
+              user: {
+                columns: {
+                  firstName: true,
+                  picture: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
 };
 
 export const createQuestion = async (userId: number, question: string) => {
