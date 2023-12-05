@@ -63,7 +63,8 @@ const Comment = ({ commentData, questionId }) => {
             <Box display={"flex"} alignItems={"center"} gap={0.75}>
               <MessageRoundedIcon fontSize={"small"} color="primary" />
               <Typography variant={"commenttitle"} color="primary">
-                Comment ({commentData?.id})
+                Comment
+                {/* ({commentData?.id}) */}
               </Typography>
               <Avatar
                 src={commentData?.user?.picture}
