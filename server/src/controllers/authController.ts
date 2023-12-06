@@ -2,7 +2,11 @@ import { OAuth2Client } from "google-auth-library";
 import jwt, { Secret, JwtPayload } from "jsonwebtoken";
 import { Request, Response } from "express";
 import { CustomJWTPayload } from "../types/types";
-import { createUser, getUserByGoogleId } from "../helpers/users";
+import {
+  createUser,
+  getUserByGoogleId,
+  updateUserRoleId
+} from "../helpers/users";
 import { logger } from "../logger";
 
 export const idTokenHandler = async (req: Request, res: Response) => {
@@ -551,5 +555,154 @@ export const userHandler = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error(error);
     res.status(500).json({ error: "Server Error" });
+  }
+};
+
+// ------------------------------------------------------------------
+
+export const gitHubHandler = async (req: Request, res: Response) => {
+  try {
+    const code = req.query.code;
+    logger.info({
+      message: "gitHubHandler code",
+      value: code
+    });
+
+    const accessTokenResponse = await fetch(
+      "https://github.com/login/oauth/access_token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          client_id: process.env.GITHUB_CLIENT_ID,
+          client_secret: process.env.GITHUB_CLIENT_SECRET,
+          code: code
+        })
+      }
+    );
+    logger.info({
+      message: "gitHubHandler accessTokenResponse",
+      value: accessTokenResponse
+    });
+
+    if (!accessTokenResponse.ok) {
+      throw new Error("fetching GitHub Access Token Failed");
+    }
+
+    const accessTokenResponseText = await accessTokenResponse.text();
+    logger.info({
+      message: "gitHubHandler accessTokenResponseText",
+      value: accessTokenResponseText
+    });
+
+    const accessTokenData = new URLSearchParams(accessTokenResponseText);
+    logger.info({
+      message: "gitHubHandler data",
+      value: accessTokenData
+    });
+
+    const accessToken = accessTokenData.get("access_token");
+    logger.info({
+      message: "gitHubHandler accessToken",
+      value: accessToken
+    });
+
+    // we used "scope=read:user read:org" on the original client request
+    const userResponse = await fetch("https://api.github.com/user", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json"
+      }
+    });
+    logger.info({
+      message: "gitHubHandler userOrganizationsResponse status",
+      value: {
+        status: userResponse.status,
+        statusText: userResponse.statusText
+      }
+    });
+
+    const userData: { login: string; organizations_url: string } =
+      (await userResponse.json()) as {
+        login: string;
+        organizations_url: string;
+      };
+    logger.info({
+      message: "gitHubHandler userData",
+      value: userData
+    });
+
+    const userOrganizationsURL = userData.organizations_url;
+    logger.info({
+      message: "gitHubHandler userOrganizationsURL",
+      value: userOrganizationsURL
+    });
+
+    // we used "scope=read:user read:org" on the original client request
+    const userOrganizationsResponse = await fetch(userOrganizationsURL, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json"
+      }
+    });
+    logger.info({
+      message: "gitHubHandler userOrganizationsResponse status",
+      value: {
+        status: userOrganizationsResponse.status,
+        statusText: userOrganizationsResponse.statusText
+      }
+    });
+
+    const userOrganizationsData = await userOrganizationsResponse.json();
+    logger.info({
+      message: "gitHubHandler userOrganizationsData",
+      value: userOrganizationsData
+    });
+
+    // check if the "codeyourfuture" organization exists in the above response
+
+    // cast a boolean based on this (CURRENTLY HARDCODED)
+    const userIsOrganizationMember = true;
+
+    // get user google id to perform database operations
+    const customJWTPayload = req.customJWTPayload as CustomJWTPayload;
+    const userGoogleId = customJWTPayload.googleId;
+    logger.info({
+      message: "gitHubHandler userGoogleId",
+      value: userGoogleId
+    });
+
+    let user;
+
+    if (!userIsOrganizationMember) {
+      // if user is NOT a member of the organization:
+      user = await getUserByGoogleId(userGoogleId);
+      logger.info({
+        message: "gitHubHandler user",
+        value: user
+      });
+      // return the original user object (with roleId 1) (Unverified)
+      const data = user[0];
+      return res.status(200).json(data);
+    } else {
+      // if user is a member of the organization:
+      // update the user's role in the database to roleId 2 (Trainee)
+      user = await updateUserRoleId(userGoogleId, 2);
+      logger.info({
+        message: "gitHubHandler user",
+        value: user
+      });
+      // return the updated user object (with roleId 2)
+      const data = user[0];
+      return res.status(200).json(data);
+    }
+  } catch (error) {
+    console.log("❌ ERROR HERE");
+    logger.error(error);
+    return res.status(500).json({ verified: false, error: error });
   }
 };

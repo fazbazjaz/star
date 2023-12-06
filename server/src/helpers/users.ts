@@ -22,3 +22,14 @@ export const getUserByGoogleId = async (
 export const createUser = async (user: InsertUserType) => {
   return await database.insert(users).values(user).returning();
 };
+
+export const updateUserRoleId = async (
+  userGoogleId: string,
+  roleId: number
+) => {
+  return await database
+    .update(users)
+    .set({ roleId: roleId })
+    .where(eq(users.googleId, userGoogleId))
+    .returning();
+};

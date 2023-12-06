@@ -315,8 +315,9 @@ export const AuthProvider = ({ children }) => {
       login,
       logout,
       authenticatedUser,
+      setAuthenticatedUser,
     }),
-    [login, logout, authenticatedUser]
+    [login, logout, authenticatedUser, setAuthenticatedUser]
   );
 
   // ----------------------------------------------------------------

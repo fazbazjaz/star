@@ -8,6 +8,7 @@ import {
 import RootLayout from "./layouts/RootLayout";
 import HomePage from "./pages/HomePage";
 import AboutPage from "./pages/AboutPage";
+import VerifyPage from "./pages/VerifyPage";
 import Protected from "./components/Protected";
 import ProfilePage from "./pages/ProfilePage";
 import UsersPage from "./pages/UsersPage";
@@ -22,6 +23,7 @@ const router = createBrowserRouter(
     <Route path="/" element={<RootLayout />}>
       <Route index element={<HomePage />} />
       <Route path="about" element={<AboutPage />} />
+      <Route path="verify" element={<VerifyPage />} />
       <Route
         path="profile"
         element={
