@@ -245,9 +245,9 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       sameSite: "none",
       // sameSite: "lax",
       maxAge: 3600000,
-      expires: oneHourFromNow,
+      expires: oneHourFromNow
       // domain: "star-cyf-server-ios.onrender.com"
-      domain: ".onrender.com"
+      // domain: ".onrender.com"
     });
 
     logger.info({
