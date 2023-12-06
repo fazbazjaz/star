@@ -528,11 +528,7 @@ export const deleteCommentHandler = async (req: Request, res: Response) => {
 
   try {
     console.log("SQL STARTS RUNNING HERE");
-    const deleteCommentQuery = await deleteComment(
-      // questionId,
-      answerId,
-      commentId
-    );
+    const deleteCommentQuery = await deleteComment(answerId, commentId);
     logger.info({
       message: "deleteCommentHandler deleteCommentQuery",
       value: deleteCommentQuery
@@ -593,12 +589,7 @@ export const editCommentHandler = async (req: Request, res: Response) => {
   }
 
   try {
-    const updateCommentQuery = await editComment(
-      // questionId,
-      answerId,
-      commentId,
-      comment
-    );
+    const updateCommentQuery = await editComment(answerId, commentId, comment);
     logger.info({
       message: "editCommentHandler updateCommentQuery",
       value: updateCommentQuery
@@ -627,7 +618,6 @@ export const getQuestionsBySearchHandler = async (
       value: searchTerm
     });
 
-    // validate searchTerm before proceeding
     if (!searchTerm) {
       res.status(400).json({ error: "Bad search term" });
       return;
@@ -639,7 +629,6 @@ export const getQuestionsBySearchHandler = async (
       value: query
     });
 
-    // return the result to the client
     res.json(query);
   } catch (error) {
     res.status(500).json({ error: "Server Error" });
