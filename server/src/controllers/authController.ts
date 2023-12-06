@@ -103,30 +103,39 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       return res.status(500).json({ error: "Error signing a new customJWT" });
     }
 
-    // [1] HTTP ONLY COOKIE VERSION
-    // res.cookie("customJWT", customJWT, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: "none",
-    //   maxAge: 3600000,
-    //   domain: ".onrender.com",
-    //   path: "/"
+    const userAgent = req.get("User-Agent");
+    logger.info({
+      message: "authorizationCodeRedirectHandler User-Agent",
+      value: userAgent
+    });
+
+    const isAppleWebKit = userAgent?.includes("Web");
+    logger.info({
+      message: "authorizationCodeRedirectHandler isAppleWebKit",
+      value: isAppleWebKit
+    });
+
+    // Pete Glitch
+    // res.writeHead(200, {
+    //   "Set-Cookie": `customJWT=${customJWT}; path=/; Secure; HttpOnly; SameSite=None; Max-Age=3600000`
     // });
+    // res.end();
+
+    // [1] HTTP ONLY COOKIE VERSION
+    res.cookie("customJWT", customJWT, {
+      path: "/",
+      secure: isAppleWebKit ? false : true,
+      httpOnly: true,
+      sameSite: "none",
+      maxAge: 3600000
+      // domain: ".onrender.com"
+    });
 
     // logger.info({
     //   message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
     //   value: res.getHeaders()["set-cookie"]
     // });
 
-    logger.info({
-      message: "authorizationCodeRedirectHandler User-Agent",
-      value: req.get("User-Agent")
-    });
-
-    // Pete Glitch
-    res.writeHead(200, {
-      "Set-Cookie": `customJWT=${customJWT}; path=/; Secure; HttpOnly; SameSite=None; Max-Age=3600000`
-    });
     res.end();
 
     // [2] AUTH HEADER JWT VERSION
