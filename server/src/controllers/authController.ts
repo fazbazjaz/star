@@ -139,12 +139,16 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       value: isAppleWebKit
     });
 
-    const isIPhoneIPad = Boolean(
-      userAgent?.includes("iPhone") || userAgent?.includes("iPad")
-    );
+    const isIPhone = Boolean(userAgent?.includes("iPhone"));
     logger.info({
-      message: "authorizationCodeRedirectHandler isIphoneIpad 📱",
-      value: isIPhoneIPad
+      message: "authorizationCodeRedirectHandler isIphone 📱",
+      value: isIPhone
+    });
+
+    const isIPad = Boolean(userAgent?.includes("iPhone"));
+    logger.info({
+      message: "authorizationCodeRedirectHandler isIPad 📱",
+      value: isIPad
     });
 
     const isChromeIOS = Boolean(userAgent?.includes("CriOS"));
@@ -187,14 +191,22 @@ export const idTokenHandler = async (req: Request, res: Response) => {
 
     let cookieSecureValue;
 
-    if (isIPhoneIPad && isAppleWebKit) {
-      // iPhone / iPad with ALL BROWSERS needs secure: false
+    if (isIPhone && isAppleWebKit) {
+      console.log("-------- [1] IT IS AN IPHONE");
+      // iPhone with ALL BROWSERS needs secure: false
+      cookieSecureValue = false;
+    } else if (isIPad && isAppleWebKit) {
+      console.log("-------- [2] IT IS AN IPAD");
+      // iPad with ALL BROWSERS needs secure: false
       cookieSecureValue = false;
     } else if (isMacOS && isSafari) {
+      console.log("-------- [3] IT IS MAC OS AND SAFARI");
       // MacOS with Safari needs secure: false
       cookieSecureValue = false;
     } else {
+      console.log("-------- [4] IT IS SOMETHING ELSE");
       // Mac OS with Chrome needs secure: true
+      // Everything else needs secure: true
       cookieSecureValue = true;
     }
 
