@@ -105,13 +105,13 @@ export const idTokenHandler = async (req: Request, res: Response) => {
 
     const userAgent = req.get("User-Agent");
     logger.info({
-      message: "authorizationCodeRedirectHandler User-Agent",
+      message: "authorizationCodeRedirectHandler User-Agent 🤖",
       value: userAgent
     });
 
-    const isAppleWebKit = userAgent?.includes("AppleWebKit");
+    const isAppleWebKit = Boolean(userAgent?.includes("AppleWebKit"));
     logger.info({
-      message: "authorizationCodeRedirectHandler isAppleWebKit",
+      message: "authorizationCodeRedirectHandler isAppleWebKit 🍏",
       value: String(isAppleWebKit)
     });
 
@@ -132,7 +132,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     });
 
     logger.info({
-      message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
+      message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"] 🍪`,
       value: res.getHeaders()["set-cookie"]
     });
 
