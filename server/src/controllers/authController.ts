@@ -240,8 +240,10 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       path: "/",
       secure: cookieSecureValue,
       httpOnly: true,
-      sameSite: "none",
+      // sameSite: "none",
+      sameSite: "lax",
       maxAge: 3600000,
+      // expires: ,
       domain: "star-cyf-server-ios.onrender.com"
     });
 
