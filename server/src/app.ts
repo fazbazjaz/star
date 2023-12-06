@@ -18,7 +18,6 @@ app.use(
     exposedHeaders: ["set-cookie"],
     // origin: true,
     origin: "https://cyf-star-client-ios.onrender.com",
-    // origin: "https://*.onrender.com",
     credentials: true // Server will accept Cookies from the Client
   })
 );
