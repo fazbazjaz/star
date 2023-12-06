@@ -192,21 +192,29 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     let cookieSecureValue;
 
     if (isIPhone && isAppleWebKit && isSafari) {
-      console.log("-------- [1] IT IS AN IPHONE AND SAFARI");
+      console.log("-------- [1a] IT IS AN IPHONE AND SAFARI");
       // iPhone with ALL BROWSERS needs secure: false (???)
       cookieSecureValue = false;
     } else if (isIPhone && isAppleWebKit && isChromeIOS) {
-      console.log("-------- [1] IT IS AN IPHONE AND CHROME");
+      console.log("-------- [1b] IT IS AN IPHONE AND CHROME");
       cookieSecureValue = true;
     } else if (isIPhone && isAppleWebKit && isFireFoxIOS) {
-      console.log("-------- [1] IT IS AN IPHONE AND FIREFOX");
+      console.log("-------- [1c] IT IS AN IPHONE AND FIREFOX");
       cookieSecureValue = true;
     } else if (isIPad && isAppleWebKit) {
       console.log("-------- [2] IT IS AN IPAD");
       // iPad with ALL BROWSERS needs secure: false
       cookieSecureValue = false;
     } else if (isMacOS && isSafari) {
-      console.log("-------- [3] IT IS MAC OS AND SAFARI");
+      console.log("-------- [3a] IT IS MAC OS AND SAFARI");
+      // MacOS with Safari needs secure: false
+      cookieSecureValue = false;
+    } else if (isMacOS && isChrome) {
+      console.log("-------- [3b] IT IS MAC OS AND CHROME");
+      // MacOS with Safari needs secure: false
+      cookieSecureValue = false;
+    } else if (isMacOS && isFirefox) {
+      console.log("-------- [3c] IT IS MAC OS AND FIREFOX");
       // MacOS with Safari needs secure: false
       cookieSecureValue = false;
     } else {
@@ -233,8 +241,8 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       secure: cookieSecureValue,
       httpOnly: true,
       sameSite: "none",
-      maxAge: 3600000
-      // domain: ".onrender.com"
+      maxAge: 3600000,
+      domain: ".onrender.com"
     });
 
     logger.info({
