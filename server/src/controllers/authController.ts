@@ -235,6 +235,8 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     // });
     // res.end();
 
+    const oneHourFromNow = new Date(Date.now() + 3600000);
+
     // [1] HTTP ONLY COOKIE VERSION
     res.cookie("customJWT", customJWT, {
       path: "/",
@@ -243,7 +245,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       sameSite: "none",
       // sameSite: "lax",
       maxAge: 3600000,
-      // expires: ,
+      expires: oneHourFromNow,
       // domain: "star-cyf-server-ios.onrender.com"
       domain: ".onrender.com"
     });

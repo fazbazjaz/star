@@ -15,9 +15,9 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    exposedHeaders: ["set-cookie"],
+    // exposedHeaders: ["set-cookie"],
     // origin: true,
-    origin: "https://star-cyf-client-ios.onrender.com",
+    origin: "https://*.onrender.com",
     credentials: true // Server will accept Cookies from the Client
   })
 );

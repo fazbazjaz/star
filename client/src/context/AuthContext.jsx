@@ -32,9 +32,8 @@ export const AuthProvider = ({ children }) => {
         {
           headers: {
             "Access-Control-Allow-Credentials": true,
-            "Access-Control-Allow-Origin":
-              "https://star-cyf-client-ios.onrender.com",
-            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "https://.onrender.com",
+            // "Content-Type": "application/json",
             // Authorization: `Bearer ${customJWT}`,
           },
           credentials: "include",
