@@ -130,13 +130,13 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     const isMacOS = Boolean(userAgent?.includes("Mac OS"));
     logger.info({
       message: "authorizationCodeRedirectHandler isMacOS 👿",
-      value: String(isMacOS)
+      value: isMacOS
     });
 
     const isAppleWebKit = Boolean(userAgent?.includes("AppleWebKit"));
     logger.info({
       message: "authorizationCodeRedirectHandler isAppleWebKit 🍏",
-      value: String(isAppleWebKit)
+      value: isAppleWebKit
     });
 
     const isIPhoneIPad = Boolean(
@@ -144,37 +144,37 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     );
     logger.info({
       message: "authorizationCodeRedirectHandler isIphoneIpad 📱",
-      value: String(isIPhoneIPad)
+      value: isIPhoneIPad
     });
 
     const isChromeIOS = Boolean(userAgent?.includes("CriOS"));
     logger.info({
       message: "authorizationCodeRedirectHandler isChromeIOS 🌈📱",
-      value: String(isChromeIOS)
+      value: isChromeIOS
     });
 
     const isFireFoxIOS = Boolean(userAgent?.includes("FxiOS"));
     logger.info({
       message: "authorizationCodeRedirectHandler isFireFoxIOS 🦊📱",
-      value: String(isFireFoxIOS)
+      value: isFireFoxIOS
     });
 
     const isSafari = Boolean(userAgent?.includes("Version"));
     logger.info({
       message: "authorizationCodeRedirectHandler isSafari 🦒",
-      value: String(isSafari)
+      value: isSafari
     });
 
     const isChrome = Boolean(userAgent?.includes("Chrome"));
     logger.info({
       message: "authorizationCodeRedirectHandler isChrome 🌈💻",
-      value: String(isChrome)
+      value: isChrome
     });
 
     const isFirefox = Boolean(userAgent?.includes("Firefox"));
     logger.info({
       message: "authorizationCodeRedirectHandler isFirefox 🦊💻",
-      value: String(isFirefox)
+      value: isFirefox
     });
 
     // iPhone OS+safari+crios=iOS Chrome  === secure: false
@@ -200,7 +200,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
 
     logger.info({
       message: "authorizationCodeRedirectHandler cookieSecureValue 🍪📃",
-      value: String(cookieSecureValue)
+      value: cookieSecureValue
     });
 
     // Pete Glitch

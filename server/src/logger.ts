@@ -12,6 +12,8 @@ export const logger = createLogger({
         formattedValue = "";
       } else if (typeof value === "string" || typeof value === "number") {
         formattedValue = value;
+      } else if (typeof value === "boolean") {
+        formattedValue = String(value);
       } else if (Object.keys(value).length) {
         formattedValue = JSON.stringify(value);
       }
