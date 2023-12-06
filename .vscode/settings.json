@@ -5,6 +5,7 @@
     "commentitle",
     "firstname",
     "lastname",
+    "pagetitle",
     "questionbody",
     "questiontitle",
     "tanstack",
