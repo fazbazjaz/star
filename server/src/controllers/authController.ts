@@ -112,7 +112,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     const isAppleWebKit = userAgent?.includes("AppleWebKit");
     logger.info({
       message: "authorizationCodeRedirectHandler isAppleWebKit",
-      value: isAppleWebKit
+      value: String(isAppleWebKit)
     });
 
     // Pete Glitch
@@ -131,10 +131,10 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       // domain: ".onrender.com"
     });
 
-    // logger.info({
-    //   message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
-    //   value: res.getHeaders()["set-cookie"]
-    // });
+    logger.info({
+      message: `authorizationCodeRedirectHandler res.getHeaders()["set-cookie"]`,
+      value: res.getHeaders()["set-cookie"]
+    });
 
     res.end();
 
