@@ -191,10 +191,16 @@ export const idTokenHandler = async (req: Request, res: Response) => {
 
     let cookieSecureValue;
 
-    if (isIPhone && isAppleWebKit) {
-      console.log("-------- [1] IT IS AN IPHONE");
-      // iPhone with ALL BROWSERS needs secure: false
+    if (isIPhone && isAppleWebKit && isSafari) {
+      console.log("-------- [1] IT IS AN IPHONE AND SAFARI");
+      // iPhone with ALL BROWSERS needs secure: false (???)
       cookieSecureValue = false;
+    } else if (isIPhone && isAppleWebKit && isChromeIOS) {
+      console.log("-------- [1] IT IS AN IPHONE AND CHROME");
+      cookieSecureValue = true;
+    } else if (isIPhone && isAppleWebKit && isFireFoxIOS) {
+      console.log("-------- [1] IT IS AN IPHONE AND FIREFOX");
+      cookieSecureValue = true;
     } else if (isIPad && isAppleWebKit) {
       console.log("-------- [2] IT IS AN IPAD");
       // iPad with ALL BROWSERS needs secure: false
