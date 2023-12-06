@@ -109,10 +109,98 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       value: userAgent
     });
 
+    // Safari on iOS
+    // Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1
+
+    // Chrome on iOS
+    // Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/120.0.6099.101 Mobile/15E148 Safari/604.1
+
+    // Firefox on iOS
+    // Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/120.0 Mobile/15E148 Safari/605.1.15
+
+    // Safari on Mac OS
+    // Mozilla/5.0 (Macintosh; Intel Mac OS X 14_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15
+
+    // Chrome on Mac OS
+    // Mozilla/5.0 (Macintosh; Intel Mac OS X 14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+
+    // Firefox on Mac OS
+    // Mozilla/5.0 (Macintosh; Intel Mac OS X 14.1; rv:120.0) Gecko/20100101 Firefox/120.0
+
+    const isMacOS = Boolean(userAgent?.includes("Mac OS"));
+    logger.info({
+      message: "authorizationCodeRedirectHandler isMacOS 👿",
+      value: String(isMacOS)
+    });
+
     const isAppleWebKit = Boolean(userAgent?.includes("AppleWebKit"));
     logger.info({
       message: "authorizationCodeRedirectHandler isAppleWebKit 🍏",
       value: String(isAppleWebKit)
+    });
+
+    const isIPhoneIPad = Boolean(
+      userAgent?.includes("iPhone") || userAgent?.includes("iPad")
+    );
+    logger.info({
+      message: "authorizationCodeRedirectHandler isIphoneIpad 📱",
+      value: String(isIPhoneIPad)
+    });
+
+    const isChromeIOS = Boolean(userAgent?.includes("CriOS"));
+    logger.info({
+      message: "authorizationCodeRedirectHandler isChromeIOS 🌈📱",
+      value: String(isChromeIOS)
+    });
+
+    const isFireFoxIOS = Boolean(userAgent?.includes("FxiOS"));
+    logger.info({
+      message: "authorizationCodeRedirectHandler isFireFoxIOS 🦊📱",
+      value: String(isFireFoxIOS)
+    });
+
+    const isSafari = Boolean(userAgent?.includes("Version"));
+    logger.info({
+      message: "authorizationCodeRedirectHandler isSafari 🦒",
+      value: String(isSafari)
+    });
+
+    const isChrome = Boolean(userAgent?.includes("Chrome"));
+    logger.info({
+      message: "authorizationCodeRedirectHandler isChrome 🌈💻",
+      value: String(isChrome)
+    });
+
+    const isFirefox = Boolean(userAgent?.includes("Firefox"));
+    logger.info({
+      message: "authorizationCodeRedirectHandler isFirefox 🦊💻",
+      value: String(isFirefox)
+    });
+
+    // iPhone OS+safari+crios=iOS chrome  === secure: false
+    // iPhone OS+safari+fxiOS=iOS firefox === secure: false
+    // iPhone OS+safari+Version=iOS safari === secure: false
+
+    // Mac OS+safari+Version=Mac OS safari === secure: false
+    // Mac OS+safari+firefox=Mac OS firefox === secure: true
+    // Mac OS+safari+chrome=Mac OS chrome === secure: true
+
+    let cookieSecureValue;
+
+    if (isIPhoneIPad && isAppleWebKit) {
+      // iPhone / iPad with ALL BROWSERS needs secure: false
+      cookieSecureValue = false;
+    } else if (isMacOS && isSafari) {
+      // MacOS with Safari needs secure: false
+      cookieSecureValue = false;
+    } else {
+      // Mac OS with Chrome needs secure: true
+      cookieSecureValue = true;
+    }
+
+    logger.info({
+      message: "authorizationCodeRedirectHandler cookieSecureValue 🍪📃",
+      value: cookieSecureValue
     });
 
     // Pete Glitch
@@ -124,7 +212,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     // [1] HTTP ONLY COOKIE VERSION
     res.cookie("customJWT", customJWT, {
       path: "/",
-      secure: isAppleWebKit ? false : true,
+      secure: cookieSecureValue,
       httpOnly: true,
       sameSite: "none",
       maxAge: 3600000
