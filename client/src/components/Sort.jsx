@@ -1,27 +1,23 @@
-import { FormControl, MenuItem, Select } from "@mui/material";
-import { yellow } from "@mui/material/colors";
+import { FormControl, MenuItem, Select, InputLabel } from "@mui/material";
 
 const Sort = ({ sort, setSort }) => {
   const handleChange = (event) => {
     setSort(event.target.value);
   };
   return (
-    <FormControl>
-      <Select
-        sx={{ bgcolor: yellow[600], color: "black" }}
-        id="sort"
-        value={sort}
-        onChange={handleChange}
-        autoWidth
-        label="sort">
+    <FormControl variant="filled" size="small" sx={{ width: "max-content" }}>
+      <InputLabel id="sort" labelId="sort" sx={{ color: "white" }}>
+        Sort
+      </InputLabel>
+      <Select id="sort" value={sort} label="Sort" onChange={handleChange}>
         <MenuItem value="popular" sx={{ color: "black" }}>
-          <em>Most Popular</em>
+          Most Upvoted
         </MenuItem>
         <MenuItem value="recentlyCreated" sx={{ color: "black" }}>
-          <em>Most Recently Added</em>
+          Recently Added
         </MenuItem>
         <MenuItem value="recentlyUpdated" sx={{ color: "black" }}>
-          <em>Most Recently Updated</em>
+          Recently Updated
         </MenuItem>
       </Select>
     </FormControl>

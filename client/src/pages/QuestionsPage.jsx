@@ -57,23 +57,35 @@ const QuestionsPage = () => {
       {questionsByPageData && (
         <>
           <Box>
-            <Box display={"flex"} justifyContent={"space-between"}>
-              <Typography variant={"pagetitle"}>
-                All Questions (
-                {questionsByPageData.pages
-                  .map((page) => page.length)
-                  .reduce((acc, cv) => acc + cv, 0)}
-                )
-              </Typography>
-              <Sort sort={sort} setSort={setSort} />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => setShowAddQuestionForm((prev) => !prev)}
-                disabled={showAddQuestionForm}
-                sx={{ display: "flex", gap: 0.5 }}>
-                Add a Question
-              </Button>
+            <Box
+              display={"flex"}
+              flexWrap={"wrap"}
+              justifyContent={"space-between"}
+              alignItems={"end"}>
+              <Box
+                display={"flex"}
+                gap={2}
+                alignItems={"center"}
+                flexWrap={"wrap"}>
+                <Typography variant={"pagetitle"}>
+                  All Questions (
+                  {questionsByPageData.pages
+                    .map((page) => page.length)
+                    .reduce((acc, cv) => acc + cv, 0)}
+                  )
+                </Typography>
+                <Sort sort={sort} setSort={setSort} />
+              </Box>
+              <Box>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setShowAddQuestionForm((prev) => !prev)}
+                  disabled={showAddQuestionForm}
+                  sx={{ display: "flex", gap: 0.5 }}>
+                  Add a Question
+                </Button>
+              </Box>
             </Box>
             {showAddQuestionForm && (
               <QuestionForm setShowAddQuestionForm={setShowAddQuestionForm} />

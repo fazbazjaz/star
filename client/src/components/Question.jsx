@@ -159,13 +159,16 @@ const Question = ({
                   component={RouterLink}
                   to={`/questions/${questionData.id}`}
                   color={consistentLinkColor}
-                  variant="questionbody">
+                  variant="questionbody"
+                  sx={{ wordBreak: "break-word" }}>
                   {questionData.question}
                 </Link>
               )}
             {!showUpdateQuestionForm &&
               currentPage === "individualQuestionPage" && (
-                <Typography variant={"questionbody"}>
+                <Typography
+                  variant={"questionbody"}
+                  sx={{ wordBreak: "break-word" }}>
                   {questionData.question}
                 </Typography>
               )}
