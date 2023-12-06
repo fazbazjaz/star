@@ -645,30 +645,3 @@ export const getQuestionsBySearchHandler = async (
     res.status(500).json({ error: "Server Error" });
   }
 };
-
-// export const getQuestionsBySearchHandler = async (
-//   req: Request,
-//   res: Response
-// ) => {
-//   try {
-//     // /api/questions/search?q=ABC123
-//     const searchTerm = req.query.q as string;
-//     logger.info({
-//       message: "getQuestionsBySearchHandler searchTerm",
-//       value: searchTerm
-//     });
-
-//     // handle errors for searchTerm being bad(?)
-
-//     // use the getQuestionsBySearch  HELPER FUNCTION
-//     const query = await getQuestionsBySearch(searchTerm);
-//     logger.info({
-//       message: "getQuestionsBySearchHandler query",
-//       value: query
-//     });
-
-//     // returning the query^ to the client
-//   } catch (error) {
-//     res.status(500).json({ error: "Server Error" });
-//   }
-// };

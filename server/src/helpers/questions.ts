@@ -49,6 +49,19 @@ export const getAllQuestionsByUser = async (userId: number) => {
 
 export const getQuestionsBySearch = async (searchTerm: string) => {
   try {
+    // const result = await database
+    //   .select({
+    //     id: questions.id,
+    //     question: questions.question
+    //   })
+    //   .from(questions)
+    //   .where(
+    //     sql`lower(${
+    //       questions.question
+    //     }) like lower('%' || ${sql`${searchTerm}`}) || '%')`
+    //   )
+    //   .orderBy(desc(questions.createdAt))
+    //   .execute();
     const result = await database
       .select({
         id: questions.id,
@@ -58,7 +71,7 @@ export const getQuestionsBySearch = async (searchTerm: string) => {
       .where(
         sql`lower(${
           questions.question
-        }) like lower('%' || ${sql`${searchTerm}`}) || '%')`
+        }) like lower('%' || ${sql`${searchTerm}`} || '%')`
       )
       .orderBy(desc(questions.createdAt))
       .execute();
