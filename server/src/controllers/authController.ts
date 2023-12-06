@@ -109,7 +109,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       value: userAgent
     });
 
-    const isAppleWebKit = userAgent?.includes("Web");
+    const isAppleWebKit = userAgent?.includes("AppleWebKit");
     logger.info({
       message: "authorizationCodeRedirectHandler isAppleWebKit",
       value: isAppleWebKit
