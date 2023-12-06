@@ -6,9 +6,11 @@ import Error from "../components/Error";
 import Question from "../components/Question";
 import QuestionForm from "../components/QuestionForm";
 import getQuestionsByPage from "../api/getQuestionsByPage";
+import Sort from "../components/sort";
 
 const QuestionsPage = () => {
   const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
+  const [sort, setSort] = useState("popular");
 
   const {
     data: questionsByPageData,
@@ -17,7 +19,7 @@ const QuestionsPage = () => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["questions"],
+    queryKey: ["questions", sort],
 
     queryFn: getQuestionsByPage,
 
@@ -63,6 +65,7 @@ const QuestionsPage = () => {
                   .reduce((acc, cv) => acc + cv, 0)}
                 )
               </Typography>
+              <Sort sort={sort} setSort={setSort} />
               <Button
                 variant="contained"
                 color="primary"

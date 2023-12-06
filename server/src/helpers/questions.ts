@@ -2,7 +2,11 @@ import { database } from "../database/connection";
 import { questions, answers, comments } from "../database/schema";
 import { eq, and } from "drizzle-orm";
 
-export const getQuestionsByPage = async (limit: number, page: number) => {
+export const getQuestionsByPage = async (
+  limit: number,
+  page: number,
+  sort: string
+) => {
   return await database.query.questions.findMany({
     with: {
       user: {
@@ -33,7 +37,13 @@ export const getQuestionsByPage = async (limit: number, page: number) => {
       }
     },
     limit,
-    offset: (page - 1) * limit
+    offset: (page - 1) * limit,
+    orderBy: (questions, { desc }) =>
+      sort === "popular"
+        ? [desc(questions.likes)]
+        : sort === "recentlyCreated"
+          ? [desc(questions.createdAt)]
+          : [desc(questions.updatedAt)]
   });
 };
 

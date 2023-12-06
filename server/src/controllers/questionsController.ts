@@ -23,6 +23,8 @@ export const getQuestionsByPageHandler = async (
   try {
     const limit = parseInt(req.query.limit as string);
     const page = parseInt(req.query.page as string);
+    const sort = req.query.sort as string;
+
     logger.info({
       message: "getQuestionsByPageHandler limit",
       value: limit
@@ -32,7 +34,12 @@ export const getQuestionsByPageHandler = async (
       value: page
     });
 
-    const query = await getQuestionsByPage(limit, page);
+    logger.info({
+      message: "getQuestionsByPageHandler sort",
+      value: sort
+    });
+
+    const query = await getQuestionsByPage(limit, page, sort);
     logger.info({
       message: "getQuestionsByPageHandler query",
       value: query
