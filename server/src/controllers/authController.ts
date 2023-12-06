@@ -701,8 +701,7 @@ export const gitHubHandler = async (req: Request, res: Response) => {
       return res.status(200).json(data);
     }
   } catch (error) {
-    console.log("❌ ERROR HERE");
     logger.error(error);
-    return res.status(500).json({ verified: false, error: error });
+    return res.status(500).json({ error: error });
   }
 };

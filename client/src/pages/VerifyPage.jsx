@@ -19,6 +19,7 @@ import {
 } from "../themes/ConsistentStyles";
 
 const VerifyPage = () => {
+  console.log("VerifyPage useEffect ran");
   const { authenticatedUser, setAuthenticatedUser } = useContext(AuthContext);
 
   const [searchParams] = useSearchParams();
@@ -28,48 +29,61 @@ const VerifyPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const fetchUserVerification = async (code) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/api/auth/github?code=${code}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("customJWT")}`,
+          },
+          // credentials: "include",
+        }
+      );
+      console.log("fetchUserVerification response", response);
+
+      if (!response.ok) {
+        throw new Error("fetchUserVerification response failed");
+      }
+
+      const data = await response.json();
+      console.log("fetchUserVerification data", data);
+
+      if (!data) {
+        throw new Error("fetchUserVerification data : No Data");
+      }
+
+      localStorage.setItem("authenticatedUser", JSON.stringify(data));
+      setAuthenticatedUser(data);
+    } catch (error) {
+      console.error("fetchUserVerification error", error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+      navigate(".", { replace: true });
+    }
+  };
+
   useEffect(() => {
     console.log("VerifyPage useEffect ran");
+
     const code = searchParams.get("code");
-    if (code) {
-      const fetchUserVerification = async (code) => {
-        try {
-          setIsLoading(true);
-          setError(null);
+    console.log("VerifyPage useEffect code:", code);
 
-          const response = await fetch(
-            `${import.meta.env.VITE_SERVER_URL}/api/auth/github?code=${code}`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("customJWT")}`,
-              },
-              // credentials: "include",
-            }
-          );
-          console.log("fetchUserVerification response", response);
-
-          const data = await response.json();
-          console.log("fetchUserVerification data", data);
-
-          if (!data) {
-            throw new Error("fetchUserVerification data : No Data");
-          }
-
-          localStorage.setItem("authenticatedUser", JSON.stringify(data));
-          setAuthenticatedUser(data);
-        } catch (error) {
-          console.error("fetchUserVerification error", error);
-          setError(error.message);
-        } finally {
-          setIsLoading(false);
-          console.log("trying to remove code from url");
-          navigate(".", { replace: true });
-        }
-      };
-      fetchUserVerification(code);
+    if (!code) {
+      console.log("VerifyPage useEffect IF BLOCK [1]");
+      return;
     }
-  }, [searchParams, setAuthenticatedUser, navigate]);
+
+    if (code) {
+      console.log("VerifyPage useEffect IF BLOCK [2] code:", code);
+      fetchUserVerification(code);
+      return;
+    }
+  }, []);
 
   return (
     <Box my={2}>
@@ -150,9 +164,9 @@ const VerifyPage = () => {
             </Typography>
           )}
         </Box>
-        <Box>
-          {authenticatedUser && (
-            <>
+        {authenticatedUser && (
+          <>
+            <Box>
               <Typography>Name: {authenticatedUser.firstName}</Typography>
               <Typography>
                 Verification Status:{" "}
@@ -163,16 +177,18 @@ const VerifyPage = () => {
                   {authenticatedUser.roleId === 1 ? "Unverified" : "Verified"}
                 </Typography>
               </Typography>
-            </>
-          )}
-        </Box>
-
-        {authenticatedUser && authenticatedUser.roleId > 1 && (
-          <Box>
-            <Button component={NavLink} to={"/profile"} variant={"contained"}>
-              Verified! Continue...
-            </Button>
-          </Box>
+            </Box>
+            {authenticatedUser.roleId > 1 && (
+              <Box>
+                <Button
+                  component={NavLink}
+                  to={"/profile"}
+                  variant={"contained"}>
+                  Verified! Continue...
+                </Button>
+              </Box>
+            )}
+          </>
         )}
       </Box>
     </Box>
