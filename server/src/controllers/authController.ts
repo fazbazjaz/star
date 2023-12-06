@@ -200,7 +200,7 @@ export const idTokenHandler = async (req: Request, res: Response) => {
 
     logger.info({
       message: "authorizationCodeRedirectHandler cookieSecureValue 🍪📃",
-      value: cookieSecureValue
+      value: String(cookieSecureValue)
     });
 
     // Pete Glitch
