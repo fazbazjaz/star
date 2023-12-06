@@ -30,12 +30,12 @@ export const AuthProvider = ({ children }) => {
       const response = await fetch(
         `${import.meta.env.VITE_SERVER_URL}/api/auth/user`,
         {
-          headers: {
-            "Access-Control-Allow-Credentials": true,
-            "Access-Control-Allow-Origin": "https://.onrender.com",
-            // "Content-Type": "application/json",
-            // Authorization: `Bearer ${customJWT}`,
-          },
+          // headers: {
+          // "Access-Control-Allow-Credentials": true,
+          // "Access-Control-Allow-Origin": "https://.onrender.com",
+          // "Content-Type": "application/json",
+          // Authorization: `Bearer ${customJWT}`,
+          // },
           credentials: "include",
         }
       );
