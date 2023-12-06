@@ -5,7 +5,7 @@ const Sort = ({ sort, setSort }) => {
     setSort(event.target.value);
   };
   return (
-    <FormControl variant="filled" size="small" sx={{ width: "max-content" }}>
+    <FormControl variant="filled" size="small">
       <InputLabel id="sort" labelId="sort" sx={{ color: "white" }}>
         Sort
       </InputLabel>

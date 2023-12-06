@@ -123,6 +123,7 @@ const AnswerForm = ({
 
   return (
     <Box
+      mt={2}
       p={3}
       border={consistentBorder}
       borderRadius={consistentBorderRadius}

@@ -4,13 +4,13 @@ import { useLocation, useNavigate, Link as RouterLink } from "react-router-dom";
 import {
   Box,
   Typography,
-  Button,
+  // Button,
   Link,
   IconButton,
   Avatar,
 } from "@mui/material";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
-import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
+// import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { AuthContext } from "../context/AuthContext";
@@ -26,11 +26,7 @@ import {
 } from "../themes/ConsistentStyles";
 import QuestionForm from "./QuestionForm";
 
-const Question = ({
-  questionData,
-  showAddAnswerForm,
-  setShowAddAnswerForm,
-}) => {
+const Question = ({ questionData }) => {
   const { authenticatedUser } = useContext(AuthContext);
 
   const [showUpdateQuestionForm, setShowUpdateQuestionForm] = useState(false);
@@ -181,35 +177,18 @@ const Question = ({
             )}
           </Box>
           <Box
+            marginLeft={"auto"}
             display={"flex"}
-            justifyContent={"space-between"}
-            flexWrap={"wrap"}
-            gap={1}>
-            <Box>
-              {currentPage === "individualQuestionPage" && (
-                <Button
-                  variant="outlined"
-                  startIcon={<RateReviewOutlinedIcon />}
-                  onClick={() => setShowAddAnswerForm((prev) => !prev)}
-                  disabled={showAddAnswerForm}>
-                  Add an Answer
-                </Button>
-              )}
-            </Box>
-            <Box
-              marginLeft={"auto"}
-              display={"flex"}
-              flexDirection={"column"}
-              justifyContent={"flex-end"}
-              justifySelf={"flex-end"}
-              alignItems={"flex-end"}>
-              <Typography variant={"body2"}>
-                updated {formatDate(questionData.updatedAt)}
-              </Typography>
-              <Typography variant={"body2"}>
-                created {formatDate(questionData.createdAt)}
-              </Typography>
-            </Box>
+            flexDirection={"column"}
+            justifyContent={"flex-end"}
+            justifySelf={"flex-end"}
+            alignItems={"flex-end"}>
+            <Typography variant={"body2"}>
+              updated {formatDate(questionData.updatedAt)}
+            </Typography>
+            <Typography variant={"body2"}>
+              created {formatDate(questionData.createdAt)}
+            </Typography>
           </Box>
         </Box>
       )}

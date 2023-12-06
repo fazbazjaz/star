@@ -6,7 +6,7 @@ import Error from "../components/Error";
 import Question from "../components/Question";
 import QuestionForm from "../components/QuestionForm";
 import getQuestionsByPage from "../api/getQuestionsByPage";
-import Sort from "../components/sort";
+import Sort from "../components/Sort";
 
 const QuestionsPage = () => {
   const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
@@ -61,12 +61,12 @@ const QuestionsPage = () => {
               display={"flex"}
               flexWrap={"wrap"}
               justifyContent={"space-between"}
-              alignItems={"end"}>
+              alignItems={"center"}>
               <Box
                 display={"flex"}
-                gap={2}
                 alignItems={"center"}
-                flexWrap={"wrap"}>
+                flexWrap={"wrap"}
+                gap={2}>
                 <Typography variant={"pagetitle"}>
                   All Questions (
                   {questionsByPageData.pages
