@@ -31,6 +31,9 @@ export const AuthProvider = ({ children }) => {
         `${import.meta.env.VITE_SERVER_URL}/api/auth/user`,
         {
           headers: {
+            "Access-Control-Allow-Credentials": true,
+            "Access-Control-Allow-Origin":
+              "https://star-cyf-client-ios.onrender.com",
             "Content-Type": "application/json",
             // Authorization: `Bearer ${customJWT}`,
           },
