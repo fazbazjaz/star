@@ -211,11 +211,11 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       cookieSecureValue = false;
     } else if (isMacOS && isChrome) {
       console.log("-------- [3b] IT IS MAC OS AND CHROME");
-      // MacOS with Safari needs secure: false
+      // MacOS with Chrome needs secure: true
       cookieSecureValue = true;
     } else if (isMacOS && isFirefox) {
       console.log("-------- [3c] IT IS MAC OS AND FIREFOX");
-      // MacOS with Safari needs secure: false
+      // MacOS with Firefox needs secure: true
       cookieSecureValue = true;
     } else {
       console.log("-------- [4] IT IS SOMETHING ELSE");
@@ -240,11 +240,12 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       path: "/",
       secure: cookieSecureValue,
       httpOnly: true,
-      // sameSite: "none",
-      sameSite: "lax",
+      sameSite: "none",
+      // sameSite: "lax",
       maxAge: 3600000,
       // expires: ,
-      domain: "star-cyf-server-ios.onrender.com"
+      // domain: "star-cyf-server-ios.onrender.com"
+      domain: ".onrender.com"
     });
 
     logger.info({
