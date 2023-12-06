@@ -177,13 +177,13 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       value: String(isFirefox)
     });
 
-    // iPhone OS+safari+crios=iOS chrome  === secure: false
-    // iPhone OS+safari+fxiOS=iOS firefox === secure: false
-    // iPhone OS+safari+Version=iOS safari === secure: false
+    // iPhone OS+safari+crios=iOS Chrome  === secure: false
+    // iPhone OS+safari+fxiOS=iOS Firefox === secure: false
+    // iPhone OS+safari+Version=iOS Safari === secure: false
 
     // Mac OS+safari+Version=Mac OS safari === secure: false
     // Mac OS+safari+firefox=Mac OS firefox === secure: true
-    // Mac OS+safari+chrome=Mac OS chrome === secure: true
+    // Mac OS+safari+chrome=Mac OS chrome === secure: true
 
     let cookieSecureValue;
 
