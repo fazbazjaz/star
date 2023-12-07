@@ -87,7 +87,7 @@ export const getOneQuestion = async (questionId: number, sort: string) => {
   });
 };
 
-export const getAllQuestionsByUser = async (userId: number) => {
+export const getAllQuestionsByUser = async (userId: number, sort: string) => {
   return await database.query.questions.findMany({
     where: eq(questions.userId, userId),
     with: {
@@ -117,7 +117,13 @@ export const getAllQuestionsByUser = async (userId: number) => {
           }
         }
       }
-    }
+    },
+    orderBy: (questions, { desc }) =>
+      sort === "popular"
+        ? [desc(questions.likes)]
+        : sort === "recentlyCreated"
+          ? [desc(questions.createdAt)]
+          : [desc(questions.updatedAt)]
   });
 };
 

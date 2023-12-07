@@ -21,9 +21,9 @@ export const getQuestionsByPageHandler = async (
   res: Response
 ) => {
   try {
-    const limit = parseInt(req.query.limit as string);
-    const page = parseInt(req.query.page as string);
-    const sort = req.query.sort as string;
+    const limit = parseInt(String(req.query.limit));
+    const page = parseInt(String(req.query.page));
+    const sort = String(req.query.sort);
 
     logger.info({
       message: "getQuestionsByPageHandler limit",
@@ -61,8 +61,7 @@ export const getQuestionsByPageHandler = async (
 export const getOneQuestionHandler = async (req: Request, res: Response) => {
   const questionId = parseInt(req.params.id);
   const sort = String(req.query.sort);
-  console.log(sort);
-  // const sort = "popular" as string;
+
   logger.info({
     message: "getOneQuestionHandler questionId",
     value: questionId
@@ -98,13 +97,19 @@ export const getAllQuestionsByUserHandler = async (
   res: Response
 ) => {
   const userId = parseInt(req.params.id);
+  const sort = String(req.query.sort);
   logger.info({
     message: "getAllQuestionsByUserHandler userId",
     value: userId
   });
 
+  logger.info({
+    message: "getAllQuestionsByUserHandler sort",
+    value: sort
+  });
+
   try {
-    const query = await getAllQuestionsByUser(userId);
+    const query = await getAllQuestionsByUser(userId, sort);
     logger.info({
       message: "getAllQuestionsByUserHandler query",
       value: query
