@@ -1,16 +1,21 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
+import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
+import { SortContext } from "../context/SortContext";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import Question from "../components/Question";
 import AnswerForm from "../components/AnswerForm";
 import Answer from "../components/Answer";
+import Sort from "../components/Sort";
 import getQuestionById from "../api/getQuestionById";
 
 const QuestionPage = () => {
   const { id: questionId } = useParams();
+
+  const { sortAnswers } = useContext(SortContext);
 
   const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
 
@@ -20,8 +25,8 @@ const QuestionPage = () => {
     error,
     data: questionData,
   } = useQuery({
-    queryKey: [`question-${questionId}`],
-    queryFn: () => getQuestionById(questionId),
+    queryKey: ["questions", questionId, sortAnswers],
+    queryFn: () => getQuestionById(questionId, sortAnswers),
   });
 
   return (
@@ -45,6 +50,36 @@ const QuestionPage = () => {
                 setShowAddAnswerForm={setShowAddAnswerForm}
               />
             )}
+            <Box
+              display={"flex"}
+              flexWrap={"wrap"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+              gap={2}>
+              <Box
+                display={"flex"}
+                flexWrap={"wrap"}
+                alignItems={"center"}
+                gap={2}>
+                {questionData?.answers.length > 0 && (
+                  <>
+                    <Typography variant={"pagetitle"}>
+                      Answers ({questionData?.answers.length})
+                    </Typography>
+                    <Sort />
+                  </>
+                )}
+              </Box>
+              <Box>
+                <Button
+                  variant="contained"
+                  startIcon={<RateReviewOutlinedIcon />}
+                  onClick={() => setShowAddAnswerForm((prev) => !prev)}
+                  disabled={showAddAnswerForm}>
+                  Add an Answer
+                </Button>
+              </Box>
+            </Box>
             <Box display={"grid"} gap={2}>
               {questionData.answers.map((answerData) => {
                 return <Answer key={answerData.id} answerData={answerData} />;

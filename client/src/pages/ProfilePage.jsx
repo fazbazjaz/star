@@ -1,14 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
-import { Box, Typography, CardMedia } from "@mui/material";
+import { Box, Typography, Avatar } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
+import { SortContext } from "../context/SortContext";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import Question from "../components/Question";
+import Sort from "../components/Sort";
 import getAllQuestionsByUserId from "../api/getAllQuestionsByUserId";
 
 const ProfilePage = () => {
   const { authenticatedUser } = useContext(AuthContext);
+  const { sortProfileQuestions } = useContext(SortContext);
 
   const userId = authenticatedUser.id;
 
@@ -18,8 +21,8 @@ const ProfilePage = () => {
     error,
     data: userQuestionsData,
   } = useQuery({
-    queryKey: [`questions-userId-${userId}`],
-    queryFn: () => getAllQuestionsByUserId(userId),
+    queryKey: ["questions", userId, sortProfileQuestions],
+    queryFn: () => getAllQuestionsByUserId(userId, sortProfileQuestions),
   });
 
   return (
@@ -36,14 +39,11 @@ const ProfilePage = () => {
             flexWrap={"wrap"}
             gap={{ xs: 1, sm: 1.5 }}
             mt={1}>
-            <CardMedia
-              component={"img"}
-              image={authenticatedUser.picture}
+            <Avatar
+              src={authenticatedUser.picture}
               sx={{
                 height: 48,
                 width: 48,
-                gridTemplateRows: "span 2",
-                borderRadius: "0.5rem",
               }}
             />
             <Box>
@@ -72,9 +72,16 @@ const ProfilePage = () => {
             </Box>
           </Box>
           <Box mt={2}>
-            <Typography variant={"pagetitle"}>
-              Your Questions ({userQuestionsData.length})
-            </Typography>
+            <Box
+              display={"flex"}
+              flexWrap={"wrap"}
+              alignItems={"center"}
+              gap={1}>
+              <Typography variant={"pagetitle"}>
+                Your Questions ({userQuestionsData.length})
+              </Typography>
+              <Sort />
+            </Box>
             <Box display={"grid"} gap={2} mt={1}>
               {userQuestionsData.map((userQuestionData) => {
                 return (
