@@ -4,28 +4,30 @@ import { FormControl, MenuItem, Select, InputLabel } from "@mui/material";
 import { SortContext } from "../context/SortContext";
 
 const Sort = () => {
-  const { sortQuestions, setSortQuestions, sortAnswers, setSortAnswers } =
-    useContext(SortContext);
+  const {
+    sortQuestions,
+    setSortQuestions,
+    sortAnswers,
+    setSortAnswers,
+    sortProfileQuestions,
+    setSortProfileQuestions,
+  } = useContext(SortContext);
 
   const location = useLocation();
 
-  let currentPage;
+  let sortValue;
+  let setSortFunction;
 
   if (location.pathname.includes("/questions/")) {
-    currentPage = "individualQuestionPage";
+    sortValue = sortAnswers;
+    setSortFunction = setSortAnswers;
   } else if (location.pathname.includes("/questions")) {
-    currentPage = "allQuestionsPage";
+    sortValue = sortQuestions;
+    setSortFunction = setSortQuestions;
   } else if (location.pathname.includes("/profile")) {
-    currentPage = "profilePage";
+    sortValue = sortProfileQuestions;
+    setSortFunction = setSortProfileQuestions;
   }
-
-  const sortValue =
-    currentPage === "individualQuestionPage" ? sortAnswers : sortQuestions;
-
-  const setSortFunction =
-    currentPage === "individualQuestionPage"
-      ? setSortAnswers
-      : setSortQuestions;
 
   return (
     <FormControl variant="filled" size="small">
