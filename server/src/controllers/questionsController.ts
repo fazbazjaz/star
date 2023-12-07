@@ -22,8 +22,10 @@ export const getQuestionsByPageHandler = async (
   res: Response
 ) => {
   try {
-    const limit = parseInt(req.query.limit as string);
-    const page = parseInt(req.query.page as string);
+    const limit = parseInt(String(req.query.limit));
+    const page = parseInt(String(req.query.page));
+    const sort = String(req.query.sort);
+
     logger.info({
       message: "getQuestionsByPageHandler limit",
       value: limit
@@ -33,7 +35,12 @@ export const getQuestionsByPageHandler = async (
       value: page
     });
 
-    const query = await getQuestionsByPage(limit, page);
+    logger.info({
+      message: "getQuestionsByPageHandler sort",
+      value: sort
+    });
+
+    const query = await getQuestionsByPage(limit, page, sort);
     logger.info({
       message: "getQuestionsByPageHandler query",
       value: query
@@ -57,7 +64,7 @@ export const getQuestionsBySearchHandler = async (
   res: Response
 ) => {
   try {
-    const searchTerm = req.query.q as string;
+    const searchTerm = String(req.query.search);
     logger.info({
       message: "getQuestionsBySearchHandler searchTerm",
       value: searchTerm
@@ -82,13 +89,15 @@ export const getQuestionsBySearchHandler = async (
 
 export const getOneQuestionHandler = async (req: Request, res: Response) => {
   const questionId = parseInt(req.params.id);
+  const sort = String(req.query.sort);
+
   logger.info({
     message: "getOneQuestionHandler questionId",
     value: questionId
   });
 
   try {
-    const query = await getOneQuestion(questionId);
+    const query = await getOneQuestion(questionId, sort);
     logger.info({
       message: "getOneQuestionHandler query",
       value: query
@@ -117,13 +126,19 @@ export const getAllQuestionsByUserHandler = async (
   res: Response
 ) => {
   const userId = parseInt(req.params.id);
+  const sort = String(req.query.sort);
   logger.info({
     message: "getAllQuestionsByUserHandler userId",
     value: userId
   });
 
+  logger.info({
+    message: "getAllQuestionsByUserHandler sort",
+    value: sort
+  });
+
   try {
-    const query = await getAllQuestionsByUser(userId);
+    const query = await getAllQuestionsByUser(userId, sort);
     logger.info({
       message: "getAllQuestionsByUserHandler query",
       value: query
@@ -215,7 +230,7 @@ export const createAnswerHandler = async (req: Request, res: Response) => {
   }
 
   try {
-    const questionIdQuery = await getOneQuestion(questionId);
+    const questionIdQuery = await getOneQuestion(questionId, "popular");
     logger.info({
       message: "createAnswerHandler questionIdQuery",
       value: questionIdQuery
@@ -566,7 +581,7 @@ export const deleteAnswerHandler = async (req: Request, res: Response) => {
       });
     }
 
-    const answerAuthorId = answerQuery[0].questions.userId;
+    const answerAuthorId = answerQuery[0].answers.userId;
 
     logger.info({
       message: "deleteAnswerHandler answerAuthorId",
@@ -636,7 +651,6 @@ export const deleteCommentHandler = async (req: Request, res: Response) => {
   }
 
   try {
-    console.log("SQL STARTS RUNNING HERE");
     const deleteCommentQuery = await deleteComment(answerId, commentId);
     logger.info({
       message: "deleteCommentHandler deleteCommentQuery",

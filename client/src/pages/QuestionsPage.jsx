@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Box, Typography, Button } from "@mui/material";
 import Loading from "../components/Loading";
@@ -7,9 +7,13 @@ import SearchBar from "../components/SearchBar";
 import Question from "../components/Question";
 import QuestionForm from "../components/QuestionForm";
 import getQuestionsByPage from "../api/getQuestionsByPage";
+import Sort from "../components/Sort";
+import { SortContext } from "../context/SortContext";
 
 const QuestionsPage = () => {
   const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
+
+  const { sortQuestions } = useContext(SortContext);
 
   const {
     data: questionsByPageData,
@@ -18,7 +22,7 @@ const QuestionsPage = () => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["questions"],
+    queryKey: ["questions", sortQuestions],
 
     queryFn: getQuestionsByPage,
 
@@ -75,16 +79,19 @@ const QuestionsPage = () => {
                 </Typography>
                 <Box>
                   <SearchBar />
+                  <Sort />
                 </Box>
               </Box>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => setShowAddQuestionForm((prev) => !prev)}
-                disabled={showAddQuestionForm}
-                sx={{ display: "flex", gap: 0.5 }}>
-                Add a Question
-              </Button>
+              <Box>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setShowAddQuestionForm((prev) => !prev)}
+                  disabled={showAddQuestionForm}
+                  sx={{ display: "flex", gap: 0.5 }}>
+                  Add a Question
+                </Button>
+              </Box>
             </Box>
             {showAddQuestionForm && (
               <QuestionForm setShowAddQuestionForm={setShowAddQuestionForm} />

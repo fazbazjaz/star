@@ -3,7 +3,11 @@ import { questions, answers, comments } from "../database/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { desc } from "drizzle-orm";
 
-export const getQuestionsByPage = async (limit: number, page: number) => {
+export const getQuestionsByPage = async (
+  limit: number,
+  page: number,
+  sort: string
+) => {
   return await database.query.questions.findMany({
     with: {
       user: {
@@ -34,11 +38,17 @@ export const getQuestionsByPage = async (limit: number, page: number) => {
       }
     },
     limit,
-    offset: (page - 1) * limit
+    offset: (page - 1) * limit,
+    orderBy: (questions, { desc }) =>
+      sort === "popular"
+        ? [desc(questions.likes)]
+        : sort === "recentlyCreated"
+          ? [desc(questions.createdAt)]
+          : [desc(questions.updatedAt)]
   });
 };
 
-export const getOneQuestion = async (questionId: number) => {
+export const getOneQuestion = async (questionId: number, sort: string) => {
   return await database.query.questions.findFirst({
     where: eq(questions.id, questionId),
     with: {
@@ -66,13 +76,19 @@ export const getOneQuestion = async (questionId: number) => {
               }
             }
           }
-        }
+        },
+        orderBy: (answers, { desc }) =>
+          sort === "popular"
+            ? [desc(answers.likes)]
+            : sort === "recentlyCreated"
+              ? [desc(answers.createdAt)]
+              : [desc(answers.updatedAt)]
       }
     }
   });
 };
 
-export const getAllQuestionsByUser = async (userId: number) => {
+export const getAllQuestionsByUser = async (userId: number, sort: string) => {
   return await database.query.questions.findMany({
     where: eq(questions.userId, userId),
     with: {
@@ -102,7 +118,13 @@ export const getAllQuestionsByUser = async (userId: number) => {
           }
         }
       }
-    }
+    },
+    orderBy: (questions, { desc }) =>
+      sort === "popular"
+        ? [desc(questions.likes)]
+        : sort === "recentlyCreated"
+          ? [desc(questions.createdAt)]
+          : [desc(questions.updatedAt)]
   });
 };
 
@@ -113,10 +135,12 @@ export const getQuestionsBySearch = async (searchTerm: string) => {
       question: questions.question
     })
     .from(questions)
+    // WHERE LOWER(question) LIKE LOWER('%' || searchTerm || '%') //
+    // || is concatenation
     .where(
       sql`lower(${
         questions.question
-      }) like lower('%' || ${sql`${searchTerm}`} || '%')`
+      }) like lower('%'||${sql`${searchTerm}`}||'%')`
     )
     .orderBy(desc(questions.createdAt));
 };
