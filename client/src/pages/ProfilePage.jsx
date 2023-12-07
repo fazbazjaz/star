@@ -22,7 +22,7 @@ const ProfilePage = () => {
     data: userQuestionsData,
   } = useQuery({
     queryKey: ["questions", userId, sortProfileQuestions],
-    queryFn: () => getAllQuestionsByUserId(userId),
+    queryFn: () => getAllQuestionsByUserId(userId, sortProfileQuestions),
   });
 
   return (
