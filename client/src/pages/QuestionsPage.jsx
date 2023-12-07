@@ -64,7 +64,8 @@ const QuestionsPage = () => {
               display={"flex"}
               flexWrap={"wrap"}
               justifyContent={"space-between"}
-              alignItems={"center"}>
+              alignItems={"center"}
+              gap={1}>
               <Box
                 display={"flex"}
                 flexWrap={"wrap"}
@@ -77,9 +78,13 @@ const QuestionsPage = () => {
                     .reduce((acc, cv) => acc + cv, 0)}
                   )
                 </Typography>
-                <Box>
-                  <SearchBar />
+                <Box
+                  display={"flex"}
+                  flexWrap={"wrap"}
+                  alignItems={"center"}
+                  gap={1}>
                   <Sort />
+                  <SearchBar />
                 </Box>
               </Box>
               <Box>
