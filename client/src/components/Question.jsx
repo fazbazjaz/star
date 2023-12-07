@@ -89,66 +89,69 @@ const Question = ({
           sx={{
             backdropFilter: consistentBackdropFilter,
           }}>
-          <Box display={"flex"} alignItems={"center"}>
-            <Box>
-              <Box display={"flex"} alignItems={"center"} gap={0.75}>
-                <HelpOutlineOutlinedIcon
-                  fontSize={"medium"}
-                  color="primary"
-                  sx={{ alignSelf: "center" }}
-                />
-                <Typography variant={"questiontitle"} color="primary">
-                  Question ({questionData?.id})
-                </Typography>
-                <Avatar
-                  src={questionData?.user?.picture}
-                  sx={{ height: 24, width: 24 }}
-                />
-                <Typography variant={"body2"}>
-                  by {questionData?.user?.firstName}
-                </Typography>
+          <Box>
+            <Box
+              display={"flex"}
+              flexWrap={"wrap"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+              gap={1}>
+              <Box display={"flex"}>
+                <Box>
+                  <Avatar
+                    src={questionData?.user?.picture}
+                    sx={{ height: 28, width: 28 }}
+                  />
+                </Box>
                 <Box
                   display={"flex"}
-                  alignItems={"center"}
                   flexWrap={"wrap"}
-                  gap={0.5}>
-                  <Typography variant={"body2"}>
-                    ({questionData?.answers?.length}) Answers
+                  alignItems={"center"}
+                  border={1}>
+                  <HelpOutlineOutlinedIcon
+                    fontSize={"medium"}
+                    color="primary"
+                  />
+                  <Typography
+                    variant={"questiontitle"}
+                    color="primary"
+                    paddingLeft={0.5}>
+                    Question{" "}
                   </Typography>
+                  <Typography component={"span"} color="primary">
+                    ({questionData?.id})
+                  </Typography>
+                </Box>
+                <Box display={"flex"} flexWrap={"wrap"} alignItems={"center"}>
                   <Typography variant={"body2"}>
-                    (
-                    {questionData?.answers?.reduce((acc, answer) => {
-                      if (
-                        answer &&
-                        answer.comments &&
-                        answer.comments.length > 0
-                      ) {
-                        return answer.comments.length + acc;
-                      }
-                      return acc;
-                    }, 0)}
-                    ) Comments
+                    from{" "}
+                    <Typography
+                      component={"span"}
+                      variant={"body2"}
+                      color="primary">
+                      {questionData?.user?.firstName}
+                    </Typography>
                   </Typography>
                 </Box>
               </Box>
-            </Box>
-            <Box
-              marginLeft={"auto"}
-              display={"flex"}
-              alignItems={"center"}
-              gap={0.5}>
-              {questionData.userId === authenticatedUser.id && (
-                <IconButton onClick={handleEdit} color="primary">
-                  <EditOutlinedIcon />
-                </IconButton>
-              )}
-              {questionData.userId === authenticatedUser.id && (
-                <IconButton
-                  onClick={() => handleDelete(questionData.id)}
-                  color="primary">
-                  <DeleteOutlineIcon />
-                </IconButton>
-              )}
+              <Box
+                marginLeft={"auto"}
+                display={"flex"}
+                alignItems={"center"}
+                gap={0.5}>
+                {questionData.userId === authenticatedUser.id && (
+                  <IconButton onClick={handleEdit} color="primary">
+                    <EditOutlinedIcon />
+                  </IconButton>
+                )}
+                {questionData.userId === authenticatedUser.id && (
+                  <IconButton
+                    onClick={() => handleDelete(questionData.id)}
+                    color="primary">
+                    <DeleteOutlineIcon />
+                  </IconButton>
+                )}
+              </Box>
             </Box>
           </Box>
           <Box my={1}>
@@ -180,8 +183,24 @@ const Question = ({
           <Box
             display={"flex"}
             justifyContent={"space-between"}
+            alignItems={"center"}
             flexWrap={"wrap"}
             gap={1}>
+            <Box display={"flex"} flexWrap={"wrap"} gap={0.75} border={1}>
+              <Typography variant={"body2"}>
+                ({questionData?.answers?.length}) Answers
+              </Typography>
+              <Typography variant={"body2"}>
+                (
+                {questionData?.answers?.reduce((acc, answer) => {
+                  if (answer && answer.comments && answer.comments.length > 0) {
+                    return answer.comments.length + acc;
+                  }
+                  return acc;
+                }, 0)}
+                ) Comments
+              </Typography>
+            </Box>
             <Box>
               {currentPage === "individualQuestionPage" && (
                 <Button
@@ -194,11 +213,8 @@ const Question = ({
               )}
             </Box>
             <Box
-              marginLeft={"auto"}
               display={"flex"}
               flexDirection={"column"}
-              justifyContent={"flex-end"}
-              justifySelf={"flex-end"}
               alignItems={"flex-end"}>
               <Typography variant={"body2"}>
                 updated {formatDate(questionData.updatedAt)}
