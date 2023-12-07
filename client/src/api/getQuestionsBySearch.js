@@ -1,6 +1,8 @@
-const getQuestionsBySearch = async (searchTerm) => {
+const getQuestionsBySearch = async (searchTerm, sort) => {
   const response = await fetch(
-    `${import.meta.env.VITE_SERVER_URL}/api/questions/search?q=${searchTerm}`,
+    `${
+      import.meta.env.VITE_SERVER_URL
+    }/api/questions/search?term=${searchTerm}&sort=${sort}`,
     {
       headers: {
         "Content-Type": "application/json",

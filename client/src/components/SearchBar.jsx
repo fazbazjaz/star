@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
-import { Box, TextField, List, ListItem, ListItemText } from "@mui/material";
+import { useState, useEffect, useContext } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Box, TextField } from "@mui/material";
+import { SortContext } from "../context/SortContext";
 import getQuestionsBySearch from "../api/getQuestionsBySearch";
 import {
   consistentBgColor,
@@ -9,7 +11,14 @@ import {
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearchPending, setIsSearchPending] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
+
+  const { sortQuestions } = useContext(SortContext);
+
+  const searchQuery = useQuery({
+    queryKey: ["questions", sortQuestions, searchTerm],
+    queryFn: () => getQuestionsBySearch(searchTerm, sortQuestions),
+    onSuccess: () => {},
+  });
 
   useEffect(() => {
     if (!isSearchPending) {
@@ -18,16 +27,14 @@ const SearchBar = () => {
 
     const timerId = setTimeout(async () => {
       if (searchTerm.trim().length === 0) {
-        setSearchResults([]);
         return;
       }
-      const data = await getQuestionsBySearch(searchTerm);
-      setSearchResults(data);
+      searchMutation.mutate();
       setIsSearchPending(false);
     }, 1000);
 
     return () => clearTimeout(timerId);
-  }, [isSearchPending, searchTerm]);
+  }, [isSearchPending, searchTerm, searchMutation]);
 
   const handleSearch = (event) => {
     const value = event.target.value;
@@ -50,15 +57,6 @@ const SearchBar = () => {
           border: consistentBorder,
         }}
       />
-      {searchResults && searchResults.length > 0 && (
-        <List>
-          {searchResults.map((result) => (
-            <ListItem key={result.id}>
-              <ListItemText primary={result.question} />
-            </ListItem>
-          ))}
-        </List>
-      )}
     </Box>
   );
 };

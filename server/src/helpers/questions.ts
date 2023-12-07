@@ -1,7 +1,6 @@
 import { database } from "../database/connection";
 import { questions, answers, comments } from "../database/schema";
 import { eq, and, sql } from "drizzle-orm";
-import { desc } from "drizzle-orm";
 
 export const getQuestionsByPage = async (
   limit: number,
@@ -128,21 +127,49 @@ export const getAllQuestionsByUser = async (userId: number, sort: string) => {
   });
 };
 
-export const getQuestionsBySearch = async (searchTerm: string) => {
-  return await database
-    .select({
-      id: questions.id,
-      question: questions.question
-    })
-    .from(questions)
-    // WHERE LOWER(question) LIKE LOWER('%' || searchTerm || '%') //
-    // || is concatenation
-    .where(
-      sql`lower(${
-        questions.question
-      }) like lower('%'||${sql`${searchTerm}`}||'%')`
-    )
-    .orderBy(desc(questions.createdAt));
+export const getQuestionsBySearch = async (
+  searchTerm: string,
+  sort: string
+) => {
+  return await database.query.questions.findMany({
+    with: {
+      user: {
+        columns: {
+          firstName: true,
+          picture: true
+        }
+      },
+      answers: {
+        with: {
+          user: {
+            columns: {
+              firstName: true,
+              picture: true
+            }
+          },
+          comments: {
+            with: {
+              user: {
+                columns: {
+                  firstName: true,
+                  picture: true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    where: sql`lower(${
+      questions.question
+    }) like lower('%'||${sql`${searchTerm}`}||'%')`,
+    orderBy: (questions, { desc }) =>
+      sort === "popular"
+        ? [desc(questions.likes)]
+        : sort === "recentlyCreated"
+          ? [desc(questions.createdAt)]
+          : [desc(questions.updatedAt)]
+  });
 };
 
 export const createQuestion = async (userId: number, question: string) => {

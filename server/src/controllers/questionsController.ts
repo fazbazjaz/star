@@ -34,7 +34,6 @@ export const getQuestionsByPageHandler = async (
       message: "getQuestionsByPageHandler page",
       value: page
     });
-
     logger.info({
       message: "getQuestionsByPageHandler sort",
       value: sort
@@ -64,24 +63,32 @@ export const getQuestionsBySearchHandler = async (
   res: Response
 ) => {
   try {
-    const searchTerm = String(req.query.search);
+    const searchTerm = String(req.query.term);
     logger.info({
       message: "getQuestionsBySearchHandler searchTerm",
       value: searchTerm
     });
 
     if (!searchTerm) {
-      res.status(400).json({ error: "Bad search term" });
+      res.status(400).json({ error: "No Search Term" });
       return;
     }
 
-    const query = await getQuestionsBySearch(searchTerm);
+    const sort = String(req.query.sort);
+    logger.info({
+      message: "getQuestionsBySearchHandler sort",
+      value: sort
+    });
+
+    const query = await getQuestionsBySearch(searchTerm, sort);
     logger.info({
       message: "getQuestionsBySearchHandler query",
       value: query
     });
 
-    res.json(query);
+    const data = query;
+
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ error: "Server Error" });
   }

@@ -27,9 +27,7 @@ questionsRouter
   .get(getQuestionsByPageHandler)
   .post(createQuestionHandler);
 
-questionsRouter
-  .route("/search")
-  .get(authMiddleware, getQuestionsBySearchHandler);
+questionsRouter.route("/search").get(getQuestionsBySearchHandler);
 
 questionsRouter
   .route("/:id")

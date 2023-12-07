@@ -23,11 +23,8 @@ const QuestionsPage = () => {
     status,
   } = useInfiniteQuery({
     queryKey: ["questions", sortQuestions],
-
-    queryFn: getQuestionsByPage,
-
+    queryFn: isSearching ? getQuestionsByPage : getQuestionsBySearch,
     initialPageParam: 1,
-
     getNextPageParam: (lastPage, allPages) => {
       const nextPage = lastPage.length < 5 ? undefined : allPages.length + 1;
       return nextPage;
