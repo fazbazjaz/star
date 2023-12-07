@@ -56,14 +56,27 @@ const QuestionsPage = () => {
       {questionsByPageData && (
         <>
           <Box>
-            <Box display={"flex"} justifyContent={"space-between"}>
-              <Typography variant={"pagetitle"}>
-                All Questions (
-                {questionsByPageData.pages
-                  .map((page) => page.length)
-                  .reduce((acc, cv) => acc + cv, 0)}
-                )
-              </Typography>
+            <Box
+              display={"flex"}
+              flexWrap={"wrap"}
+              justifyContent={"space-between"}
+              alignItems={"center"}>
+              <Box
+                display={"flex"}
+                flexWrap={"wrap"}
+                alignItems={"center"}
+                gap={2}>
+                <Typography variant={"pagetitle"}>
+                  All Questions (
+                  {questionsByPageData.pages
+                    .map((page) => page.length)
+                    .reduce((acc, cv) => acc + cv, 0)}
+                  )
+                </Typography>
+                <Box>
+                  <SearchBar />
+                </Box>
+              </Box>
               <Button
                 variant="contained"
                 color="primary"
@@ -76,9 +89,6 @@ const QuestionsPage = () => {
             {showAddQuestionForm && (
               <QuestionForm setShowAddQuestionForm={setShowAddQuestionForm} />
             )}
-            <Box>
-              <SearchBar />
-            </Box>
             <Box display={"grid"} gap={2} mt={1}>
               {questionsByPageData?.pages.map((page) =>
                 page?.map((questionData) => (
