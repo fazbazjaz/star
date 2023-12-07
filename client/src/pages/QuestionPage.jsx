@@ -25,12 +25,10 @@ const QuestionPage = () => {
     error,
     data: questionData,
   } = useQuery({
-    // queryKey: [`question-${questionId}`, sortAnswer],
     queryKey: ["questions", questionId, sortAnswers],
     queryFn: () => getQuestionById(questionId, sortAnswers),
   });
 
-  // const data = queryClient.getQueryData(queryKey);
   return (
     <Box py={2}>
       {isPending && <Loading />}
@@ -57,17 +55,20 @@ const QuestionPage = () => {
               flexWrap={"wrap"}
               justifyContent={"space-between"}
               alignItems={"center"}
-              gap={2}
-              my={1}>
+              gap={2}>
               <Box
                 display={"flex"}
                 flexWrap={"wrap"}
                 alignItems={"center"}
                 gap={2}>
-                <Typography variant={"pagetitle"}>
-                  Answers ({questionData?.answers.length})
-                </Typography>
-                <Sort />
+                {questionData?.answers.length > 0 && (
+                  <>
+                    <Typography variant={"pagetitle"}>
+                      Answers ({questionData?.answers.length})
+                    </Typography>
+                    <Sort />
+                  </>
+                )}
               </Box>
               <Box>
                 <Button

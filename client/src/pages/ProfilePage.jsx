@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
-import { Box, Typography, CardMedia } from "@mui/material";
+import { Box, Typography, Avatar } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
 // import { SortContext } from "../context/SortContext";
 import Loading from "../components/Loading";
@@ -40,14 +40,11 @@ const ProfilePage = () => {
             flexWrap={"wrap"}
             gap={{ xs: 1, sm: 1.5 }}
             mt={1}>
-            <CardMedia
-              component={"img"}
-              image={authenticatedUser.picture}
+            <Avatar
+              src={authenticatedUser.picture}
               sx={{
                 height: 48,
                 width: 48,
-                gridTemplateRows: "span 2",
-                borderRadius: "0.5rem",
               }}
             />
             <Box>

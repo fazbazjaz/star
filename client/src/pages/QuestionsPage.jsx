@@ -13,7 +13,6 @@ const QuestionsPage = () => {
   const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
 
   const { sortQuestions } = useContext(SortContext);
-  console.log("SortContext - sortQuestions:", sortQuestions);
 
   const {
     data: questionsByPageData,

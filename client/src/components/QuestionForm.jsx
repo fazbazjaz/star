@@ -29,7 +29,6 @@ const QuestionForm = ({
   setShowUpdateQuestionForm,
 }) => {
   const { sortQuestions } = useContext(SortContext);
-  console.log("QuestionForm - sortQuestions:", sortQuestions);
 
   const [question, setQuestion] = useState(questionId ? originalQuestion : "");
 
@@ -141,7 +140,7 @@ const QuestionForm = ({
               type={"submit"}
               endIcon={<SendIcon />}
               disabled={isPending || !questionValidation}>
-              Add Question
+              {questionId ? "Edit Question" : "Add Question"}
             </Button>
           </Box>
           <Box>

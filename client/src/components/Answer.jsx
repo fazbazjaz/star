@@ -71,8 +71,7 @@ const Answer = ({ answerData }) => {
               <Box display={"flex"} alignItems={"center"} gap={0.75}>
                 <PsychologyAltRoundedIcon fontSize={"medium"} color="primary" />
                 <Typography variant={"answertitle"} color="primary">
-                  Answer
-                  {/* ({answerData?.id}) */}
+                  Answer ({answerData?.id})
                 </Typography>
                 <Avatar
                   src={answerData?.user?.picture}
@@ -89,9 +88,6 @@ const Answer = ({ answerData }) => {
                   <Typography variant={"body2"}>
                     ({answerData?.comments?.length}) Comments
                   </Typography>
-                </Box>
-                <Box>
-                  <Typography>likes{answerData?.likes}</Typography>
                 </Box>
               </Box>
             </Box>

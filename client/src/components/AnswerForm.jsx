@@ -123,7 +123,6 @@ const AnswerForm = ({
 
   return (
     <Box
-      mt={2}
       p={3}
       border={consistentBorder}
       borderRadius={consistentBorderRadius}
@@ -282,7 +281,7 @@ const AnswerForm = ({
                 isPending ||
                 Object.values(answerValidation).some((value) => !value)
               }>
-              Add Answer
+              {answerId ? "Edit Answer" : "Add Answer"}
             </Button>
           </Box>
           <Box>

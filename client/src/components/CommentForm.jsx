@@ -140,7 +140,7 @@ const CommentForm = ({
               type={"submit"}
               endIcon={<SendIcon />}
               disabled={isPending || !commentValidation}>
-              Add Comment
+              {commentId ? "Edit Comment" : "Add Comment"}
             </Button>
           </Box>
           <Box>

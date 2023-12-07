@@ -19,12 +19,8 @@ const Sort = () => {
     currentPage = "profilePage";
   }
 
-  console.log("Sort Component currentPage:", currentPage);
-
   const sortValue =
     currentPage === "individualQuestionPage" ? sortAnswers : sortQuestions;
-
-  console.log("Sort Component sortValue:", sortValue);
 
   const setSortFunction =
     currentPage === "individualQuestionPage"
@@ -42,10 +38,10 @@ const Sort = () => {
         label="Sort"
         onChange={(event) => setSortFunction(event.target.value)}>
         <MenuItem value="popular" sx={{ color: "black" }}>
-          Most Upvoted
+          Most Likes
         </MenuItem>
         <MenuItem value="recentlyCreated" sx={{ color: "black" }}>
-          Recently Added
+          Recently Created
         </MenuItem>
         <MenuItem value="recentlyUpdated" sx={{ color: "black" }}>
           Recently Updated
