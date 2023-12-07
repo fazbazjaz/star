@@ -59,10 +59,8 @@ const Question = ({ questionData }) => {
       console.error(error);
     },
     onSuccess: () => {
-      if (currentPage === "allQuestionsPage" || currentPage === "profilePage") {
-        queryClient.refetchQueries(["questions"]);
-      } else if (currentPage === "individualQuestionPage") {
-        queryClient.removeQueries([`question-${questionId}`]);
+      queryClient.invalidateQueries(["questions", questionId]);
+      if (currentPage === "individualQuestionPage") {
         navigate("/questions");
       }
     },

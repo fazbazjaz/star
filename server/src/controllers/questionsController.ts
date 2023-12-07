@@ -60,13 +60,16 @@ export const getQuestionsByPageHandler = async (
 
 export const getOneQuestionHandler = async (req: Request, res: Response) => {
   const questionId = parseInt(req.params.id);
+  const sort = String(req.query.sort);
+  console.log(sort);
+  // const sort = "popular" as string;
   logger.info({
     message: "getOneQuestionHandler questionId",
     value: questionId
   });
 
   try {
-    const query = await getOneQuestion(questionId);
+    const query = await getOneQuestion(questionId, sort);
     logger.info({
       message: "getOneQuestionHandler query",
       value: query
@@ -193,7 +196,7 @@ export const createAnswerHandler = async (req: Request, res: Response) => {
   }
 
   try {
-    const questionIdQuery = await getOneQuestion(questionId);
+    const questionIdQuery = await getOneQuestion(questionId, "popular");
     logger.info({
       message: "createAnswerHandler questionIdQuery",
       value: questionIdQuery

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Box, Typography, Button } from "@mui/material";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
+import { SortContext } from "../context/SortContext";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import Question from "../components/Question";
@@ -14,9 +15,9 @@ import getQuestionById from "../api/getQuestionById";
 const QuestionPage = () => {
   const { id: questionId } = useParams();
 
-  const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
+  const { sortAnswers } = useContext(SortContext);
 
-  const [sortAnswer, setSortAnswers] = useState("popular");
+  const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
 
   const {
     isPending,
@@ -24,10 +25,12 @@ const QuestionPage = () => {
     error,
     data: questionData,
   } = useQuery({
-    queryKey: [`question-${questionId}`],
-    queryFn: () => getQuestionById(questionId),
+    // queryKey: [`question-${questionId}`, sortAnswer],
+    queryKey: ["questions", questionId, sortAnswers],
+    queryFn: () => getQuestionById(questionId, sortAnswers),
   });
 
+  // const data = queryClient.getQueryData(queryKey);
   return (
     <Box py={2}>
       {isPending && <Loading />}
@@ -37,7 +40,7 @@ const QuestionPage = () => {
           <Typography variant={"pagetitle"}>
             Individual Question (id: {questionData.id})
           </Typography>
-          <Box display={"grid"} mt={2}>
+          <Box display={"grid"} gap={2} mt={2}>
             <Question
               questionData={questionData}
               showAddAnswerForm={showAddAnswerForm}
@@ -64,7 +67,7 @@ const QuestionPage = () => {
                 <Typography variant={"pagetitle"}>
                   Answers ({questionData?.answers.length})
                 </Typography>
-                <Sort sort={sortAnswer} setSort={setSortAnswers} />
+                <Sort />
               </Box>
               <Box>
                 <Button

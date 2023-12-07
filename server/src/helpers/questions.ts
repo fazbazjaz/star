@@ -47,7 +47,7 @@ export const getQuestionsByPage = async (
   });
 };
 
-export const getOneQuestion = async (questionId: number) => {
+export const getOneQuestion = async (questionId: number, sort: string) => {
   return await database.query.questions.findFirst({
     where: eq(questions.id, questionId),
     with: {
@@ -75,7 +75,13 @@ export const getOneQuestion = async (questionId: number) => {
               }
             }
           }
-        }
+        },
+        orderBy: (answers, { desc }) =>
+          sort === "popular"
+            ? [desc(answers.likes)]
+            : sort === "recentlyCreated"
+              ? [desc(answers.createdAt)]
+              : [desc(answers.updatedAt)]
       }
     }
   });

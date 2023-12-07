@@ -2,13 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 import { Box, Typography, CardMedia } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
+// import { SortContext } from "../context/SortContext";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import Question from "../components/Question";
+// import Sort from "../components/Sort";
 import getAllQuestionsByUserId from "../api/getAllQuestionsByUserId";
 
 const ProfilePage = () => {
   const { authenticatedUser } = useContext(AuthContext);
+  // const { sortQuestions, setSortQuestions } = useContext(SortContext);
+  // console.log("ProfilePage sortQuestions:", sortQuestions);
 
   const userId = authenticatedUser.id;
 
@@ -75,6 +79,7 @@ const ProfilePage = () => {
             <Typography variant={"pagetitle"}>
               Your Questions ({userQuestionsData.length})
             </Typography>
+            {/* <Sort /> */}
             <Box display={"grid"} gap={2} mt={1}>
               {userQuestionsData.map((userQuestionData) => {
                 return (

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Box, Typography, Button } from "@mui/material";
 import Loading from "../components/Loading";
@@ -7,10 +7,13 @@ import Question from "../components/Question";
 import QuestionForm from "../components/QuestionForm";
 import getQuestionsByPage from "../api/getQuestionsByPage";
 import Sort from "../components/Sort";
+import { SortContext } from "../context/SortContext";
 
 const QuestionsPage = () => {
   const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
-  const [sort, setSort] = useState("popular");
+
+  const { sortQuestions } = useContext(SortContext);
+  console.log("SortContext - sortQuestions:", sortQuestions);
 
   const {
     data: questionsByPageData,
@@ -19,7 +22,7 @@ const QuestionsPage = () => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["questions", sort],
+    queryKey: ["questions", sortQuestions],
 
     queryFn: getQuestionsByPage,
 
@@ -74,7 +77,7 @@ const QuestionsPage = () => {
                     .reduce((acc, cv) => acc + cv, 0)}
                   )
                 </Typography>
-                <Sort sort={sort} setSort={setSort} />
+                <Sort />
               </Box>
               <Box>
                 <Button

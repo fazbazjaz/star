@@ -43,7 +43,7 @@ const Answer = ({ answerData }) => {
       console.error(error);
     },
     onSuccess: () => {
-      queryClient.refetchQueries([`question-${questionId}`]);
+      queryClient.invalidateQueries(["questions", questionId]);
     },
   });
 
@@ -89,6 +89,9 @@ const Answer = ({ answerData }) => {
                   <Typography variant={"body2"}>
                     ({answerData?.comments?.length}) Comments
                   </Typography>
+                </Box>
+                <Box>
+                  <Typography>likes{answerData?.likes}</Typography>
                 </Box>
               </Box>
             </Box>
