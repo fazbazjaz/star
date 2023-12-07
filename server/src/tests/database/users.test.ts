@@ -1,4 +1,4 @@
-import { disconnectFromDatabase } from "../../helpers/database";
+import { disconnectFromDatabase } from "../helpers/database";
 import { getAllUsers, createUser, getUserById } from "../../helpers/users";
 import { cleanAll } from "../helpers/dbCleaner";
 
@@ -8,9 +8,9 @@ describe("Users", () => {
   beforeEach(async () => {
     await cleanAll();
     const user = await createUser({
-      google_id: "0123456789",
-      firstname: "Bob",
-      lastname: "Smith",
+      googleId: "0123456789",
+      firstName: "Bob",
+      lastName: "Smith",
       email: "bob@gmail.com"
     });
     userId = user[0].id;

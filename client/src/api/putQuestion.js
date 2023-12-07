@@ -3,10 +3,11 @@ const putQuestion = async (questionId, question) => {
     `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}`,
     {
       method: "PUT",
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("customJWT")}`,
       },
+      // credentials: "include",
       body: JSON.stringify({ question }),
     }
   );

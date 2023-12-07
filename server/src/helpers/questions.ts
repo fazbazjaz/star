@@ -1,72 +1,124 @@
 import { database } from "../database/connection";
 import { questions, answers, comments } from "../database/schema";
-import { eq, and, sql, placeholder } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { desc } from "drizzle-orm";
-import { debounce } from "lodash";
 
-export const getAllQuestions = async () => {
-  return await database.select().from(questions);
-};
-
-export const getOneQuestion = async (questionId: number) => {
-  return await database
-    .select()
-    .from(questions)
-    .where(eq(questions.id, questionId));
-};
-
-export const getOneQuestionWithAnswers = async (questionId: number) => {
+export const getQuestionsByPage = async (limit: number, page: number) => {
   return await database.query.questions.findMany({
     with: {
-      answers: true
-    },
-    where: eq(questions.id, questionId)
-  });
-};
-
-export const getOneQuestionWithAnswersAndComments = async (
-  questionId: number
-) => {
-  return await database.query.questions.findMany({
-    with: {
+      user: {
+        columns: {
+          firstName: true,
+          picture: true
+        }
+      },
       answers: {
         with: {
-          comments: true
+          user: {
+            columns: {
+              firstName: true,
+              picture: true
+            }
+          },
+          comments: {
+            with: {
+              user: {
+                columns: {
+                  firstName: true,
+                  picture: true
+                }
+              }
+            }
+          }
         }
       }
     },
-    where: eq(questions.id, questionId)
+    limit,
+    offset: (page - 1) * limit
+  });
+};
+
+export const getOneQuestion = async (questionId: number) => {
+  return await database.query.questions.findFirst({
+    where: eq(questions.id, questionId),
+    with: {
+      user: {
+        columns: {
+          firstName: true,
+          picture: true
+        }
+      },
+      answers: {
+        with: {
+          user: {
+            columns: {
+              firstName: true,
+              picture: true
+            }
+          },
+          comments: {
+            with: {
+              user: {
+                columns: {
+                  firstName: true,
+                  picture: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   });
 };
 
 export const getAllQuestionsByUser = async (userId: number) => {
-  return await database
-    .select()
-    .from(questions)
-    .where(eq(questions.userId, userId));
+  return await database.query.questions.findMany({
+    where: eq(questions.userId, userId),
+    with: {
+      user: {
+        columns: {
+          firstName: true,
+          picture: true
+        }
+      },
+      answers: {
+        with: {
+          user: {
+            columns: {
+              firstName: true,
+              picture: true
+            }
+          },
+          comments: {
+            with: {
+              user: {
+                columns: {
+                  firstName: true,
+                  picture: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
 };
 
 export const getQuestionsBySearch = async (searchTerm: string) => {
-  try {
-    const result = await database
-      .select({
-        id: questions.id,
-        question: questions.question
-      })
-      .from(questions)
-      .where(
-        sql`lower(${
-          questions.question
-        }) like lower('%' || ${sql`${searchTerm}`} || '%')`
-      )
-      .orderBy(desc(questions.createdAt))
-      .execute();
-
-    return result;
-  } catch (error) {
-    console.error("Error fetching questions:", error);
-    throw error;
-  }
+  return await database
+    .select({
+      id: questions.id,
+      question: questions.question
+    })
+    .from(questions)
+    .where(
+      sql`lower(${
+        questions.question
+      }) like lower('%' || ${sql`${searchTerm}`} || '%')`
+    )
+    .orderBy(desc(questions.createdAt));
 };
 
 export const createQuestion = async (userId: number, question: string) => {
@@ -163,19 +215,4 @@ export const deleteComment = async (answerId: number, commentId: number) => {
     .delete(comments)
     .where(and(eq(comments.id, commentId), eq(comments.answerId, answerId)))
     .returning();
-};
-
-export const debouncedSearchQuestions = debounce(async (keyword: string) => {
-  return await database
-    .select()
-    .from(questions)
-    .where(
-      sql`to_tsvector(${questions.question}) @@ to_tsquery(${placeholder(
-        keyword
-      )})`
-    );
-}, 1000);
-
-export const searchQuestions = (keyword: string) => {
-  return debouncedSearchQuestions(keyword);
 };

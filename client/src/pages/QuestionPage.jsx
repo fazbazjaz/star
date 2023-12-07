@@ -8,10 +8,10 @@ import Question from "../components/Question";
 import AnswerForm from "../components/AnswerForm";
 import Answer from "../components/Answer";
 import getQuestionById from "../api/getQuestionById";
-import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const QuestionPage = () => {
-  const { id } = useParams();
+  const { id: questionId } = useParams();
+
   const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
 
   const {
@@ -20,21 +20,12 @@ const QuestionPage = () => {
     error,
     data: questionData,
   } = useQuery({
-    queryKey: ["question", id],
-    queryFn: () => getQuestionById(id),
+    queryKey: [`question-${questionId}`],
+    queryFn: () => getQuestionById(questionId),
   });
 
   return (
-    <Box
-      p={3}
-      color="white"
-      sx={{
-        backgroundImage: consistentPageBackgroundImage,
-        backgroundSize: "cover",
-        backgroundPosition: "center center",
-        backgroundRepeat: "no-repeat",
-        overflow: "hidden",
-      }}>
+    <Box py={2}>
       {isPending && <Loading />}
       {isError && <Error message={error.message} />}
       {questionData && (
@@ -42,7 +33,7 @@ const QuestionPage = () => {
           <Typography variant={"pagetitle"}>
             Individual Question (id: {questionData.id})
           </Typography>
-          <Box display={"grid"} gap={2}>
+          <Box display={"grid"} gap={2} mt={2}>
             <Question
               questionData={questionData}
               showAddAnswerForm={showAddAnswerForm}

@@ -1,6 +1,6 @@
 import supertest from "supertest";
 import { cleanAll } from "../helpers/dbCleaner";
-import { disconnectFromDatabase } from "../../helpers/database";
+import { disconnectFromDatabase } from "../helpers/database";
 import { app } from "../../app";
 
 describe("API Routes", () => {
@@ -16,12 +16,12 @@ describe("API Routes", () => {
 
   describe("/api GET", () => {
     it("returns 200 JSON response with message", async () => {
-      const response = await request.get("/api");
+      const response = await request.get("/");
 
       expect(response.statusCode).toBe(200);
       expect(response.type).toBe("application/json");
       expect(response.body).toEqual({
-        message: "STAR Server /api API Route"
+        message: "STAR Server / Root Route"
       });
     });
   });

@@ -21,6 +21,9 @@ const theme = createTheme({
     secondary: {
       main: purple[600],
     },
+    text: {
+      primary: "rgba(255, 255, 255, 1)",
+    },
   },
   typography: {
     fontFamily: "Inter Variable",
@@ -35,7 +38,7 @@ const theme = createTheme({
       fontWeight: "500",
     },
     questiontitle: {
-      fontSize: "1.15rem",
+      fontSize: "1.2rem",
       fontWeight: "500",
     },
     questionbody: {
@@ -47,7 +50,7 @@ const theme = createTheme({
       fontWeight: "500",
     },
     answertitle: {
-      fontSize: "1.25rem",
+      fontSize: "1.2rem",
       fontWeight: "500",
     },
     answerbody: {
@@ -66,6 +69,10 @@ const theme = createTheme({
     },
     commentformtitle: {
       fontSize: "1.2rem",
+      fontWeight: "500",
+    },
+    tabletitle: {
+      fontSize: "1.1rem",
       fontWeight: "500",
     },
   },

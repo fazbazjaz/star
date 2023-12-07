@@ -1,7 +1,7 @@
 import supertest from "supertest";
 import jwt, { Secret } from "jsonwebtoken";
 import { app } from "../../app";
-import { disconnectFromDatabase } from "../../helpers/database";
+import { disconnectFromDatabase } from "../helpers/database";
 import { createUser } from "../../helpers/users";
 import { cleanAll } from "../helpers/dbCleaner";
 import { CustomJWTPayload } from "../../types/types";
@@ -19,31 +19,31 @@ describe("User Routes", () => {
   });
 
   describe("/api/users GET", () => {
-    it("returns 401 error when no JWT is provided from an HTTP-Only Cookie", async () => {
+    it("returns 401 error when no customJWT is provided", async () => {
       const response = await request.get("/api/users");
 
       expect(response.statusCode).toBe(401);
       expect(response.type).toBe("application/json");
       expect(response.body).toEqual({
-        error: "Unauthorized - No Cookie with JWT Provided"
+        error: "Authorization Header Missing or Invalid"
       });
     });
 
     it("returns 200 JSON Response with an Array of Users when a Valid JWT is provided", async () => {
       // Create the First User
       const user = await createUser({
-        google_id: "0123456789",
-        firstname: "Bob",
-        lastname: "Smith",
+        googleId: "0123456789",
+        firstName: "Bob",
+        lastName: "Smith",
         email: "bob@gmail.com",
         picture: "test.com/bob.png"
       });
 
       // Create The Second User
       await createUser({
-        google_id: "9876543210",
-        firstname: "Ben",
-        lastname: "Smith",
+        googleId: "9876543210",
+        firstName: "Ben",
+        lastName: "Smith",
         email: "ben@gmail.com",
         picture: "test.com/ben.png"
       });
@@ -53,7 +53,7 @@ describe("User Routes", () => {
 
       const customJWTPayload: CustomJWTPayload = {
         id: createdUserId,
-        google_id: "0123456789"
+        googleId: "0123456789"
       };
 
       const customJWT = jwt.sign(
@@ -66,7 +66,7 @@ describe("User Routes", () => {
 
       const response = await request
         .get("/api/users")
-        .set("Cookie", `customJWT=${customJWT}`);
+        .set("Authorization", `Bearer ${customJWT}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.type).toBe("application/json");
@@ -77,14 +77,14 @@ describe("User Routes", () => {
           expect(user.id).toBeDefined();
           expect(typeof user.id).toBe("number");
 
-          expect(user.google_id).toBeDefined();
-          expect(typeof user.google_id).toBe("string");
+          expect(user.googleId).toBeDefined();
+          expect(typeof user.googleId).toBe("string");
 
-          expect(user.firstname).toBeDefined();
-          expect(typeof user.firstname).toBe("string");
+          expect(user.firstName).toBeDefined();
+          expect(typeof user.firstName).toBe("string");
 
-          expect(user.lastname).toBeDefined();
-          expect(typeof user.lastname).toBe("string");
+          expect(user.lastName).toBeDefined();
+          expect(typeof user.lastName).toBe("string");
 
           expect(user.email).toBeDefined();
           expect(typeof user.email).toBe("string");
@@ -92,11 +92,11 @@ describe("User Routes", () => {
           expect(user.picture).toBeDefined();
           expect(typeof user.picture).toBe("string");
 
-          expect(user.created_at).toBeDefined();
-          expect(typeof user.created_at).toBe("string");
+          expect(user.createdAt).toBeDefined();
+          expect(typeof user.createdAt).toBe("string");
 
-          expect(user.updated_at).toBeDefined();
-          expect(typeof user.updated_at).toBe("string");
+          expect(user.updatedAt).toBeDefined();
+          expect(typeof user.updatedAt).toBe("string");
         });
       }
     });
@@ -109,15 +109,15 @@ describe("User Routes", () => {
       expect(response.statusCode).toBe(401);
       expect(response.type).toBe("application/json");
       expect(response.body).toEqual({
-        error: "Unauthorized - No Cookie with JWT Provided"
+        error: "Authorization Header Missing or Invalid"
       });
     });
 
     it("returns 200 JSON Response with a Single User when a Valid JWT is provided", async () => {
       const user = await createUser({
-        google_id: "0123456789",
-        firstname: "Bob",
-        lastname: "Smith",
+        googleId: "0123456789",
+        firstName: "Bob",
+        lastName: "Smith",
         email: "bob@gmail.com",
         picture: "test.com/bob.png"
       });
@@ -126,7 +126,7 @@ describe("User Routes", () => {
 
       const customJWTPayload: CustomJWTPayload = {
         id: createdUserId,
-        google_id: "0123456789"
+        googleId: "0123456789"
       };
 
       const customJWT = jwt.sign(
@@ -139,26 +139,26 @@ describe("User Routes", () => {
 
       const response = await request
         .get(`/api/users/${createdUserId}`)
-        .set("Cookie", `customJWT=${customJWT}`);
+        .set("Authorization", `Bearer ${customJWT}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.type).toBe("application/json");
       expect(response.body).toBeInstanceOf(Object);
 
       if (response.body) {
-        const user = response.body;
+        const user: SelectUserType = response.body;
 
         expect(user.id).toBeDefined();
         expect(typeof user.id).toBe("number");
 
-        expect(user.google_id).toBeDefined();
-        expect(typeof user.google_id).toBe("string");
+        expect(user.googleId).toBeDefined();
+        expect(typeof user.googleId).toBe("string");
 
-        expect(user.firstname).toBeDefined();
-        expect(typeof user.firstname).toBe("string");
+        expect(user.firstName).toBeDefined();
+        expect(typeof user.firstName).toBe("string");
 
-        expect(user.lastname).toBeDefined();
-        expect(typeof user.lastname).toBe("string");
+        expect(user.lastName).toBeDefined();
+        expect(typeof user.lastName).toBe("string");
 
         expect(user.email).toBeDefined();
         expect(typeof user.email).toBe("string");
@@ -166,11 +166,11 @@ describe("User Routes", () => {
         expect(user.picture).toBeDefined();
         expect(typeof user.picture).toBe("string");
 
-        expect(user.created_at).toBeDefined();
-        expect(typeof user.created_at).toBe("string");
+        expect(user.createdAt).toBeDefined();
+        expect(typeof user.createdAt).toBe("string");
 
-        expect(user.updated_at).toBeDefined();
-        expect(typeof user.updated_at).toBe("string");
+        expect(user.updatedAt).toBeDefined();
+        expect(typeof user.updatedAt).toBe("string");
       }
     });
   });

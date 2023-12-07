@@ -1,18 +1,8 @@
 import { Box, Typography } from "@mui/material";
-import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const NotFoundPage = () => {
   return (
-    <Box
-      p={3}
-      color="white"
-      sx={{
-        backgroundImage: consistentPageBackgroundImage,
-        backgroundSize: "cover",
-        backgroundPosition: "center center",
-        backgroundRepeat: "no-repeat",
-        overflow: "hidden",
-      }}>
+    <Box py={2}>
       <Typography variant={"pagetitle"}>Page Not Found</Typography>
     </Box>
   );

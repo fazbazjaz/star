@@ -2,7 +2,7 @@ import supertest from "supertest";
 import { createUser } from "../../helpers/users";
 import { createQuestion } from "../../helpers/questions";
 import { cleanAll } from "../helpers/dbCleaner";
-import { disconnectFromDatabase } from "../../helpers/database";
+import { disconnectFromDatabase } from "../helpers/database";
 import { createAppWithQuestionRoutes } from "../helpers/appFactory";
 
 describe("Questions Routes", () => {
@@ -27,9 +27,9 @@ describe("Questions Routes", () => {
     const app = createAppWithQuestionRoutes();
     const request = supertest(app);
     const user = await createUser({
-      google_id: "012345689",
-      firstname: "Bob",
-      lastname: "Smith",
+      googleId: "012345689",
+      firstName: "Bob",
+      lastName: "Smith",
       email: "bob@gmail2.com"
     });
 

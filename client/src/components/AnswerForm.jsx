@@ -67,7 +67,7 @@ const AnswerForm = ({
         ? putAnswer(questionId, answerId, answer)
         : postAnswer(questionId, answer),
     onSuccess: () => {
-      queryClient.refetchQueries(["question", questionId]);
+      queryClient.refetchQueries([`question-${questionId}`]);
       setAnswer({
         situation: "",
         task: "",

@@ -13,21 +13,25 @@ export const app = express();
 
 app.use(cookieParser());
 
-// for HTTP-Only Cookies :
 app.use(
   cors({
     origin: true,
-    credentials: true
+    credentials: true // Server will accept Cookies from the Client
   })
 );
 
 app.use(express.json());
 
-// for a basic check on /api
+// basic check on /
+app.get("/", (req: Request, res: Response) => {
+  res.status(200).json({ message: "STAR Server / Root Route" });
+});
+
+// basic check on /api
 app.get("/api", (req: Request, res: Response) => {
   res.status(200).json({ message: "STAR Server /api API Route" });
 });
 
-app.use("/api/users", usersRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
 app.use("/api/questions", questionsRouter);

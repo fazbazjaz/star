@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Box, Typography, Button, IconButton } from "@mui/material";
+import { Box, Typography, Button, IconButton, Avatar } from "@mui/material";
 import PsychologyAltRoundedIcon from "@mui/icons-material/PsychologyAltRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import SmsOutlinedIcon from "@mui/icons-material/SmsOutlined";
@@ -43,7 +43,7 @@ const Answer = ({ answerData }) => {
       console.error(error);
     },
     onSuccess: () => {
-      queryClient.refetchQueries(["questions", questionId]);
+      queryClient.refetchQueries([`question-${questionId}`]);
     },
   });
 
@@ -66,27 +66,48 @@ const Answer = ({ answerData }) => {
           sx={{
             backdropFilter: consistentBackdropFilter,
           }}>
-          <Box display={"flex"} gap={0.5} alignItems={"center"}>
-            <PsychologyAltRoundedIcon fontSize={"medium"} color="primary" />
-            <Typography variant={"answertitle"} color="primary">
-              Answer
-            </Typography>
-            <Typography variant={"body2"}>(id: {answerData.id})</Typography>
-            <Typography variant={"body2"}>
-              by userId: {answerData.userId}
-            </Typography>
-            <Box marginLeft={"auto"}>
+          <Box display={"flex"} alignItems={"center"}>
+            <Box>
+              <Box display={"flex"} alignItems={"center"} gap={0.75}>
+                <PsychologyAltRoundedIcon fontSize={"medium"} color="primary" />
+                <Typography variant={"answertitle"} color="primary">
+                  Answer
+                  {/* ({answerData?.id}) */}
+                </Typography>
+                <Avatar
+                  src={answerData?.user?.picture}
+                  sx={{ height: 24, width: 24 }}
+                />
+                <Typography variant={"body2"}>
+                  by {answerData?.user?.firstName}
+                </Typography>
+                <Box
+                  display={"flex"}
+                  alignItems={"center"}
+                  flexWrap={"wrap"}
+                  gap={1}>
+                  <Typography variant={"body2"}>
+                    ({answerData?.comments?.length}) Comments
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              marginLeft={"auto"}
+              display={"flex"}
+              alignItems={"center"}
+              gap={0.5}>
               {answerData.userId === authenticatedUser.id && (
-                <>
-                  <IconButton onClick={handleEdit} color="primary">
-                    <EditOutlinedIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleDelete(answerData.id)}
-                    color="primary">
-                    <DeleteOutlineIcon />
-                  </IconButton>
-                </>
+                <IconButton onClick={handleEdit} color="primary">
+                  <EditOutlinedIcon />
+                </IconButton>
+              )}
+              {answerData.userId === authenticatedUser.id && (
+                <IconButton
+                  onClick={() => handleDelete(answerData.id)}
+                  color="primary">
+                  <DeleteOutlineIcon />
+                </IconButton>
               )}
             </Box>
           </Box>

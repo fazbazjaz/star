@@ -1,22 +1,146 @@
 import { Request, Response } from "express";
 import {
-  createQuestion,
-  getAllQuestions,
-  deleteQuestion,
-  getAllQuestionsByUser,
-  getOneQuestionWithAnswersAndComments,
+  getQuestionsByPage,
   getOneQuestion,
+  getAllQuestionsByUser,
+  getAnswer,
+  createQuestion,
   createAnswer,
   createComment,
-  getAnswer,
   editQuestion,
-  deleteAnswer,
-  deleteComment,
   editAnswer,
   editComment,
+  deleteQuestion,
+  deleteAnswer,
+  deleteComment,
   getQuestionsBySearch
 } from "../helpers/questions";
 import { logger } from "../logger";
+
+export const getQuestionsByPageHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const limit = parseInt(req.query.limit as string);
+    const page = parseInt(req.query.page as string);
+    logger.info({
+      message: "getQuestionsByPageHandler limit",
+      value: limit
+    });
+    logger.info({
+      message: "getQuestionsByPageHandler page",
+      value: page
+    });
+
+    const query = await getQuestionsByPage(limit, page);
+    logger.info({
+      message: "getQuestionsByPageHandler query",
+      value: query
+    });
+
+    const data = query;
+    logger.info({
+      message: "getQuestionsByPageHandler data",
+      value: data
+    });
+
+    res.status(200).json(data);
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const getQuestionsBySearchHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const searchTerm = req.query.q as string;
+    logger.info({
+      message: "getQuestionsBySearchHandler searchTerm",
+      value: searchTerm
+    });
+
+    if (!searchTerm) {
+      res.status(400).json({ error: "Bad search term" });
+      return;
+    }
+
+    const query = await getQuestionsBySearch(searchTerm);
+    logger.info({
+      message: "getQuestionsBySearchHandler query",
+      value: query
+    });
+
+    res.json(query);
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const getOneQuestionHandler = async (req: Request, res: Response) => {
+  const questionId = parseInt(req.params.id);
+  logger.info({
+    message: "getOneQuestionHandler questionId",
+    value: questionId
+  });
+
+  try {
+    const query = await getOneQuestion(questionId);
+    logger.info({
+      message: "getOneQuestionHandler query",
+      value: query
+    });
+
+    if (!query) {
+      res.status(404).json({ error: "No Question Found" });
+      return;
+    }
+
+    const data = query;
+    logger.info({
+      message: "getOneQuestionHandler data",
+      value: data
+    });
+
+    res.status(200).json(data);
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const getAllQuestionsByUserHandler = async (
+  req: Request,
+  res: Response
+) => {
+  const userId = parseInt(req.params.id);
+  logger.info({
+    message: "getAllQuestionsByUserHandler userId",
+    value: userId
+  });
+
+  try {
+    const query = await getAllQuestionsByUser(userId);
+    logger.info({
+      message: "getAllQuestionsByUserHandler query",
+      value: query
+    });
+
+    const data = query;
+    logger.info({
+      message: "getAllQuestionsByUserHandler data",
+      value: data
+    });
+
+    res.status(200).json(data);
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
 
 export const createQuestionHandler = async (req: Request, res: Response) => {
   try {
@@ -47,115 +171,6 @@ export const createQuestionHandler = async (req: Request, res: Response) => {
     });
 
     res.status(200).json(queryQuestion);
-  } catch (error) {
-    logger.error(error);
-    res.status(500).json({ error: "Server Error" });
-  }
-};
-
-export const getAllQuestionsHandler = async (req: Request, res: Response) => {
-  try {
-    const query = await getAllQuestions();
-    logger.info("getAllQuestionsHandler query", query);
-
-    const data = query;
-    logger.info({
-      message: "getAllQuestionsHandler data",
-      value: data
-    });
-
-    res.status(200).json(data);
-  } catch (error) {
-    logger.error(error);
-    res.status(500).json({ error: "Server Error" });
-  }
-};
-
-export const deleteQuestionHandler = async (req: Request, res: Response) => {
-  try {
-    const questionId = parseInt(req.params.id);
-    logger.info({
-      message: "deleteQuestionHandler questionId",
-      value: questionId
-    });
-
-    if (!questionId) {
-      return res.status(400).json({ error: "No questionId provided" });
-    }
-
-    if (isNaN(questionId)) {
-      return res.status(400).json({ error: "Invalid questionId format" });
-    }
-
-    const deleteQuery = await deleteQuestion(questionId);
-    logger.info({
-      message: "deleteQuestionHandler deleteQuery",
-      value: deleteQuery
-    });
-
-    res.status(200).json(deleteQuery);
-  } catch (error) {
-    logger.error(error);
-    res.status(500).json({ error: "Server Error" });
-  }
-};
-
-export const findAllQuestionsByUserHandler = async (
-  req: Request,
-  res: Response
-) => {
-  const userId = parseInt(req.params.id);
-  logger.info({
-    message: "findAllQuestionsByUserHandler userId",
-    value: userId
-  });
-
-  try {
-    const query = await getAllQuestionsByUser(userId);
-    logger.info({
-      message: "findAllQuestionsByUserHandler query",
-      value: query
-    });
-
-    const data = query;
-    logger.info({
-      message: "findAllQuestionsByUserHandler data",
-      value: data
-    });
-
-    res.status(200).json(data);
-  } catch (error) {
-    logger.error(error);
-    res.status(500).json({ error: "Server Error" });
-  }
-};
-
-export const findOneQuestionHandler = async (req: Request, res: Response) => {
-  const questionId = parseInt(req.params.id);
-  logger.info({
-    message: "findOneQuestionHandler questionId",
-    value: questionId
-  });
-
-  try {
-    const query = await getOneQuestionWithAnswersAndComments(questionId);
-    logger.info({
-      message: "findOneQuestionHandler query",
-      value: query
-    });
-
-    if (!query || query.length === 0) {
-      res.status(404).json({ error: "No Question Found" });
-      return;
-    }
-
-    const data = query[0];
-    logger.info({
-      message: "findOneQuestionHandler data",
-      value: data
-    });
-
-    res.status(200).json(data);
   } catch (error) {
     logger.error(error);
     res.status(500).json({ error: "Server Error" });
@@ -206,7 +221,7 @@ export const createAnswerHandler = async (req: Request, res: Response) => {
       value: questionIdQuery
     });
 
-    if (!questionIdQuery || questionIdQuery.length === 0) {
+    if (!questionIdQuery) {
       return res
         .status(404)
         .json({ error: `There is no Question with ID ${questionId}` });
@@ -360,6 +375,157 @@ export const editQuestionHandler = async (req: Request, res: Response) => {
   }
 };
 
+export const editAnswerHandler = async (req: Request, res: Response) => {
+  const questionId = parseInt(req.params.id);
+  logger.info({
+    message: "editAnswerHandler questionId",
+    value: questionId
+  });
+
+  if (!questionId) {
+    res.status(400).json({ error: "Invalid Question ID Provided" });
+  }
+
+  const answerId = parseInt(req.params.answerId);
+  logger.info({
+    message: "editAnswerHandler answerId",
+    value: answerId
+  });
+
+  if (!answerId) {
+    res.status(400).json({ error: "Invalid Answer ID Provided" });
+  }
+
+  const { situation, task, action, result } = req.body;
+  logger.info({
+    message: "editAnswerHandler req.body",
+    value: req.body
+  });
+
+  if (!situation || !task || !action || !result) {
+    return res.status(400).json({ error: "Your Answer was not Complete" });
+  }
+
+  try {
+    const updateAnswerQuery = await editAnswer(
+      questionId,
+      answerId,
+      situation,
+      task,
+      action,
+      result
+    );
+    logger.info({
+      message: "editAnswerHandler updateAnswerQuery",
+      value: updateAnswerQuery
+    });
+
+    const data = updateAnswerQuery[0];
+    logger.info({
+      message: "editAnswerHandler data",
+      value: data
+    });
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const editCommentHandler = async (req: Request, res: Response) => {
+  const questionId = parseInt(req.params.id);
+  logger.info({
+    message: "editCommentHandler questionId",
+    value: questionId
+  });
+
+  if (!questionId) {
+    res.status(400).json({ error: "Invalid Question ID Provided" });
+  }
+
+  const answerId = parseInt(req.params.answerId);
+  logger.info({
+    message: "editCommentHandler answerId",
+    value: answerId
+  });
+
+  if (!answerId) {
+    res.status(400).json({ error: "Invalid Answer ID Provided" });
+  }
+
+  const commentId = parseInt(req.params.commentId);
+  logger.info({
+    message: "editCommentHandler commentId",
+    value: commentId
+  });
+
+  if (!commentId) {
+    res.status(400).json({ error: "Invalid Comment ID Provided" });
+  }
+
+  const { comment } = req.body;
+  logger.info({
+    message: "editCommentHandler req.body",
+    value: req.body
+  });
+
+  if (!comment) {
+    return res.status(400).json({ error: "Your Comment was not Complete" });
+  }
+
+  try {
+    const updateCommentQuery = await editComment(
+      // questionId,
+      answerId,
+      commentId,
+      comment
+    );
+    logger.info({
+      message: "editCommentHandler updateCommentQuery",
+      value: updateCommentQuery
+    });
+
+    const data = updateCommentQuery[0];
+    logger.info({
+      message: "editCommentHandler data",
+      value: data
+    });
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const deleteQuestionHandler = async (req: Request, res: Response) => {
+  try {
+    const questionId = parseInt(req.params.id);
+    logger.info({
+      message: "deleteQuestionHandler questionId",
+      value: questionId
+    });
+
+    if (!questionId) {
+      return res.status(400).json({ error: "No questionId provided" });
+    }
+
+    if (isNaN(questionId)) {
+      return res.status(400).json({ error: "Invalid questionId format" });
+    }
+
+    const deleteQuery = await deleteQuestion(questionId);
+    logger.info({
+      message: "deleteQuestionHandler deleteQuery",
+      value: deleteQuery
+    });
+
+    res.status(200).json(deleteQuery);
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
 export const deleteAnswerHandler = async (req: Request, res: Response) => {
   const user = req.customJWTPayload;
   logger.info({
@@ -438,63 +604,6 @@ export const deleteAnswerHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const editAnswerHandler = async (req: Request, res: Response) => {
-  const questionId = parseInt(req.params.id);
-  logger.info({
-    message: "editAnswerHandler questionId",
-    value: questionId
-  });
-
-  if (!questionId) {
-    res.status(400).json({ error: "Invalid Question ID Provided" });
-  }
-
-  const answerId = parseInt(req.params.answerId);
-  logger.info({
-    message: "editAnswerHandler answerId",
-    value: answerId
-  });
-
-  if (!answerId) {
-    res.status(400).json({ error: "Invalid Answer ID Provided" });
-  }
-
-  const { situation, task, action, result } = req.body;
-  logger.info({
-    message: "editAnswerHandler req.body",
-    value: req.body
-  });
-
-  if (!situation || !task || !action || !result) {
-    return res.status(400).json({ error: "Your Answer was not Complete" });
-  }
-
-  try {
-    const updateAnswerQuery = await editAnswer(
-      questionId,
-      answerId,
-      situation,
-      task,
-      action,
-      result
-    );
-    logger.info({
-      message: "editAnswerHandler updateAnswerQuery",
-      value: updateAnswerQuery
-    });
-
-    const data = updateAnswerQuery[0];
-    logger.info({
-      message: "editAnswerHandler data",
-      value: data
-    });
-
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ error: "Server Error" });
-  }
-};
-
 export const deleteCommentHandler = async (req: Request, res: Response) => {
   const questionId = parseInt(req.params.id);
   logger.info({
@@ -544,93 +653,5 @@ export const deleteCommentHandler = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error(error);
     res.status(500).json({ error: `No Comment ID ${commentId} Found` });
-  }
-};
-
-export const editCommentHandler = async (req: Request, res: Response) => {
-  const questionId = parseInt(req.params.id);
-  logger.info({
-    message: "editCommentHandler questionId",
-    value: questionId
-  });
-
-  if (!questionId) {
-    res.status(400).json({ error: "Invalid Question ID Provided" });
-  }
-
-  const answerId = parseInt(req.params.answerId);
-  logger.info({
-    message: "editCommentHandler answerId",
-    value: answerId
-  });
-
-  if (!answerId) {
-    res.status(400).json({ error: "Invalid Answer ID Provided" });
-  }
-
-  const commentId = parseInt(req.params.commentId);
-  logger.info({
-    message: "editCommentHandler commentId",
-    value: commentId
-  });
-
-  if (!commentId) {
-    res.status(400).json({ error: "Invalid Comment ID Provided" });
-  }
-
-  const { comment } = req.body;
-  logger.info({
-    message: "editCommentHandler req.body",
-    value: req.body
-  });
-
-  if (!comment) {
-    return res.status(400).json({ error: "Your Comment was not Complete" });
-  }
-
-  try {
-    const updateCommentQuery = await editComment(answerId, commentId, comment);
-    logger.info({
-      message: "editCommentHandler updateCommentQuery",
-      value: updateCommentQuery
-    });
-
-    const data = updateCommentQuery[0];
-    logger.info({
-      message: "editCommentHandler data",
-      value: data
-    });
-
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ error: "Server Error" });
-  }
-};
-
-export const getQuestionsBySearchHandler = async (
-  req: Request,
-  res: Response
-) => {
-  try {
-    const searchTerm = req.query.q as string;
-    logger.info({
-      message: "getQuestionsBySearchHandler searchTerm",
-      value: searchTerm
-    });
-
-    if (!searchTerm) {
-      res.status(400).json({ error: "Bad search term" });
-      return;
-    }
-
-    const query = await getQuestionsBySearch(searchTerm);
-    logger.info({
-      message: "getQuestionsBySearchHandler query",
-      value: query
-    });
-
-    res.json(query);
-  } catch (error) {
-    res.status(500).json({ error: "Server Error" });
   }
 };
