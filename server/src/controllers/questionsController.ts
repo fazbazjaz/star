@@ -552,7 +552,7 @@ export const deleteAnswerHandler = async (req: Request, res: Response) => {
       });
     }
 
-    const answerAuthorId = answerQuery[0].questions.userId;
+    const answerAuthorId = answerQuery[0].answers.userId;
 
     logger.info({
       message: "deleteAnswerHandler answerAuthorId",
