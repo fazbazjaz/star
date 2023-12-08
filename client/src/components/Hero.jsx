@@ -76,7 +76,7 @@ const Hero = () => {
           </Typography>
           <Box alignSelf={"flex-end"} mt={2}>
             <Button variant="contained" size="large" onClick={login}>
-              Reach for the STARs
+              Situation, Task, Action... Result!
             </Button>
           </Box>
         </Box>
