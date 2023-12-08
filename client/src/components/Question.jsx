@@ -67,7 +67,6 @@ const Question = ({ questionData }) => {
     <>
       {questionData && (
         <Box
-          display={"grid"}
           p={2}
           border={consistentBorder}
           borderRadius={consistentBorderRadius}
@@ -76,64 +75,59 @@ const Question = ({ questionData }) => {
           sx={{
             backdropFilter: consistentBackdropFilter,
           }}>
-          <Box>
-            <Box
-              display={"flex"}
-              flexWrap={"wrap"}
-              justifyContent={"space-between"}
-              alignItems={"center"}>
-              <Box display={"flex"} gap={0.75}>
-                <Box>
-                  <Avatar
-                    src={questionData?.user?.picture}
-                    sx={{ height: 28, width: 28 }}
-                  />
-                </Box>
-                <Box display={"flex"} flexWrap={"wrap"} alignItems={"center"}>
-                  <HelpOutlineOutlinedIcon
-                    fontSize={"medium"}
-                    color="primary"
-                  />
+          <Box
+            display={"flex"}
+            flexWrap={"wrap"}
+            justifyContent={"space-between"}
+            alignItems={"center"}>
+            <Box display={"flex"} alignItems={"center"} gap={0.75}>
+              <Box>
+                <Avatar
+                  src={questionData?.user?.picture}
+                  sx={{ height: 28, width: 28 }}
+                />
+              </Box>
+              <Box display={"flex"} flexWrap={"wrap"} alignItems={"center"}>
+                <HelpOutlineOutlinedIcon fontSize={"medium"} color="primary" />
+                <Typography
+                  variant={"questiontitle"}
+                  color="primary"
+                  paddingLeft={0.5}>
+                  Question{" "}
+                </Typography>
+                <Typography component={"span"} color="primary" pl={0.5}>
+                  ({questionData?.id})
+                </Typography>
+              </Box>
+              <Box display={"flex"} flexWrap={"wrap"} alignItems={"center"}>
+                <Typography variant={"body2"}>
+                  from{" "}
                   <Typography
-                    variant={"questiontitle"}
-                    color="primary"
-                    paddingLeft={0.5}>
-                    Question{" "}
-                  </Typography>
-                  <Typography component={"span"} color="primary" pl={0.5}>
-                    ({questionData?.id})
-                  </Typography>
-                </Box>
-                <Box display={"flex"} flexWrap={"wrap"} alignItems={"center"}>
-                  <Typography variant={"body2"}>
-                    from{" "}
-                    <Typography
-                      component={"span"}
-                      variant={"body2"}
-                      color="primary">
-                      {questionData?.user?.firstName}
-                    </Typography>
-                  </Typography>
-                </Box>
-              </Box>
-              <Box
-                marginLeft={"auto"}
-                display={"flex"}
-                alignItems={"center"}
-                gap={0.5}>
-                {questionData.userId === authenticatedUser.id && (
-                  <IconButton onClick={handleEdit} color="primary">
-                    <EditOutlinedIcon />
-                  </IconButton>
-                )}
-                {questionData.userId === authenticatedUser.id && (
-                  <IconButton
-                    onClick={() => handleDelete(questionData.id)}
+                    component={"span"}
+                    variant={"body2"}
                     color="primary">
-                    <DeleteOutlineIcon />
-                  </IconButton>
-                )}
+                    {questionData?.user?.firstName}
+                  </Typography>
+                </Typography>
               </Box>
+            </Box>
+            <Box
+              marginLeft={"auto"}
+              display={"flex"}
+              alignItems={"center"}
+              gap={0.5}>
+              {questionData.userId === authenticatedUser.id && (
+                <IconButton onClick={handleEdit} color="primary">
+                  <EditOutlinedIcon />
+                </IconButton>
+              )}
+              {questionData.userId === authenticatedUser.id && (
+                <IconButton
+                  onClick={() => handleDelete(questionData.id)}
+                  color="primary">
+                  <DeleteOutlineIcon />
+                </IconButton>
+              )}
             </Box>
           </Box>
           <Box my={1}>
