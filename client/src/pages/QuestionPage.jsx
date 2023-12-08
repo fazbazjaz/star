@@ -59,15 +59,20 @@ const QuestionPage = () => {
                 alignItems={"center"}
                 gap={2}>
                 {questionData?.answers.length > 0 && (
-                  <>
+                  <Box
+                    display={"flex"}
+                    flexDirection={{ xs: "column", sm: "row" }}
+                    flexWrap={"wrap"}
+                    alignItems={{ xs: "", sm: "center" }}
+                    gap={{ xs: 1, sm: 2 }}>
                     <Typography variant={"pagetitle"}>
                       Answers ({questionData?.answers.length})
                     </Typography>
                     <Sort sort={sort} setSort={setSort} />
-                  </>
+                  </Box>
                 )}
               </Box>
-              <Box>
+              <Box marginLeft={"auto"}>
                 <Button
                   variant="contained"
                   startIcon={<RateReviewOutlinedIcon />}

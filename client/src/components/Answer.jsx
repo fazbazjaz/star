@@ -21,6 +21,7 @@ import {
 import AnswerForm from "./AnswerForm";
 
 const Answer = ({ answerData }) => {
+  console.log(answerData);
   const { authenticatedUser } = useContext(AuthContext);
 
   const [showUpdateAnswerForm, setShowUpdateAnswerForm] = useState(false);
@@ -55,10 +56,7 @@ const Answer = ({ answerData }) => {
     <>
       {answerData && (
         <Box
-          display={"grid"}
-          gridTemplateColumns={"auto"}
-          gridTemplateRows={"auto"}
-          p={3}
+          p={2}
           border={consistentBorder}
           borderRadius={consistentBorderRadius}
           bgcolor={consistentBgColor}
@@ -66,29 +64,40 @@ const Answer = ({ answerData }) => {
           sx={{
             backdropFilter: consistentBackdropFilter,
           }}>
-          <Box display={"flex"} alignItems={"center"}>
-            <Box>
-              <Box display={"flex"} alignItems={"center"} gap={0.75}>
-                <PsychologyAltRoundedIcon fontSize={"medium"} color="primary" />
-                <Typography variant={"answertitle"} color="primary">
-                  Answer ({answerData?.id})
-                </Typography>
+          <Box
+            display={"flex"}
+            flexWrap={"wrap"}
+            justifyContent={"space-between"}
+            alignItems={"center"}>
+            <Box display={"flex"} alignItems={"center"} gap={0.75}>
+              <Box>
                 <Avatar
                   src={answerData?.user?.picture}
-                  sx={{ height: 24, width: 24 }}
+                  sx={{ height: 28, width: 28 }}
                 />
-                <Typography variant={"body2"}>
-                  by {answerData?.user?.firstName}
+              </Box>
+              <Box display={"flex"} flexWrap={"wrap"} alignItems={"center"}>
+                <PsychologyAltRoundedIcon fontSize={"medium"} color="primary" />
+                <Typography
+                  variant={"answertitle"}
+                  color="primary"
+                  paddingLeft={0.5}>
+                  Answer{" "}
                 </Typography>
-                <Box
-                  display={"flex"}
-                  alignItems={"center"}
-                  flexWrap={"wrap"}
-                  gap={1}>
-                  <Typography variant={"body2"}>
-                    ({answerData?.comments?.length}) Comments
+                <Typography component={"span"} color="primary" pl={0.5}>
+                  ({answerData?.id})
+                </Typography>
+              </Box>
+              <Box display={"flex"} flexWrap={"wrap"} alignItems={"center"}>
+                <Typography variant={"body2"}>
+                  from{" "}
+                  <Typography
+                    component={"span"}
+                    variant={"body2"}
+                    color="primary">
+                    {answerData?.user?.firstName}
                   </Typography>
-                </Box>
+                </Typography>
               </Box>
             </Box>
             <Box
@@ -216,16 +225,28 @@ const Answer = ({ answerData }) => {
           </Box>
           <Box
             display={"flex"}
-            flexDirection={"column"}
-            justifyContent={"flex-end"}
-            alignItems={"flex-end"}
-            my={1}>
-            <Typography variant={"body2"}>
-              updated {formatDate(answerData.updatedAt)}
-            </Typography>
-            <Typography variant={"body2"}>
-              created {formatDate(answerData.createdAt)}
-            </Typography>
+            justifyContent={"space-between"}
+            alignItems={"center"}>
+            <Box>
+              {answerData?.comments.length > 0 && (
+                <Typography variant={"body2"}>
+                  ({answerData?.comments?.length}) Comments
+                </Typography>
+              )}
+            </Box>
+            <Box
+              display={"flex"}
+              flexDirection={"column"}
+              justifyContent={"flex-end"}
+              alignItems={"flex-end"}
+              mt={1}>
+              <Typography variant={"body2"}>
+                updated {formatDate(answerData.updatedAt)}
+              </Typography>
+              <Typography variant={"body2"}>
+                created {formatDate(answerData.createdAt)}
+              </Typography>
+            </Box>
           </Box>
           {answerData.comments &&
             answerData.comments.map((commentData) => (
@@ -235,22 +256,22 @@ const Answer = ({ answerData }) => {
                 commentData={commentData}
               />
             ))}
-          <Box mt={1.5}>
+          <Box mt={2} display={"flex"} justifyContent={"flex-end"}>
             <Button
-              variant="outlined"
+              variant="contained"
               startIcon={<SmsOutlinedIcon />}
               onClick={() => setShowAddCommentForm((prev) => !prev)}
               disabled={showAddCommentForm}>
               Add a Comment
             </Button>
-            {showAddCommentForm && (
-              <AddCommentForm
-                questionId={answerData.questionId}
-                answerId={answerData.id}
-                setShowAddCommentForm={setShowAddCommentForm}
-              />
-            )}
           </Box>
+          {showAddCommentForm && (
+            <AddCommentForm
+              questionId={answerData.questionId}
+              answerId={answerData.id}
+              setShowAddCommentForm={setShowAddCommentForm}
+            />
+          )}
         </Box>
       )}
     </>

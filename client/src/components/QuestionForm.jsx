@@ -78,7 +78,8 @@ const QuestionForm = ({
 
   return (
     <Box
-      my={1}
+      mt={1}
+      mb={2}
       p={3}
       border={consistentBorder}
       borderRadius={consistentBorderRadius}
