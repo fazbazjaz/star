@@ -5,10 +5,10 @@ import { Box, Typography, Button } from "@mui/material";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
-import Question from "../components/Question";
-import AnswerForm from "../components/AnswerForm";
-import Answer from "../components/Answer";
 import Sort from "../components/Sort";
+import Question from "../components/Question";
+import Answer from "../components/Answer";
+import AnswerForm from "../components/AnswerForm";
 import getQuestionById from "../api/getQuestionById";
 
 const QuestionPage = () => {
@@ -30,12 +30,10 @@ const QuestionPage = () => {
 
   return (
     <Box py={2}>
-      {isPending && <Loading />}
-      {isError && <Error message={error.message} />}
       {questionData && (
         <Box>
           <Typography variant={"pagetitle"}>
-            Individual Question (id: {questionData.id})
+            Individual Question (id: {questionData?.id})
           </Typography>
           <Box display={"grid"} gap={2} mt={2}>
             <Question
@@ -87,6 +85,8 @@ const QuestionPage = () => {
           </Box>
         </Box>
       )}
+      {isPending && <Loading />}
+      {isError && <Error message={error.message} />}
     </Box>
   );
 };

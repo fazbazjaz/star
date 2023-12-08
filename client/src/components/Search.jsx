@@ -5,7 +5,7 @@ import {
   consistentBorder,
 } from "../themes/ConsistentStyles";
 
-const SearchBar = ({ setDebouncedSearchTerm }) => {
+const Search = ({ setDebouncedSearchTerm }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const [isSearchPending, setIsSearchPending] = useState(false);
@@ -33,7 +33,7 @@ const SearchBar = ({ setDebouncedSearchTerm }) => {
   }, [searchTerm, setDebouncedSearchTerm, isSearchPending, setIsSearchPending]);
 
   return (
-    <FormControl>
+    <FormControl sx={{ width: "200px" }}>
       <TextField
         type="text"
         variant={"outlined"}
@@ -52,4 +52,4 @@ const SearchBar = ({ setDebouncedSearchTerm }) => {
   );
 };
 
-export default SearchBar;
+export default Search;

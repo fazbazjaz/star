@@ -4,7 +4,7 @@ const Sort = ({ sort, setSort }) => {
   console.log(`Sort sort: ${sort}`);
 
   return (
-    <FormControl variant="filled" size="small">
+    <FormControl variant="filled" size="small" sx={{ width: "180px" }}>
       <InputLabel id="sort" label="sort" sx={{ color: "white" }}>
         Sort
       </InputLabel>

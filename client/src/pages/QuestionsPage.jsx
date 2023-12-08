@@ -3,11 +3,11 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { Box, Typography, Button } from "@mui/material";
 import Loading from "../components/Loading";
 import Error from "../components/Error";
-import SearchBar from "../components/SearchBar";
+import Sort from "../components/Sort";
+import Search from "../components/Search";
 import Question from "../components/Question";
 import QuestionForm from "../components/QuestionForm";
 import getQuestionsByPage from "../api/getQuestionsByPage";
-import Sort from "../components/Sort";
 import getQuestionsBySearch from "../api/getQuestionsBySearch";
 
 const QuestionsPage = () => {
@@ -18,11 +18,12 @@ const QuestionsPage = () => {
   const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
 
   const {
-    data: questionsByPageData,
+    isPending,
+    isError,
     error,
+    data: questionsByPageData,
     fetchNextPage,
     isFetchingNextPage,
-    status,
   } = useInfiniteQuery({
     queryKey: debouncedSearchTerm
       ? ["questions", sort, debouncedSearchTerm]
@@ -42,10 +43,6 @@ const QuestionsPage = () => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          console.log("❓🔃 QuestionsPage useEffect 🟠 fetchNextPage()");
-          console.log(
-            "❓🔃 QuestionsPage useEffect 🟠 THIS WILL CAUSE RE-RENDER ???"
-          );
           fetchNextPage();
         }
       });
@@ -68,12 +65,12 @@ const QuestionsPage = () => {
           alignItems={"center"}
           gap={1}>
           <Box display={"flex"} flexWrap={"wrap"} alignItems={"center"} gap={2}>
-            <Typography variant={"pagetitle"}>
+            <Typography variant={"pagetitle"} width={"180px"}>
               All Questions (
-              {questionsByPageData &&
-                questionsByPageData.pages
-                  .map((page) => page.length)
-                  .reduce((acc, cv) => acc + cv, 0)}
+              {questionsByPageData?.pages.reduce(
+                (acc, page) => acc + page.length,
+                0
+              )}
               )
             </Typography>
             <Box
@@ -82,7 +79,7 @@ const QuestionsPage = () => {
               alignItems={"center"}
               gap={1}>
               <Sort sort={sort} setSort={setSort} />
-              <SearchBar setDebouncedSearchTerm={setDebouncedSearchTerm} />
+              <Search setDebouncedSearchTerm={setDebouncedSearchTerm} />
             </Box>
           </Box>
           <Box>
@@ -102,8 +99,6 @@ const QuestionsPage = () => {
             sort={sort}
           />
         )}
-        {status === "pending" && <Loading />}
-        {status === "error" && <Error message={error.message} />}
         {questionsByPageData && (
           <Box display={"grid"} gap={2} mt={1}>
             {questionsByPageData?.pages.map((page) =>
@@ -113,6 +108,8 @@ const QuestionsPage = () => {
             )}
           </Box>
         )}
+        {isPending && <Loading />}
+        {isError && <Error message={error.message} />}
       </Box>
       {isFetchingNextPage && <Loading />}
     </Box>
