@@ -8,7 +8,6 @@ import Header from "../components/Header";
 import { Outlet } from "react-router-dom";
 import Footer from "../components/Footer";
 import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
-import { SortProvider } from "../context/SortContext";
 
 const RootLayout = () => {
   return (
@@ -32,9 +31,7 @@ const RootLayout = () => {
                 backgroundRepeat: "no-repeat",
               }}>
               <Box maxWidth={1200} mx={"auto"}>
-                <SortProvider>
-                  <Outlet />
-                </SortProvider>
+                <Outlet />
               </Box>
             </Box>
             <Footer />
