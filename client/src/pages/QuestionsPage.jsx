@@ -9,9 +9,12 @@ import QuestionForm from "../components/QuestionForm";
 import getQuestionsByPage from "../api/getQuestionsByPage";
 import Sort from "../components/Sort";
 import { SortContext } from "../context/SortContext";
+import getQuestionsBySearch from "../api/getQuestionsBySearch";
 
 const QuestionsPage = () => {
   const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isSearchPending, setIsSearchPending] = useState(false);
 
   const { sortQuestions } = useContext(SortContext);
 
@@ -22,8 +25,10 @@ const QuestionsPage = () => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["questions", sortQuestions],
-    queryFn: isSearching ? getQuestionsByPage : getQuestionsBySearch,
+    queryKey: ["questions", sortQuestions, searchTerm],
+    queryFn:
+      searchTerm && isSearchPending ? getQuestionsBySearch : getQuestionsByPage,
+
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
       const nextPage = lastPage.length < 5 ? undefined : allPages.length + 1;
@@ -81,7 +86,12 @@ const QuestionsPage = () => {
                   alignItems={"center"}
                   gap={1}>
                   <Sort />
-                  <SearchBar />
+                  <SearchBar
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    sSearchPending={isSearchPending}
+                    setIsSearchPending={setIsSearchPending}
+                  />
                 </Box>
               </Box>
               <Box>

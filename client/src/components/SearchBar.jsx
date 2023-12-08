@@ -1,40 +1,30 @@
 import { useState, useEffect, useContext } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Box, TextField } from "@mui/material";
+import { Box, FormControl, TextField } from "@mui/material";
 import { SortContext } from "../context/SortContext";
-import getQuestionsBySearch from "../api/getQuestionsBySearch";
 import {
   consistentBgColor,
   consistentBorder,
 } from "../themes/ConsistentStyles";
 
-const SearchBar = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isSearchPending, setIsSearchPending] = useState(false);
-
-  const { sortQuestions } = useContext(SortContext);
-
-  const searchQuery = useQuery({
-    queryKey: ["questions", sortQuestions, searchTerm],
-    queryFn: () => getQuestionsBySearch(searchTerm, sortQuestions),
-    onSuccess: () => {},
-  });
-
+const SearchBar = ({
+  searchTerm,
+  setSearchTerm,
+  isSearchPending,
+  setIsSearchPending,
+}) => {
   useEffect(() => {
     if (!isSearchPending) {
       return;
     }
-
     const timerId = setTimeout(async () => {
-      if (searchTerm.trim().length === 0) {
+      if (searchTerm.trim()?.length === 0) {
         return;
       }
-      searchMutation.mutate();
       setIsSearchPending(false);
     }, 1000);
 
     return () => clearTimeout(timerId);
-  }, [isSearchPending, searchTerm, searchMutation]);
+  }, [isSearchPending, searchTerm, setIsSearchPending]);
 
   const handleSearch = (event) => {
     const value = event.target.value;
@@ -43,7 +33,7 @@ const SearchBar = () => {
   };
 
   return (
-    <Box component={"form"}>
+    <FormControl>
       <TextField
         type="text"
         variant={"outlined"}
@@ -56,8 +46,9 @@ const SearchBar = () => {
           borderRadius: 1,
           border: consistentBorder,
         }}
+        inputRef={(input) => input && input.focus()}
       />
-    </Box>
+    </FormControl>
   );
 };
 

@@ -63,7 +63,11 @@ export const getQuestionsBySearchHandler = async (
   res: Response
 ) => {
   try {
+    const page = parseInt(String(req.query.page));
+    const limit = parseInt(String(req.query.limit));
     const searchTerm = String(req.query.term);
+    const sort = String(req.query.sort);
+
     logger.info({
       message: "getQuestionsBySearchHandler searchTerm",
       value: searchTerm
@@ -74,13 +78,12 @@ export const getQuestionsBySearchHandler = async (
       return;
     }
 
-    const sort = String(req.query.sort);
     logger.info({
       message: "getQuestionsBySearchHandler sort",
       value: sort
     });
 
-    const query = await getQuestionsBySearch(searchTerm, sort);
+    const query = await getQuestionsBySearch(page, limit, searchTerm, sort);
     logger.info({
       message: "getQuestionsBySearchHandler query",
       value: query

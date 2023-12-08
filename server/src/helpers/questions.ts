@@ -128,6 +128,8 @@ export const getAllQuestionsByUser = async (userId: number, sort: string) => {
 };
 
 export const getQuestionsBySearch = async (
+  page: number,
+  limit: number,
   searchTerm: string,
   sort: string
 ) => {
@@ -163,6 +165,8 @@ export const getQuestionsBySearch = async (
     where: sql`lower(${
       questions.question
     }) like lower('%'||${sql`${searchTerm}`}||'%')`,
+    limit,
+    offset: (page - 1) * limit,
     orderBy: (questions, { desc }) =>
       sort === "popular"
         ? [desc(questions.likes)]
