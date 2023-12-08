@@ -13,3 +13,4 @@ export const consistentLinkColor = "rgb(255,255,255)";
 export const consistentLinkHoverColor = "rgb(253,216,53)";
 export const consistentHeroCardBorder = "3px solid rgba(255, 255, 255, 0.3)";
 export const consistentHeroCardPadding = 4;
+export const consistentTextShadowGlow = "0 0 8px rgba(255, 255, 255, 0.3)";

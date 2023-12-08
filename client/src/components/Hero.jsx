@@ -1,26 +1,36 @@
-import { Box, Typography } from "@mui/material";
+import { useContext } from "react";
+import { Box, Typography, Button } from "@mui/material";
+import { AuthContext } from "../context/AuthContext";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import {
   consistentBgColor,
   consistentBorderRadius,
   consistentHeroCardPadding,
   consistentHeroCardBorder,
-  // consistentHeaderFooterBorder,
+  consistentTextShadowGlow,
 } from "../themes/ConsistentStyles";
-import { starCharacterFlyingCape } from "../themes/StarCharacters";
+import {
+  starCharacterFlyingCape,
+  starCharacterHulaHoop,
+  starCharacterJobKey,
+  starCharacterPencilSpeechBubble,
+  starCharacterMagnifyingGlass,
+} from "../themes/StarCharacters";
 
 const Hero = () => {
+  const { login } = useContext(AuthContext);
   return (
-    <Box>
+    <Box my={4} mx={2}>
+      {/* Hero Main Card */}
       <Box
         display={"flex"}
         justifyContent={"center"}
         flexWrap={{ xs: "wrap", md: "nowrap" }}
         alignItems={"center"}
         gap={6}
-        m={4}
+        mb={4}
         p={consistentHeroCardPadding}
         border={consistentHeroCardBorder}
-        // border={consistentHeaderFooterBorder}
         borderRadius={consistentBorderRadius}
         bgcolor={consistentBgColor}
         color={"white"}>
@@ -28,18 +38,19 @@ const Hero = () => {
           component={"img"}
           src={starCharacterFlyingCape}
           alt="star character flying with a cape on"
-          maxHeight={"128px"}
+          maxHeight={{ xs: "140px", md: "160px" }}
           maxWidth={"100%"}
           className="star-cape"
         />
-        <Box>
+        <Box display={"flex"} flexDirection={"column"}>
           <Typography variant={"heromaincardtitle"}>
             Guarantee{" "}
             <Typography
               component={"span"}
               variant={"heromaincardtitle"}
               color="primary"
-              fontWeight={600}>
+              fontWeight={600}
+              sx={{ textShadow: consistentTextShadowGlow }}>
               interview success
             </Typography>{" "}
             <br />
@@ -48,8 +59,9 @@ const Hero = () => {
               component={"span"}
               variant={"heromaincardtitle"}
               color="primary"
-              fontWeight={600}>
-              tech career
+              fontWeight={600}
+              sx={{ textShadow: consistentTextShadowGlow }}>
+              dream tech career
             </Typography>{" "}
             <br />
             with the help of our{" "}
@@ -57,95 +69,154 @@ const Hero = () => {
               component={"span"}
               variant={"heromaincardtitle"}
               color="primary"
-              fontWeight={600}>
+              fontWeight={600}
+              sx={{ textShadow: consistentTextShadowGlow }}>
               community!
             </Typography>
           </Typography>
+          <Box alignSelf={"flex-end"} mt={2}>
+            <Button variant="contained" size="large" onClick={login}>
+              Reach for the STARs
+            </Button>
+          </Box>
         </Box>
       </Box>
+
+      {/* Hero Sub Card Grid */}
       <Box
         display={"grid"}
-        gridTemplateColumns={"1fr 1fr"}
-        gridTemplateRows={"1fr 1fr"}
-        rowGap={4}
-        columnGap={4}
-        m={4}
-        color={"white"}>
+        gridTemplateColumns={{ xs: "1fr", sm: "1fr", md: "1fr 1fr" }}
+        gap={6}>
+        {/* Hero Sub Card 1 */}
         <Box
-          p={4}
+          px={3}
+          py={2}
           border={consistentHeroCardBorder}
           borderRadius={consistentBorderRadius}
-          bgcolor={consistentBgColor}>
-          <Typography textAlign={"center"} fontSize={"2rem"} fontWeight={500}>
+          bgcolor={consistentBgColor}
+          display={"flex"}
+          alignItems={"center"}
+          gap={2}>
+          <Box>
             <Typography
-              component={"span"}
               color="primary"
-              fontSize={"inherit"}
-              fontWeight={700}>
-              S
+              component={"p"}
+              variant={"herosubcardtitle"}
+              sx={{ textShadow: consistentTextShadowGlow }}>
+              Shine
             </Typography>
-            ituation
-          </Typography>
-          <Typography>
-            Set the Scene: Outline the context of your experience or challenge.
-          </Typography>
+            <Typography component={"p"} variant={"herosubcardslogan"} mt={2}>
+              Refine your abilities, shine in every interview
+            </Typography>
+            <Typography component={"p"} variant={"herosubcardsubtitle"} mt={2}>
+              Skills Enhancement
+            </Typography>
+          </Box>
+          <Box>
+            <Box
+              component={"img"}
+              maxHeight={"128px"}
+              src={starCharacterMagnifyingGlass}></Box>
+          </Box>
         </Box>
+
+        {/* Hero Sub Card 2 */}
         <Box
-          p={4}
+          px={3}
+          py={2}
           border={consistentHeroCardBorder}
           borderRadius={consistentBorderRadius}
-          bgcolor={consistentBgColor}>
-          <Typography textAlign={"center"} fontSize={"2rem"} fontWeight={500}>
+          bgcolor={consistentBgColor}
+          display={"flex"}
+          alignItems={"center"}
+          gap={2}>
+          <Box>
+            <Box
+              component={"img"}
+              maxHeight={"132px"}
+              src={starCharacterPencilSpeechBubble}></Box>
+          </Box>
+          <Box textAlign={"right"}>
             <Typography
-              component={"span"}
               color="primary"
-              fontSize={"inherit"}
-              fontWeight={700}>
-              T
+              component={"p"}
+              variant={"herosubcardtitle"}
+              sx={{ textShadow: consistentTextShadowGlow }}>
+              Thrive
             </Typography>
-            ask
-          </Typography>
-          <Typography>
-            Define Your Goal: Specify the task or objective you were assigned.
-          </Typography>
+            <Typography component={"p"} variant={"herosubcardslogan"} mt={2}>
+              Crafting success, through expert guidance
+            </Typography>
+            <Typography component={"p"} variant={"herosubcardsubtitle"} mt={2}>
+              Tailored Feedback
+            </Typography>
+          </Box>
         </Box>
+
+        {/* Hero Sub Card 3 */}
         <Box
-          p={4}
+          px={3}
+          py={2}
           border={consistentHeroCardBorder}
           borderRadius={consistentBorderRadius}
-          bgcolor={consistentBgColor}>
-          <Typography textAlign={"center"} fontSize={"2rem"} fontWeight={500}>
+          bgcolor={consistentBgColor}
+          display={"flex"}
+          alignItems={"center"}
+          gap={2}>
+          <Box>
             <Typography
-              component={"span"}
               color="primary"
-              fontSize={"inherit"}
-              fontWeight={700}>
-              A
+              component={"p"}
+              variant={"herosubcardtitle"}
+              sx={{ textShadow: consistentTextShadowGlow }}>
+              Achieve
             </Typography>
-            ction
-          </Typography>
-          <Typography>
-            Take Initiative: Describe the steps you took to address the task.
-          </Typography>
+            <Typography component={"p"} variant={"herosubcardslogan"} mt={2}>
+              Nurturing potential, building futures
+            </Typography>
+            <Typography component={"p"} variant={"herosubcardsubtitle"} mt={2}>
+              Attain your Goal
+            </Typography>
+          </Box>
+          <Box>
+            <Box
+              component={"img"}
+              maxHeight={"112px"}
+              src={starCharacterHulaHoop}></Box>
+          </Box>
         </Box>
+
+        {/* Hero Sub Card 4 */}
         <Box
-          p={4}
+          px={3}
+          py={2}
           border={consistentHeroCardBorder}
           borderRadius={consistentBorderRadius}
-          bgcolor={consistentBgColor}>
-          <Typography textAlign={"center"} fontSize={"2rem"} fontWeight={500}>
+          bgcolor={consistentBgColor}
+          display={"flex"}
+          alignItems={"center"}
+          gap={2}>
+          <Box>
+            <Box
+              component={"img"}
+              maxHeight={"112px"}
+              src={starCharacterJobKey}></Box>
+          </Box>
+          <Box textAlign={"right"}>
             <Typography
-              component={"span"}
               color="primary"
-              fontSize={"inherit"}
-              fontWeight={700}>
-              R
+              component={"p"}
+              variant={"herosubcardtitle"}
+              sx={{ textShadow: consistentTextShadowGlow }}>
+              Rise
             </Typography>
-            esult
-          </Typography>
-          <Typography>
-            Show Impact: Share the positive outcomes of your actions.
-          </Typography>
+            <Typography component={"p"} variant={"herosubcardslogan"} mt={2}>
+              Master interviews, land your dream job
+            </Typography>
+            <Typography component={"p"} variant={"herosubcardsubtitle"} mt={2}>
+              Real World Readiness
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </Box>
@@ -247,22 +318,3 @@ export default Hero;
   </Box>
 </Box> */
 }
-
-// <Box
-//   display={"flex"}
-//   flexDirection={"column"}
-//   alignItems={"center"}
-//   py={6}
-//   color={"white"}>
-//   <Typography align={"center"} variant={"h2"} marked={"center"}>
-//     STAR - Situation, Task, Action, Result!
-//   </Typography>
-//   <Typography variant={"h5"} align={"center"} mt={6}>
-//     STAR solves a business problem.
-//   </Typography>
-//   <Typography mt={4}>
-//     At CodeYourFuture, trainees keep a brag diary to build up a bank of
-//     examples of their skills, knowledge and capabilities.
-//   </Typography>
-//   <Typography mt={4}>Build your future</Typography>
-// </Box>
