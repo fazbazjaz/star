@@ -1,6 +1,6 @@
 import { database } from "../database/connection";
 import { questions, answers, comments } from "../database/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 
 export const getQuestionsByPage = async (
   limit: number,
@@ -127,6 +127,55 @@ export const getAllQuestionsByUser = async (userId: number, sort: string) => {
   });
 };
 
+export const getQuestionsBySearch = async (
+  page: number,
+  limit: number,
+  searchTerm: string,
+  sort: string
+) => {
+  return await database.query.questions.findMany({
+    with: {
+      user: {
+        columns: {
+          firstName: true,
+          picture: true
+        }
+      },
+      answers: {
+        with: {
+          user: {
+            columns: {
+              firstName: true,
+              picture: true
+            }
+          },
+          comments: {
+            with: {
+              user: {
+                columns: {
+                  firstName: true,
+                  picture: true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    where: sql`lower(${
+      questions.question
+    }) like lower('%'||${sql`${searchTerm}`}||'%')`,
+    limit,
+    offset: (page - 1) * limit,
+    orderBy: (questions, { desc }) =>
+      sort === "popular"
+        ? [desc(questions.likes)]
+        : sort === "recentlyCreated"
+          ? [desc(questions.createdAt)]
+          : [desc(questions.updatedAt)]
+  });
+};
+
 export const createQuestion = async (userId: number, question: string) => {
   return await database
     .insert(questions)
@@ -205,7 +254,6 @@ export const createComment = async (
 };
 
 export const editComment = async (
-  // questionId: number,
   answerId: number,
   commentId: number,
   comment: string
@@ -217,11 +265,7 @@ export const editComment = async (
     .returning();
 };
 
-export const deleteComment = async (
-  // questionId: number,
-  answerId: number,
-  commentId: number
-) => {
+export const deleteComment = async (answerId: number, commentId: number) => {
   return await database
     .delete(comments)
     .where(and(eq(comments.id, commentId), eq(comments.answerId, answerId)))

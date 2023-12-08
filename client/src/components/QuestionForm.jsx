@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Box,
@@ -10,7 +10,6 @@ import {
 import HelpOutlinedIcon from "@mui/icons-material/HelpOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import postQuestion from "../api/postQuestion";
-import { SortContext } from "../context/SortContext";
 import putQuestion from "../api/putQuestion";
 import {
   consistentBorder,
@@ -23,13 +22,12 @@ import {
 } from "../themes/ConsistentStyles";
 
 const QuestionForm = ({
+  sort,
   setShowAddQuestionForm,
   questionId,
   originalQuestion,
   setShowUpdateQuestionForm,
 }) => {
-  const { sortQuestions } = useContext(SortContext);
-
   const [question, setQuestion] = useState(questionId ? originalQuestion : "");
 
   const [questionValidation, setQuestionValidation] = useState(undefined);
@@ -48,7 +46,7 @@ const QuestionForm = ({
     mutationFn: () =>
       questionId ? putQuestion(questionId, question) : postQuestion(question),
     onSuccess: () => {
-      queryClient.invalidateQueries(["questions", sortQuestions]);
+      queryClient.invalidateQueries(["questions", sort]);
       setQuestion("");
       setQuestionValidation(undefined);
       setTimeout(() => {

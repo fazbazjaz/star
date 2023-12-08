@@ -145,7 +145,9 @@ const Answer = ({ answerData }) => {
                       fontSize={"small"}
                       color={"primary"}
                     />
-                    <Typography>Situation</Typography>
+                    <Typography variant={"answersubtitles"} color={"primary"}>
+                      Situation
+                    </Typography>
                   </Box>
                   <Typography mt={1.5} variant={"answerbody"}>
                     {answerData.situation}
@@ -165,7 +167,9 @@ const Answer = ({ answerData }) => {
                       fontSize={"small"}
                       color={"primary"}
                     />
-                    <Typography>Task</Typography>
+                    <Typography variant={"answersubtitles"} color={"primary"}>
+                      Task
+                    </Typography>
                   </Box>
                   <Typography mt={1.5} variant={"answerbody"}>
                     {answerData.task}
@@ -185,7 +189,9 @@ const Answer = ({ answerData }) => {
                       fontSize={"small"}
                       color={"primary"}
                     />
-                    <Typography>Action</Typography>
+                    <Typography variant={"answersubtitles"} color={"primary"}>
+                      Action
+                    </Typography>
                   </Box>
                   <Typography mt={1.5} variant={"answerbody"}>
                     {answerData.action}
@@ -205,7 +211,9 @@ const Answer = ({ answerData }) => {
                       fontSize={"small"}
                       color={"primary"}
                     />
-                    <Typography fontSize={18}>Result</Typography>
+                    <Typography variant={"answersubtitles"} color={"primary"}>
+                      Result
+                    </Typography>
                   </Box>
                   <Typography mt={1.5} variant={"answerbody"}>
                     {answerData.result}

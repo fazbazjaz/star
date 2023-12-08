@@ -74,7 +74,8 @@ const Question = ({ questionData }) => {
           boxShadow={consistentBoxShadow}
           sx={{
             backdropFilter: consistentBackdropFilter,
-          }}>
+          }}
+          className="individual-question">
           <Box
             display={"flex"}
             flexWrap={"wrap"}
