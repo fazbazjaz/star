@@ -1,16 +1,9 @@
 import { useContext, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate, Link as RouterLink } from "react-router-dom";
-import {
-  Box,
-  Typography,
-  Button,
-  Link,
-  IconButton,
-  Avatar,
-} from "@mui/material";
+import { Box, Typography, Link, IconButton, Avatar } from "@mui/material";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
-import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
+// import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { AuthContext } from "../context/AuthContext";
@@ -26,11 +19,7 @@ import {
 } from "../themes/ConsistentStyles";
 import QuestionForm from "./QuestionForm";
 
-const Question = ({
-  questionData,
-  showAddAnswerForm,
-  setShowAddAnswerForm,
-}) => {
+const Question = ({ questionData }) => {
   const { authenticatedUser } = useContext(AuthContext);
 
   const [showUpdateQuestionForm, setShowUpdateQuestionForm] = useState(false);
@@ -94,20 +83,15 @@ const Question = ({
               display={"flex"}
               flexWrap={"wrap"}
               justifyContent={"space-between"}
-              alignItems={"center"}
-              gap={1}>
-              <Box display={"flex"}>
+              alignItems={"center"}>
+              <Box display={"flex"} gap={0.75}>
                 <Box>
                   <Avatar
                     src={questionData?.user?.picture}
                     sx={{ height: 28, width: 28 }}
                   />
                 </Box>
-                <Box
-                  display={"flex"}
-                  flexWrap={"wrap"}
-                  alignItems={"center"}
-                  border={1}>
+                <Box display={"flex"} flexWrap={"wrap"} alignItems={"center"}>
                   <HelpOutlineOutlinedIcon
                     fontSize={"medium"}
                     color="primary"
@@ -118,7 +102,7 @@ const Question = ({
                     paddingLeft={0.5}>
                     Question{" "}
                   </Typography>
-                  <Typography component={"span"} color="primary">
+                  <Typography component={"span"} color="primary" pl={0.5}>
                     ({questionData?.id})
                   </Typography>
                 </Box>
@@ -186,30 +170,32 @@ const Question = ({
             alignItems={"center"}
             flexWrap={"wrap"}
             gap={1}>
-            <Box display={"flex"} flexWrap={"wrap"} gap={0.75} border={1}>
-              <Typography variant={"body2"}>
-                ({questionData?.answers?.length}) Answers
-              </Typography>
-              <Typography variant={"body2"}>
-                (
-                {questionData?.answers?.reduce((acc, answer) => {
-                  if (answer && answer.comments && answer.comments.length > 0) {
-                    return answer.comments.length + acc;
-                  }
-                  return acc;
-                }, 0)}
-                ) Comments
-              </Typography>
-            </Box>
-            <Box>
-              {currentPage === "individualQuestionPage" && (
-                <Button
-                  variant="outlined"
-                  startIcon={<RateReviewOutlinedIcon />}
-                  onClick={() => setShowAddAnswerForm((prev) => !prev)}
-                  disabled={showAddAnswerForm}>
-                  Add an Answer
-                </Button>
+            <Box display={"flex"} flexWrap={"wrap"} gap={0.75}>
+              {questionData?.answers.length > 0 && (
+                <Typography variant={"body2"}>
+                  ({questionData?.answers?.length}) Answers
+                </Typography>
+              )}
+              {questionData?.answers?.reduce((acc, answer) => {
+                if (answer && answer.comments && answer.comments.length > 0) {
+                  return answer.comments.length + acc;
+                }
+                return acc;
+              }, 0) > 0 && (
+                <Typography variant={"body2"}>
+                  (
+                  {questionData?.answers?.reduce((acc, answer) => {
+                    if (
+                      answer &&
+                      answer.comments &&
+                      answer.comments.length > 0
+                    ) {
+                      return answer.comments.length + acc;
+                    }
+                    return acc;
+                  }, 0)}
+                  ) Comments
+                </Typography>
               )}
             </Box>
             <Box
