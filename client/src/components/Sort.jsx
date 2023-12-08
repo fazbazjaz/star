@@ -1,10 +1,15 @@
 import { FormControl, Select, MenuItem, InputLabel } from "@mui/material";
+import { consistentBgColor } from "../themes/ConsistentStyles";
 
 const Sort = ({ sort, setSort }) => {
-  console.log(`Sort sort: ${sort}`);
-
   return (
-    <FormControl variant="filled" size="small" sx={{ width: "180px" }}>
+    <FormControl
+      variant="filled"
+      size="small"
+      sx={{
+        width: "180px",
+        bgcolor: consistentBgColor,
+      }}>
       <InputLabel id="sort" label="sort" sx={{ color: "white" }}>
         Sort
       </InputLabel>
