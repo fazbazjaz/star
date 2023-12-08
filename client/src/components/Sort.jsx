@@ -1,33 +1,7 @@
-import { useContext } from "react";
-import { useLocation } from "react-router-dom";
-import { FormControl, MenuItem, Select, InputLabel } from "@mui/material";
-import { SortContext } from "../context/SortContext";
+import { FormControl, Select, MenuItem, InputLabel } from "@mui/material";
 
-const Sort = () => {
-  const {
-    sortQuestions,
-    setSortQuestions,
-    sortAnswers,
-    setSortAnswers,
-    sortProfileQuestions,
-    setSortProfileQuestions,
-  } = useContext(SortContext);
-
-  const location = useLocation();
-
-  let sortValue;
-  let setSortFunction;
-
-  if (location.pathname.includes("/questions/")) {
-    sortValue = sortAnswers;
-    setSortFunction = setSortAnswers;
-  } else if (location.pathname.includes("/questions")) {
-    sortValue = sortQuestions;
-    setSortFunction = setSortQuestions;
-  } else if (location.pathname.includes("/profile")) {
-    sortValue = sortProfileQuestions;
-    setSortFunction = setSortProfileQuestions;
-  }
+const Sort = ({ sort, setSort }) => {
+  console.log(`Sort sort: ${sort}`);
 
   return (
     <FormControl variant="filled" size="small">
@@ -36,9 +10,9 @@ const Sort = () => {
       </InputLabel>
       <Select
         id="sort"
-        value={sortValue}
+        value={sort}
         label="Sort"
-        onChange={(event) => setSortFunction(event.target.value)}>
+        onChange={(event) => setSort(event.target.value)}>
         <MenuItem value="popular" sx={{ color: "black" }}>
           Most Popular
         </MenuItem>

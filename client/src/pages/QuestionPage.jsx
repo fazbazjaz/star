@@ -1,9 +1,8 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Box, Typography, Button } from "@mui/material";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
-import { SortContext } from "../context/SortContext";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import Question from "../components/Question";
@@ -15,7 +14,7 @@ import getQuestionById from "../api/getQuestionById";
 const QuestionPage = () => {
   const { id: questionId } = useParams();
 
-  const { sortAnswers } = useContext(SortContext);
+  const [sort, setSort] = useState("popular");
 
   const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
 
@@ -25,8 +24,8 @@ const QuestionPage = () => {
     error,
     data: questionData,
   } = useQuery({
-    queryKey: ["questions", questionId, sortAnswers],
-    queryFn: () => getQuestionById(questionId, sortAnswers),
+    queryKey: ["questions", questionId, sort],
+    queryFn: () => getQuestionById(questionId, sort),
   });
 
   return (
@@ -66,7 +65,7 @@ const QuestionPage = () => {
                     <Typography variant={"pagetitle"}>
                       Answers ({questionData?.answers.length})
                     </Typography>
-                    <Sort />
+                    <Sort sort={sort} setSort={setSort} />
                   </>
                 )}
               </Box>

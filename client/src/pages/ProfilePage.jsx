@@ -1,8 +1,7 @@
+import { useContext, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useContext } from "react";
 import { Box, Typography, Avatar } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
-import { SortContext } from "../context/SortContext";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import Question from "../components/Question";
@@ -11,9 +10,9 @@ import getAllQuestionsByUserId from "../api/getAllQuestionsByUserId";
 
 const ProfilePage = () => {
   const { authenticatedUser } = useContext(AuthContext);
-  const { sortProfileQuestions } = useContext(SortContext);
-
   const userId = authenticatedUser.id;
+
+  const [sort, setSort] = useState("popular");
 
   const {
     isPending,
@@ -21,8 +20,8 @@ const ProfilePage = () => {
     error,
     data: userQuestionsData,
   } = useQuery({
-    queryKey: ["questions", userId, sortProfileQuestions],
-    queryFn: () => getAllQuestionsByUserId(userId, sortProfileQuestions),
+    queryKey: ["questions", userId, sort],
+    queryFn: () => getAllQuestionsByUserId(userId, sort),
   });
 
   return (
@@ -80,7 +79,7 @@ const ProfilePage = () => {
               <Typography variant={"pagetitle"}>
                 Your Questions ({userQuestionsData.length})
               </Typography>
-              <Sort />
+              <Sort sort={sort} setSort={setSort} />
             </Box>
             <Box display={"grid"} gap={2} mt={1}>
               {userQuestionsData.map((userQuestionData) => {

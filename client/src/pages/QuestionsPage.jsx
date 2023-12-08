@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Box, Typography, Button } from "@mui/material";
 import Loading from "../components/Loading";
@@ -8,22 +8,14 @@ import Question from "../components/Question";
 import QuestionForm from "../components/QuestionForm";
 import getQuestionsByPage from "../api/getQuestionsByPage";
 import Sort from "../components/Sort";
-import { SortContext } from "../context/SortContext";
 import getQuestionsBySearch from "../api/getQuestionsBySearch";
 
 const QuestionsPage = () => {
-  // console.log("❓🖌️ QuestionsPage RENDERED");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+  const [sort, setSort] = useState("popular");
 
   const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
-
-  // ON INTERSECTION OBSERVER WANTING TO LOAD MORE...
-  // IT TRIGGERS A USE-EFFECT AND THAT CAUSES A RE-RENDER(???)
-  // WHICH RESETS THE DEBOUNCED SEARCH TERM to ""
-  // WHICH THEN FETCHES THE getQuestionsByPage (instead of getQuestionsBySearch)
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  console.log(`❓QuestionsPage debouncedSearchTerm = ${debouncedSearchTerm}`);
-
-  const { sortQuestions } = useContext(SortContext);
 
   const {
     data: questionsByPageData,
@@ -33,8 +25,8 @@ const QuestionsPage = () => {
     status,
   } = useInfiniteQuery({
     queryKey: debouncedSearchTerm
-      ? ["questions", sortQuestions, debouncedSearchTerm]
-      : ["questions", sortQuestions],
+      ? ["questions", sort, debouncedSearchTerm]
+      : ["questions", sort],
     queryFn: debouncedSearchTerm ? getQuestionsBySearch : getQuestionsByPage,
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
@@ -44,7 +36,6 @@ const QuestionsPage = () => {
   });
 
   useEffect(() => {
-    // console.log("❓🔃 QuestionsPage useEffect RAN");
     const allQuestions = document.querySelectorAll(".individual-question");
     const lastQuestion = allQuestions[allQuestions.length - 1];
 
@@ -69,63 +60,61 @@ const QuestionsPage = () => {
 
   return (
     <Box py={2}>
-      {status === "pending" && <Loading />}
-      {status === "error" && <Error message={error.message} />}
-      {questionsByPageData && (
-        <>
-          <Box>
+      <Box>
+        <Box
+          display={"flex"}
+          flexWrap={"wrap"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+          gap={1}>
+          <Box display={"flex"} flexWrap={"wrap"} alignItems={"center"} gap={2}>
+            <Typography variant={"pagetitle"}>
+              All Questions (
+              {questionsByPageData &&
+                questionsByPageData.pages
+                  .map((page) => page.length)
+                  .reduce((acc, cv) => acc + cv, 0)}
+              )
+            </Typography>
             <Box
               display={"flex"}
               flexWrap={"wrap"}
-              justifyContent={"space-between"}
               alignItems={"center"}
               gap={1}>
-              <Box
-                display={"flex"}
-                flexWrap={"wrap"}
-                alignItems={"center"}
-                gap={2}>
-                <Typography variant={"pagetitle"}>
-                  All Questions (
-                  {questionsByPageData.pages
-                    .map((page) => page.length)
-                    .reduce((acc, cv) => acc + cv, 0)}
-                  )
-                </Typography>
-                <Box
-                  display={"flex"}
-                  flexWrap={"wrap"}
-                  alignItems={"center"}
-                  gap={1}>
-                  <Sort />
-                  <SearchBar setDebouncedSearchTerm={setDebouncedSearchTerm} />
-                </Box>
-              </Box>
-              <Box>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setShowAddQuestionForm((prev) => !prev)}
-                  disabled={showAddQuestionForm}
-                  sx={{ display: "flex", gap: 0.5 }}>
-                  Add a Question
-                </Button>
-              </Box>
-            </Box>
-            {showAddQuestionForm && (
-              <QuestionForm setShowAddQuestionForm={setShowAddQuestionForm} />
-            )}
-            <Box display={"grid"} gap={2} mt={1}>
-              {questionsByPageData?.pages.map((page) =>
-                page?.map((questionData) => (
-                  <Question key={questionData.id} questionData={questionData} />
-                ))
-              )}
+              <Sort sort={sort} setSort={setSort} />
+              <SearchBar setDebouncedSearchTerm={setDebouncedSearchTerm} />
             </Box>
           </Box>
-          {isFetchingNextPage && <Loading />}
-        </>
-      )}
+          <Box>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setShowAddQuestionForm((prev) => !prev)}
+              disabled={showAddQuestionForm}
+              sx={{ display: "flex", gap: 0.5 }}>
+              Add a Question
+            </Button>
+          </Box>
+        </Box>
+        {showAddQuestionForm && (
+          <QuestionForm
+            setShowAddQuestionForm={setShowAddQuestionForm}
+            sort={sort}
+          />
+        )}
+        {status === "pending" && <Loading />}
+        {status === "error" && <Error message={error.message} />}
+        {questionsByPageData && (
+          <Box display={"grid"} gap={2} mt={1}>
+            {questionsByPageData?.pages.map((page) =>
+              page?.map((questionData) => (
+                <Question key={questionData.id} questionData={questionData} />
+              ))
+            )}
+          </Box>
+        )}
+      </Box>
+      {isFetchingNextPage && <Loading />}
     </Box>
   );
 };
