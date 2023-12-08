@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
-import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import {
   consistentBgColor,
   consistentBorderRadius,
