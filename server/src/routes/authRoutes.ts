@@ -1,13 +1,14 @@
-import express, { Request, Response } from "express";
-import { idTokenHandler } from "../controllers/authController";
+import express from "express";
+import {
+  idTokenHandler,
+  userHandler,
+  authorizationCodePopupHandler,
+  authorizationCodeRedirectHandler
+} from "../controllers/authController";
 
 export const authRouter = express.Router();
 
-// for a basic check on /api/auth/
-authRouter.get("/", (req: Request, res: Response) => {
-  res.status(200).json({
-    message: "STAR Server /api/auth Auth Route"
-  });
-});
-
 authRouter.post("/google/idtoken", idTokenHandler);
+authRouter.post("/google/authorizationcode", authorizationCodePopupHandler);
+authRouter.get("/google/authorizationcode", authorizationCodeRedirectHandler);
+authRouter.get("/user", userHandler);

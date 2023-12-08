@@ -5,10 +5,10 @@ import { logger } from "../logger";
 export const getAllUsersHandler = async (req: Request, res: Response) => {
   try {
     const query = await getAllUsers();
-    logger.info({ message: "getAllUsers query", value: query });
+    logger.info({ message: "getAllUsersHandler query", value: query });
 
     const data = query;
-    logger.info({ message: "getAllUsers data", value: data });
+    logger.info({ message: "getAllUsersHandler data", value: data });
 
     res.json(data);
   } catch (error) {
@@ -21,15 +21,15 @@ export const getUserByIdHandler = async (req: Request, res: Response) => {
   try {
     const userId = Number(req.params.id);
     logger.info({
-      message: "getUserById userId",
+      message: "getUserByIdHandler userId",
       userId
     });
 
     const query = await getUserById(userId);
-    logger.info({ message: "getUserById query", value: query });
+    logger.info({ message: "getUserByIdHandler query", value: query });
 
     const data = query[0];
-    logger.info({ message: "getUserById data", value: data });
+    logger.info({ message: "getUserByIdHandler data", value: data });
 
     res.status(200).json(data);
   } catch (error) {

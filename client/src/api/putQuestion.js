@@ -1,13 +1,14 @@
-const putQuestion = async (questionId, editedQuestion) => {
+const putQuestion = async (questionId, question) => {
   const response = await fetch(
     `${import.meta.env.VITE_SERVER_URL}/api/questions/${questionId}`,
     {
       method: "PUT",
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("customJWT")}`,
       },
-      body: JSON.stringify({ question: editedQuestion }),
+      // credentials: "include",
+      body: JSON.stringify({ question }),
     }
   );
   // console.log("putQuestion response:", response);

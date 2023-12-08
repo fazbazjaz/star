@@ -1,5 +1,5 @@
 import { createUser, getAllUsers, getUserById } from "../helpers/users";
-import { disconnectFromDatabase } from "../helpers/database";
+import { disconnectFromDatabase } from "./helpers/database";
 import { cleanAll } from "./helpers/dbCleaner";
 
 describe("Users", () => {
@@ -13,9 +13,9 @@ describe("Users", () => {
 
   test("createUser", async () => {
     await createUser({
-      google_id: "0123456789",
-      firstname: "Bob",
-      lastname: "Smith",
+      googleId: "0123456789",
+      firstName: "Bob",
+      lastName: "Smith",
       email: "bob@gmail.com"
     });
     expect((await getAllUsers()).length).toBe(1);
@@ -23,9 +23,9 @@ describe("Users", () => {
 
   test("getUserById", async () => {
     const user = await createUser({
-      google_id: "0123456789",
-      firstname: "Bob",
-      lastname: "Smith",
+      googleId: "0123456789",
+      firstName: "Bob",
+      lastName: "Smith",
       email: "bob@gmail.com"
     });
     const result = await getUserById(user[0].id);

@@ -5,26 +5,41 @@ import LoginLogoutButton from "./LoginLogoutButton";
 import { AuthContext } from "../context/AuthContext";
 
 const Navigation = () => {
-  // get the userCookie from AuthContext
-  const { userCookie } = useContext(AuthContext);
+  const { authenticatedUser } = useContext(AuthContext);
 
   return (
     <Box display={"flex"} flexWrap={"wrap"} gap={1}>
-      <Button component={NavLink} to={"/"} variant="contained">
+      <Button size={"small"} component={NavLink} to={"/"} variant="contained">
         Home
       </Button>
-      <Button component={NavLink} to={"/about"} variant="contained">
+      <Button
+        size={"small"}
+        component={NavLink}
+        to={"/about"}
+        variant="contained">
         About
       </Button>
-      {userCookie && (
+      {authenticatedUser && (
         <>
-          <Button component={NavLink} to={"/profile"} variant="contained">
+          <Button
+            size={"small"}
+            component={NavLink}
+            to={"/profile"}
+            variant="contained">
             Profile
           </Button>
-          <Button component={NavLink} to={"/questions"} variant="contained">
+          <Button
+            size={"small"}
+            component={NavLink}
+            to={"/questions"}
+            variant="contained">
             Questions
           </Button>
-          <Button component={NavLink} to={"/users"} variant="contained">
+          <Button
+            size={"small"}
+            component={NavLink}
+            to={"/users"}
+            variant="contained">
             Users
           </Button>
         </>

@@ -1,39 +1,53 @@
 import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware";
 import {
-  getAllQuestionsHandler,
+  getQuestionsByPageHandler,
+  getOneQuestionHandler,
+  getAllQuestionsByUserHandler,
   createQuestionHandler,
-  deleteQuestionHandler,
-  findAllQuestionsByUserHandler,
-  findOneQuestionHandler,
   createAnswerHandler,
   createCommentHandler,
   editQuestionHandler,
-  deleteAnswerHandler
+  editAnswerHandler,
+  editCommentHandler,
+  deleteQuestionHandler,
+  deleteAnswerHandler,
+  deleteCommentHandler
 } from "../controllers/questionsController";
 
 export const questionsRouter = express.Router();
 
-// Questions
-questionsRouter.get("/", authMiddleware, getAllQuestionsHandler);
-questionsRouter.post("/", authMiddleware, createQuestionHandler);
-questionsRouter.put("/:id", authMiddleware, editQuestionHandler);
-questionsRouter.delete("/:id", authMiddleware, deleteQuestionHandler);
+// Apply authMiddleware to all Routes
+questionsRouter.use(authMiddleware);
 
-questionsRouter.get("/:id", authMiddleware, findOneQuestionHandler);
-questionsRouter.get("/user/:id", authMiddleware, findAllQuestionsByUserHandler);
+// Questions
+questionsRouter
+  .route("/")
+  .get(getQuestionsByPageHandler)
+  .post(createQuestionHandler);
+
+questionsRouter
+  .route("/:id")
+  .get(getOneQuestionHandler)
+  .put(editQuestionHandler)
+  .delete(deleteQuestionHandler);
+
+questionsRouter.route("/user/:id").get(getAllQuestionsByUserHandler);
 
 // Answers
-questionsRouter.post("/:id/answers", authMiddleware, createAnswerHandler);
-questionsRouter.delete(
-  "/:id/answers/:answerId",
-  authMiddleware,
-  deleteAnswerHandler
-);
+questionsRouter.route("/:id/answers").post(createAnswerHandler);
+
+questionsRouter
+  .route("/:id/answers/:answerId")
+  .put(editAnswerHandler)
+  .delete(deleteAnswerHandler);
 
 // Comments
-questionsRouter.post(
-  "/:id/answers/:answerId/comments",
-  authMiddleware,
-  createCommentHandler
-);
+questionsRouter
+  .route("/:id/answers/:answerId/comments")
+  .post(createCommentHandler);
+
+questionsRouter
+  .route("/:id/answers/:answerId/comments/:commentId")
+  .put(editCommentHandler)
+  .delete(deleteCommentHandler);

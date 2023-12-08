@@ -1,39 +1,44 @@
-const formatDate = (date) => {
-  date = new Date(date);
+const formatDate = (postgresqlTimestamp) => {
   const now = new Date();
-  const difference = now - date;
+  const date = new Date(postgresqlTimestamp);
 
-  const daysAgo = Math.floor(difference / (1000 * 60 * 60 * 24));
+  const millisecondsDifference = now - date;
 
-  if (daysAgo === 0) {
-    // Today
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const ampm = hours >= 12 ? "pm" : "am";
-    const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-    return `today, at ${formattedHours}.${
-      minutes < 10 ? "0" : ""
-    }${minutes}${ampm}`;
-  } else if (daysAgo === 1) {
-    // Yesterday
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const ampm = hours >= 12 ? "pm" : "am";
-    const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-    return `yesterday, at ${formattedHours}.${
-      minutes < 10 ? "0" : ""
-    }${minutes}${ampm}`;
+  const daysDifference = Math.floor(
+    millisecondsDifference / (24 * 60 * 60 * 1000)
+  );
+
+  let partOne;
+
+  if (daysDifference === 0) {
+    partOne = "today";
+  } else if (daysDifference === 1) {
+    partOne = "yesterday";
+  } else if (daysDifference < 7) {
+    partOne = `${daysDifference} days ago`;
+  } else if (daysDifference < 30) {
+    const weeks = Math.floor(daysDifference / 7);
+    partOne = `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
+  } else if (daysDifference < 365) {
+    const months = Math.floor(daysDifference / 30);
+    partOne = `${months} ${months === 1 ? "month" : "months"} ago`;
   } else {
-    // 2+ Days Ago
+    const years = Math.floor(daysDifference / 365);
+    partOne = `${years} ${years === 1 ? "year" : "years"} ago`;
+  }
+
+  const formatTime = (date) => {
     const hours = date.getHours();
     const minutes = date.getMinutes();
-    const ampm = hours >= 12 ? "pm" : "am";
-    const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+    const amOrPm = hours >= 12 ? "pm" : "am";
+    const formattedHours = (hours % 12 || 12).toString().padStart(2, "0");
+    const formattedMinutes = minutes.toString().padStart(2, "0");
+    return `${formattedHours}:${formattedMinutes}${amOrPm}`;
+  };
 
-    return `${daysAgo} days ago, at ${formattedHours}.${
-      minutes < 10 ? "0" : ""
-    }${minutes}${ampm}`;
-  }
+  const partTwo = formatTime(date);
+
+  return `${partOne}, at ${partTwo}`;
 };
 
 export default formatDate;

@@ -1,5 +1,5 @@
+import { useContext, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 import {
   Box,
   Button,
@@ -10,6 +10,8 @@ import {
 import HelpOutlinedIcon from "@mui/icons-material/HelpOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import postQuestion from "../api/postQuestion";
+import { SortContext } from "../context/SortContext";
+import putQuestion from "../api/putQuestion";
 import {
   consistentBorder,
   consistentBorderRadius,
@@ -20,8 +22,16 @@ import {
   consistentFormFieldBorder,
 } from "../themes/ConsistentStyles";
 
-const AddQuestionForm = ({ setShowAddQuestionForm }) => {
-  const [question, setQuestion] = useState("");
+const QuestionForm = ({
+  setShowAddQuestionForm,
+  questionId,
+  originalQuestion,
+  setShowUpdateQuestionForm,
+}) => {
+  const { sortQuestions } = useContext(SortContext);
+
+  const [question, setQuestion] = useState(questionId ? originalQuestion : "");
+
   const [questionValidation, setQuestionValidation] = useState(undefined);
 
   const changeHandler = (event) => {
@@ -34,19 +44,24 @@ const AddQuestionForm = ({ setShowAddQuestionForm }) => {
 
   const queryClient = useQueryClient();
 
-  const addQuestionMutation = useMutation({
-    mutationFn: () => postQuestion(question),
+  const questionMutation = useMutation({
+    mutationFn: () =>
+      questionId ? putQuestion(questionId, question) : postQuestion(question),
     onSuccess: () => {
-      queryClient.refetchQueries(["questions"]);
+      queryClient.invalidateQueries(["questions", sortQuestions]);
       setQuestion("");
       setQuestionValidation(undefined);
       setTimeout(() => {
-        setShowAddQuestionForm((prev) => !prev);
+        if (questionId) {
+          setShowUpdateQuestionForm(false);
+        } else {
+          setShowAddQuestionForm((prev) => !prev);
+        }
       }, 1000);
     },
   });
 
-  const { isPending, isError, error, isSuccess } = addQuestionMutation;
+  const { isPending, isError, error, isSuccess } = questionMutation;
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -56,9 +71,11 @@ const AddQuestionForm = ({ setShowAddQuestionForm }) => {
     if (!questionValidation) {
       return;
     }
-    if (questionValidation) {
-      addQuestionMutation.mutate();
+    if (questionId && question === originalQuestion) {
+      setShowUpdateQuestionForm(false);
+      return;
     }
+    questionMutation.mutate();
   };
 
   return (
@@ -81,7 +98,7 @@ const AddQuestionForm = ({ setShowAddQuestionForm }) => {
           <Box display={"flex"} alignItems={"center"} gap={0.5} mb={1}>
             <HelpOutlinedIcon fontSize="medium" color="primary" />
             <Typography variant={"questionformtitle"} color={"primary"}>
-              Add your Question
+              {questionId ? "Edit your Question" : "Add your Question"}
             </Typography>
           </Box>
           <TextareaAutosize
@@ -111,7 +128,11 @@ const AddQuestionForm = ({ setShowAddQuestionForm }) => {
           <Box display={"flex"} alignItems={"center"} gap={1} mt={1.5}>
             <Button
               variant={"contained"}
-              onClick={() => setShowAddQuestionForm((prev) => !prev)}>
+              onClick={() =>
+                questionId
+                  ? setShowUpdateQuestionForm(false)
+                  : setShowAddQuestionForm((prev) => !prev)
+              }>
               Cancel
             </Button>
             <Button
@@ -119,7 +140,7 @@ const AddQuestionForm = ({ setShowAddQuestionForm }) => {
               type={"submit"}
               endIcon={<SendIcon />}
               disabled={isPending || !questionValidation}>
-              Add Question
+              {questionId ? "Edit Question" : "Add Question"}
             </Button>
           </Box>
           <Box>
@@ -160,4 +181,4 @@ const AddQuestionForm = ({ setShowAddQuestionForm }) => {
   );
 };
 
-export default AddQuestionForm;
+export default QuestionForm;

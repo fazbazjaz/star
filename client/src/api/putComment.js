@@ -1,10 +1,10 @@
-const postComment = async (questionId, answerId, comment) => {
+const putComment = async (questionId, answerId, commentId, comment) => {
   const response = await fetch(
     `${
       import.meta.env.VITE_SERVER_URL
-    }/api/questions/${questionId}/answers/${answerId}/comments`,
+    }/api/questions/${questionId}/answers/${answerId}/comments/${commentId}`,
     {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("customJWT")}`,
@@ -13,15 +13,15 @@ const postComment = async (questionId, answerId, comment) => {
       body: JSON.stringify({ comment }),
     }
   );
-  // console.log("postComment response", response);
+  // console.log("putComment response:", response);
   if (!response.ok) {
     throw new Error(
-      `${response.status} ${response.statusText} : postComment failed`
+      `${response.status} ${response.statusText} : editAnswer failed`
     );
   }
   const data = await response.json();
-  // console.log("postComment data", data);
+  // console.log("putComment data:", data);
   return data;
 };
 
-export default postComment;
+export default putComment;

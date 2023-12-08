@@ -1,13 +1,19 @@
 import { useContext, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate, Link as RouterLink } from "react-router-dom";
-import { Box, Typography, Button, Link, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  // Button,
+  Link,
+  IconButton,
+  Avatar,
+} from "@mui/material";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
-import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
+// import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { AuthContext } from "../context/AuthContext";
-import EditQuestionForm from "./EditQuestionForm";
 import deleteQuestion from "../api/deleteQuestion";
 import formatDate from "../utils/formatDate";
 import {
@@ -18,20 +24,15 @@ import {
   consistentBackdropFilter,
   consistentLinkColor,
 } from "../themes/ConsistentStyles";
+import QuestionForm from "./QuestionForm";
 
-const Question = ({
-  questionData,
-  showAddAnswerForm,
-  setShowAddAnswerForm,
-}) => {
-  console.log("Question questionData:", questionData);
+const Question = ({ questionData }) => {
+  const { authenticatedUser } = useContext(AuthContext);
 
-  const { userCookie } = useContext(AuthContext);
-
-  const [isEditing, setIsEditing] = useState(false);
+  const [showUpdateQuestionForm, setShowUpdateQuestionForm] = useState(false);
 
   const handleEdit = async () => {
-    setIsEditing(true);
+    setShowUpdateQuestionForm(true);
   };
 
   const location = useLocation();
@@ -58,10 +59,8 @@ const Question = ({
       console.error(error);
     },
     onSuccess: () => {
-      if (currentPage === "allQuestionsPage" || currentPage === "profilePage") {
-        queryClient.refetchQueries(["questions"]);
-      } else if (currentPage === "individualQuestionPage") {
-        queryClient.removeQueries(["question", questionId]);
+      queryClient.invalidateQueries(["questions", questionId]);
+      if (currentPage === "individualQuestionPage") {
         navigate("/questions");
       }
     },
@@ -84,38 +83,60 @@ const Question = ({
           sx={{
             backdropFilter: consistentBackdropFilter,
           }}>
-          <Box display={"flex"} alignItems={"center"} gap={0.5}>
-            <HelpOutlineOutlinedIcon fontSize={"medium"} color="primary" />
-            <Typography variant={"questiontitle"} color="primary">
-              Question
-            </Typography>
-            <Typography variant={"body2"}>| id: {questionData.id}</Typography>
-            <Typography variant={"body2"}>
-              | by userId: {questionData.userId}
-            </Typography>
-            <Typography variant={"body2"}>
-              | Answers (
-              {questionData?.answers?.length
-                ? questionData.answers.length
-                : "x"}
-              )
-            </Typography>
-            <Typography variant={"body2"}>
-              | Comments (
-              {questionData?.answers?.comments?.length
-                ? questionData?.answers?.comments?.length
-                : "x"}
-              )
-            </Typography>
-            <Box marginLeft={"auto"}>
-              {questionData.userId === userCookie.id && (
-                <IconButton
-                  onClick={() => handleEdit(questionData.id)}
-                  color="primary">
+          <Box display={"flex"} alignItems={"center"}>
+            <Box>
+              <Box display={"flex"} alignItems={"center"} gap={0.75}>
+                <HelpOutlineOutlinedIcon
+                  fontSize={"medium"}
+                  color="primary"
+                  sx={{ alignSelf: "center" }}
+                />
+                <Typography variant={"questiontitle"} color="primary">
+                  Question ({questionData?.id})
+                </Typography>
+                <Avatar
+                  src={questionData?.user?.picture}
+                  sx={{ height: 24, width: 24 }}
+                />
+                <Typography variant={"body2"}>
+                  by {questionData?.user?.firstName}
+                </Typography>
+                <Box
+                  display={"flex"}
+                  alignItems={"center"}
+                  flexWrap={"wrap"}
+                  gap={0.5}>
+                  <Typography variant={"body2"}>
+                    ({questionData?.answers?.length}) Answers
+                  </Typography>
+                  <Typography variant={"body2"}>
+                    (
+                    {questionData?.answers?.reduce((acc, answer) => {
+                      if (
+                        answer &&
+                        answer.comments &&
+                        answer.comments.length > 0
+                      ) {
+                        return answer.comments.length + acc;
+                      }
+                      return acc;
+                    }, 0)}
+                    ) Comments
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              marginLeft={"auto"}
+              display={"flex"}
+              alignItems={"center"}
+              gap={0.5}>
+              {questionData.userId === authenticatedUser.id && (
+                <IconButton onClick={handleEdit} color="primary">
                   <EditOutlinedIcon />
                 </IconButton>
               )}
-              {questionData.userId === userCookie.id && (
+              {questionData.userId === authenticatedUser.id && (
                 <IconButton
                   onClick={() => handleDelete(questionData.id)}
                   color="primary">
@@ -124,61 +145,48 @@ const Question = ({
               )}
             </Box>
           </Box>
-          <Box mt={1}>
-            {!isEditing &&
+          <Box my={1}>
+            {!showUpdateQuestionForm &&
               (currentPage === "allQuestionsPage" ||
                 currentPage === "profilePage") && (
                 <Link
                   component={RouterLink}
                   to={`/questions/${questionData.id}`}
                   color={consistentLinkColor}
-                  variant="questionbody">
+                  variant="questionbody"
+                  sx={{ wordBreak: "break-word" }}>
                   {questionData.question}
                 </Link>
               )}
-            {!isEditing && currentPage === "individualQuestionPage" && (
-              <Typography variant={"questionbody"}>
-                {questionData.question}
-              </Typography>
-            )}
-            {isEditing && (
-              <EditQuestionForm
+            {!showUpdateQuestionForm &&
+              currentPage === "individualQuestionPage" && (
+                <Typography
+                  variant={"questionbody"}
+                  sx={{ wordBreak: "break-word" }}>
+                  {questionData.question}
+                </Typography>
+              )}
+            {showUpdateQuestionForm && (
+              <QuestionForm
                 questionId={questionData.id}
                 originalQuestion={questionData.question}
-                setIsEditing={setIsEditing}
+                setShowUpdateQuestionForm={setShowUpdateQuestionForm}
               />
             )}
           </Box>
           <Box
+            marginLeft={"auto"}
             display={"flex"}
-            justifyContent={"space-between"}
-            flexWrap={"wrap"}
-            gap={1}>
-            <Box>
-              {currentPage === "individualQuestionPage" && (
-                <Box mt={1}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<RateReviewOutlinedIcon />}
-                    onClick={() => setShowAddAnswerForm((prev) => !prev)}
-                    disabled={showAddAnswerForm}>
-                    Add an Answer
-                  </Button>
-                </Box>
-              )}
-            </Box>
-            <Box
-              display={"flex"}
-              flexDirection={"column"}
-              justifyContent={"flex-end"}
-              alignItems={"flex-end"}>
-              <Typography variant={"body2"}>
-                Question updated {formatDate(questionData.updatedAt)}
-              </Typography>
-              <Typography variant={"body2"}>
-                Question created {formatDate(questionData.createdAt)}
-              </Typography>
-            </Box>
+            flexDirection={"column"}
+            justifyContent={"flex-end"}
+            justifySelf={"flex-end"}
+            alignItems={"flex-end"}>
+            <Typography variant={"body2"}>
+              updated {formatDate(questionData.updatedAt)}
+            </Typography>
+            <Typography variant={"body2"}>
+              created {formatDate(questionData.createdAt)}
+            </Typography>
           </Box>
         </Box>
       )}

@@ -1,8 +1,8 @@
-const deleteAnswer = async (questionId, answerId) => {
+const deleteComment = async (questionId, answerId, commentId) => {
   const response = await fetch(
     `${
       import.meta.env.VITE_SERVER_URL
-    }/api/questions/${questionId}/answers/${answerId}`,
+    }/api/questions/${questionId}/answers/${answerId}/comments/${commentId}`,
     {
       method: "DELETE",
       headers: {
@@ -12,15 +12,15 @@ const deleteAnswer = async (questionId, answerId) => {
       // credentials: "include",
     }
   );
-  // console.log("deleteAnswer response", response);
+  // console.log("deleteComment response", response);
   if (!response.ok) {
     throw new Error(
-      `${response.status} ${response.statusText} : deleteAnswer failed`
+      `${response.status} ${response.statusText} : deleteComment failed`
     );
   }
   const data = await response.json();
-  // console.log("deleteAnswer data", data);
+  // console.log("deleteComment data", data);
   return data;
 };
 
-export default deleteAnswer;
+export default deleteComment;

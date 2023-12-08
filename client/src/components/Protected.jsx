@@ -3,10 +3,9 @@ import { Navigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 const Protected = ({ children }) => {
-  // get the userCookie from AuthContext
-  const { userCookie } = useContext(AuthContext);
+  const { authenticatedUser } = useContext(AuthContext);
 
-  if (userCookie) {
+  if (authenticatedUser) {
     return children;
   }
 

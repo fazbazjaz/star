@@ -34,22 +34,18 @@ const Map = () => {
   }, []);
 
   return (
-    <>
+    <Box>
       <Box
         py={1.5}
         backgroundColor={consistentPrimaryBackgroundColor}
         borderTop={consistentHeaderFooterBorder}
         textAlign="center"
         color="white">
-        <Typography>Find Us - 69 Wilson St, London, UK, EC2A 2BB</Typography>
+        <Typography>Find Us at 69 Wilson St, London, UK, EC2A 2BB</Typography>
       </Box>
 
-      <Box
-        ref={mapContainerRef}
-        width={"100%"}
-        height={"30vh"}
-        marginTop={"auto"}></Box>
-    </>
+      <Box ref={mapContainerRef} width={"100%"} height={"20vh"}></Box>
+    </Box>
   );
 };
 

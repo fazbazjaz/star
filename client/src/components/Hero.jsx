@@ -4,6 +4,7 @@ import {
   consistentBorderRadius,
   consistentHeroCardPadding,
   consistentHeroCardBorder,
+  // consistentHeaderFooterBorder,
 } from "../themes/ConsistentStyles";
 import { starCharacterFlyingCape } from "../themes/StarCharacters";
 
@@ -12,11 +13,14 @@ const Hero = () => {
     <Box>
       <Box
         display={"flex"}
+        justifyContent={"center"}
+        flexWrap={{ xs: "wrap", md: "nowrap" }}
         alignItems={"center"}
-        gap={3}
+        gap={6}
         m={4}
         p={consistentHeroCardPadding}
         border={consistentHeroCardBorder}
+        // border={consistentHeaderFooterBorder}
         borderRadius={consistentBorderRadius}
         bgcolor={consistentBgColor}
         color={"white"}>
@@ -30,7 +34,7 @@ const Hero = () => {
         />
         <Box>
           <Typography variant={"heromaincardtitle"}>
-            Achieve{" "}
+            Guarantee{" "}
             <Typography
               component={"span"}
               variant={"heromaincardtitle"}
@@ -38,6 +42,7 @@ const Hero = () => {
               fontWeight={600}>
               interview success
             </Typography>{" "}
+            <br />
             and secure your{" "}
             <Typography
               component={"span"}
@@ -46,7 +51,8 @@ const Hero = () => {
               fontWeight={600}>
               tech career
             </Typography>{" "}
-            with our{" "}
+            <br />
+            with the help of our{" "}
             <Typography
               component={"span"}
               variant={"heromaincardtitle"}
@@ -142,102 +148,105 @@ const Hero = () => {
           </Typography>
         </Box>
       </Box>
-      {/* <Box border={1}>
-        <Box>
-          <Typography variant={"heromaincardbody"}>
-            Trainees and Volunteers unite for shared growth and collective
-            success!
-          </Typography>
-        </Box>
-      </Box>
-      <Box border={1}>
-        <Box>
-          <Typography variant={"heromaincardbody"}>
-            Community Connection: Engage with Peers and Professionals to Elevate
-            Your Answers.
-          </Typography>
-        </Box>
-      </Box>
-      <Box border={1}>
-        <Box>
-          <Typography variant={"heromaincardbody"}>
-            Unlock Your Potential: Navigating the Tech Interview Galaxy with
-            STAR.
-          </Typography>
-        </Box>
-      </Box>
-      <Box border={1}>
-        <Box>
-          <Typography variant={"heromaincardbody"}>
-            Guiding Stars: Elevate Your Coding Career through Interview
-            Excellence.
-          </Typography>
-        </Box>
-      </Box>
-      <Box border={1}>
-        <Box>
-          <Typography variant={"heromaincardbody"}>
-            Shine Bright in Tech: Mastering STAR Interviews for Success.
-          </Typography>
-        </Box>
-      </Box>
-      <Box border={1}>
-        <Box>
-          <Typography variant={"heromaincardbody"}>
-            You are a STAR...now realise your Potential!
-          </Typography>
-        </Box>
-      </Box>
-      <Box border={1}>
-        <Box>
-          <Typography variant={"heromaincardbody"}>
-            Dive into Excellence: Explore a Rich Bank of Interview Questions.
-          </Typography>
-        </Box>
-      </Box>
-      <Box border={1}>
-        <Box>
-          <Typography variant={"heromaincardbody"}>
-            Mentorship Matters: Industry Professionals, Contribute Your
-            Questions and Wisdom. Pay it forward and help shape the future of
-            tech by sharing your expertise with diverse and aspiring talents.
-          </Typography>
-        </Box>
-      </Box>
-      <Box border={1}>
-        <Box>
-          <Typography variant={"heromaincardbody"}>
-            Inspiration for your Interview journey learn from those who've
-            conquered the coding bootcamp and landed their dream jobs.
-          </Typography>
-        </Box>
-      </Box>
-      <Box border={1}>
-        <Box>
-          <Typography variant={"heromaincardbody"}>
-            Get expert guidance on crafting effective STAR answers.
-          </Typography>
-        </Box>
-      </Box>
-      <Box border={1}>
-        <Box>
-          <Typography variant={"heromaincardbody"}>
-            Transform your interview skills with STAR.
-          </Typography>
-        </Box>
-      </Box>
-      <Box border={1}>
-        <Box>
-          <Typography variant={"heromaincardbody"}>
-            Master the STAR technique and land your dream tech job.
-          </Typography>
-        </Box>
-      </Box> */}
     </Box>
   );
 };
 
 export default Hero;
+
+{
+  /* <Box>
+  <Box>
+    <Typography variant={"heromaincardbody"}>
+      Trainees and Volunteers unite for shared growth and collective
+      success!
+    </Typography>
+  </Box>
+</Box>
+<Box border={1}>
+  <Box>
+    <Typography variant={"heromaincardbody"}>
+      Community Connection: Engage with Peers and Professionals to Elevate
+      Your Answers.
+    </Typography>
+  </Box>
+</Box>
+<Box border={1}>
+  <Box>
+    <Typography variant={"heromaincardbody"}>
+      Unlock Your Potential: Navigating the Tech Interview Galaxy with
+      STAR.
+    </Typography>
+  </Box>
+</Box>
+<Box border={1}>
+  <Box>
+    <Typography variant={"heromaincardbody"}>
+      Guiding Stars: Elevate Your Coding Career through Interview
+      Excellence.
+    </Typography>
+  </Box>
+</Box>
+<Box border={1}>
+  <Box>
+    <Typography variant={"heromaincardbody"}>
+      Shine Bright in Tech: Mastering STAR Interviews for Success.
+    </Typography>
+  </Box>
+</Box>
+<Box border={1}>
+  <Box>
+    <Typography variant={"heromaincardbody"}>
+      You are a STAR...now realise your Potential!
+    </Typography>
+  </Box>
+</Box>
+<Box border={1}>
+  <Box>
+    <Typography variant={"heromaincardbody"}>
+      Dive into Excellence: Explore a Rich Bank of Interview Questions.
+    </Typography>
+  </Box>
+</Box>
+<Box border={1}>
+  <Box>
+    <Typography variant={"heromaincardbody"}>
+      Mentorship Matters: Industry Professionals, Contribute Your
+      Questions and Wisdom. Pay it forward and help shape the future of
+      tech by sharing your expertise with diverse and aspiring talents.
+    </Typography>
+  </Box>
+</Box>
+<Box border={1}>
+  <Box>
+    <Typography variant={"heromaincardbody"}>
+      Inspiration for your Interview journey learn from those who've
+      conquered the coding bootcamp and landed their dream jobs.
+    </Typography>
+  </Box>
+</Box>
+<Box border={1}>
+  <Box>
+    <Typography variant={"heromaincardbody"}>
+      Get expert guidance on crafting effective STAR answers.
+    </Typography>
+  </Box>
+</Box>
+<Box border={1}>
+  <Box>
+    <Typography variant={"heromaincardbody"}>
+      Transform your interview skills with STAR.
+    </Typography>
+  </Box>
+</Box>
+<Box border={1}>
+  <Box>
+    <Typography variant={"heromaincardbody"}>
+      Master the STAR technique and land your dream tech job.
+    </Typography>
+  </Box>
+</Box> */
+}
 
 // <Box
 //   display={"flex"}

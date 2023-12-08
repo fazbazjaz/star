@@ -1,18 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
-import { Box, Typography, CardMedia } from "@mui/material";
+import { Box, Typography, Avatar } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
+import { SortContext } from "../context/SortContext";
 import Loading from "../components/Loading";
 import Error from "../components/Loading";
 import Question from "../components/Question";
+import Sort from "../components/Sort";
 import getAllQuestionsByUserId from "../api/getAllQuestionsByUserId";
-import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
 
 const ProfilePage = () => {
-  // get the userCookie from AuthContext
-  const { userCookie } = useContext(AuthContext);
+  const { authenticatedUser } = useContext(AuthContext);
+  const { sortProfileQuestions } = useContext(SortContext);
 
-  const userId = userCookie.id;
+  const userId = authenticatedUser.id;
 
   const {
     isPending,
@@ -20,21 +21,12 @@ const ProfilePage = () => {
     error,
     data: userQuestionsData,
   } = useQuery({
-    queryKey: ["questions", "user", userId],
-    queryFn: () => getAllQuestionsByUserId(userId),
+    queryKey: ["questions", userId, sortProfileQuestions],
+    queryFn: () => getAllQuestionsByUserId(userId, sortProfileQuestions),
   });
 
   return (
-    <Box
-      p={3}
-      color="white"
-      sx={{
-        backgroundImage: consistentPageBackgroundImage,
-        backgroundSize: "cover",
-        backgroundPosition: "center center",
-        backgroundRepeat: "no-repeat",
-        overflow: "hidden",
-      }}>
+    <Box py={2}>
       {isPending && <Loading />}
       {isError && <Error message={error.message} />}
       {userQuestionsData && (
@@ -47,24 +39,17 @@ const ProfilePage = () => {
             flexWrap={"wrap"}
             gap={{ xs: 1, sm: 1.5 }}
             mt={1}>
-            <CardMedia
-              component={"img"}
-              image={userCookie.picture}
+            <Avatar
+              src={authenticatedUser.picture}
               sx={{
                 height: 48,
                 width: 48,
-                gridTemplateRows: "span 2",
-                borderRadius: "0.5rem",
               }}
             />
             <Box>
-              <Typography variant={"body2"}>User ID:</Typography>
-              <Typography fontWeight={"bold"}>{userCookie.id}</Typography>
-            </Box>
-            <Box>
               <Typography variant={"body2"}>Name:</Typography>
               <Typography fontWeight={"bold"}>
-                {userCookie.firstname} {userCookie.lastname}
+                {authenticatedUser.firstName} {authenticatedUser.lastName}
               </Typography>
             </Box>
             <Box>
@@ -87,9 +72,16 @@ const ProfilePage = () => {
             </Box>
           </Box>
           <Box mt={2}>
-            <Typography variant={"pagetitle"}>
-              Your Questions ({userQuestionsData.length})
-            </Typography>
+            <Box
+              display={"flex"}
+              flexWrap={"wrap"}
+              alignItems={"center"}
+              gap={1}>
+              <Typography variant={"pagetitle"}>
+                Your Questions ({userQuestionsData.length})
+              </Typography>
+              <Sort />
+            </Box>
             <Box display={"grid"} gap={2} mt={1}>
               {userQuestionsData.map((userQuestionData) => {
                 return (
