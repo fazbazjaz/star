@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Box, Typography, Button } from "@mui/material";
 import Loading from "../components/Loading";
@@ -6,9 +6,13 @@ import Error from "../components/Error";
 import Question from "../components/Question";
 import QuestionForm from "../components/QuestionForm";
 import getQuestionsByPage from "../api/getQuestionsByPage";
+import Sort from "../components/Sort";
+import { SortContext } from "../context/SortContext";
 
 const QuestionsPage = () => {
   const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
+
+  const { sortQuestions } = useContext(SortContext);
 
   const {
     data: questionsByPageData,
@@ -17,7 +21,7 @@ const QuestionsPage = () => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["questions"],
+    queryKey: ["questions", sortQuestions],
 
     queryFn: getQuestionsByPage,
 
@@ -55,22 +59,35 @@ const QuestionsPage = () => {
       {questionsByPageData && (
         <>
           <Box>
-            <Box display={"flex"} justifyContent={"space-between"}>
-              <Typography variant={"pagetitle"}>
-                All Questions (
-                {questionsByPageData.pages
-                  .map((page) => page.length)
-                  .reduce((acc, cv) => acc + cv, 0)}
-                )
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => setShowAddQuestionForm((prev) => !prev)}
-                disabled={showAddQuestionForm}
-                sx={{ display: "flex", gap: 0.5 }}>
-                Add a Question
-              </Button>
+            <Box
+              display={"flex"}
+              flexWrap={"wrap"}
+              justifyContent={"space-between"}
+              alignItems={"center"}>
+              <Box
+                display={"flex"}
+                alignItems={"center"}
+                flexWrap={"wrap"}
+                gap={2}>
+                <Typography variant={"pagetitle"}>
+                  All Questions (
+                  {questionsByPageData.pages
+                    .map((page) => page.length)
+                    .reduce((acc, cv) => acc + cv, 0)}
+                  )
+                </Typography>
+                <Sort />
+              </Box>
+              <Box>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setShowAddQuestionForm((prev) => !prev)}
+                  disabled={showAddQuestionForm}
+                  sx={{ display: "flex", gap: 0.5 }}>
+                  Add a Question
+                </Button>
+              </Box>
             </Box>
             {showAddQuestionForm && (
               <QuestionForm setShowAddQuestionForm={setShowAddQuestionForm} />

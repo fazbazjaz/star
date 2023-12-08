@@ -48,7 +48,7 @@ const CommentForm = ({
         ? putComment(questionId, answerId, commentId, comment)
         : postComment(questionId, answerId, comment),
     onSuccess: () => {
-      queryClient.refetchQueries([`question-${questionId}`]);
+      queryClient.invalidateQueries(["questions", questionId]);
       setComment("");
       setCommentValidation(undefined);
       setTimeout(() => {
@@ -140,7 +140,7 @@ const CommentForm = ({
               type={"submit"}
               endIcon={<SendIcon />}
               disabled={isPending || !commentValidation}>
-              Add Comment
+              {commentId ? "Edit Comment" : "Add Comment"}
             </Button>
           </Box>
           <Box>

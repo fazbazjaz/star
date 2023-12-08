@@ -1,5 +1,5 @@
+import { useContext, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 import {
   Box,
   Button,
@@ -10,6 +10,8 @@ import {
 import HelpOutlinedIcon from "@mui/icons-material/HelpOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import postQuestion from "../api/postQuestion";
+import { SortContext } from "../context/SortContext";
+import putQuestion from "../api/putQuestion";
 import {
   consistentBorder,
   consistentBorderRadius,
@@ -19,7 +21,6 @@ import {
   consistentFormFieldBackgroundColor,
   consistentFormFieldBorder,
 } from "../themes/ConsistentStyles";
-import putQuestion from "../api/putQuestion";
 
 const QuestionForm = ({
   setShowAddQuestionForm,
@@ -27,6 +28,8 @@ const QuestionForm = ({
   originalQuestion,
   setShowUpdateQuestionForm,
 }) => {
+  const { sortQuestions } = useContext(SortContext);
+
   const [question, setQuestion] = useState(questionId ? originalQuestion : "");
 
   const [questionValidation, setQuestionValidation] = useState(undefined);
@@ -45,7 +48,7 @@ const QuestionForm = ({
     mutationFn: () =>
       questionId ? putQuestion(questionId, question) : postQuestion(question),
     onSuccess: () => {
-      queryClient.refetchQueries(["questions"]);
+      queryClient.invalidateQueries(["questions", sortQuestions]);
       setQuestion("");
       setQuestionValidation(undefined);
       setTimeout(() => {
@@ -137,7 +140,7 @@ const QuestionForm = ({
               type={"submit"}
               endIcon={<SendIcon />}
               disabled={isPending || !questionValidation}>
-              Add Question
+              {questionId ? "Edit Question" : "Add Question"}
             </Button>
           </Box>
           <Box>
