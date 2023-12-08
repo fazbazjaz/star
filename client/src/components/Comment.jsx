@@ -1,10 +1,11 @@
 import { useContext, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AuthContext } from "../context/AuthContext";
 import { Box, Typography, IconButton, Avatar } from "@mui/material";
 import MessageRoundedIcon from "@mui/icons-material/MessageRounded";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { AuthContext } from "../context/AuthContext";
+import CommentForm from "./CommentForm";
 import deleteComment from "../api/deleteComment";
 import formatDate from "../utils/formatDate";
 import {
@@ -14,7 +15,6 @@ import {
   consistentBoxShadow,
   consistentBackdropFilter,
 } from "../themes/ConsistentStyles";
-import CommentForm from "./CommentForm";
 
 const Comment = ({ commentData, questionId }) => {
   const { authenticatedUser } = useContext(AuthContext);
@@ -23,6 +23,14 @@ const Comment = ({ commentData, questionId }) => {
 
   const answerId = commentData.answerId;
   const commentId = commentData.id;
+
+  const handleDelete = () => {
+    deleteCommentMutation.mutate();
+  };
+
+  const handleEdit = () => {
+    setShowUpdateCommentForm(true);
+  };
 
   const queryClient = useQueryClient();
 
@@ -37,14 +45,6 @@ const Comment = ({ commentData, questionId }) => {
     },
   });
 
-  const handleDelete = () => {
-    deleteCommentMutation.mutate();
-  };
-
-  const handleEdit = () => {
-    setShowUpdateCommentForm(true);
-  };
-
   return (
     <>
       <Box
@@ -58,27 +58,45 @@ const Comment = ({ commentData, questionId }) => {
         sx={{
           backdropFilter: consistentBackdropFilter,
         }}>
-        <Box display={"flex"} alignItems={"center"}>
-          <Box>
-            <Box display={"flex"} alignItems={"center"} gap={0.75}>
-              <MessageRoundedIcon fontSize={"small"} color="primary" />
-              <Typography variant={"commenttitle"} color="primary">
-                Comment
-                {/* ({commentData?.id}) */}
-              </Typography>
+        <Box
+          display={"flex"}
+          flexWrap={"wrap"}
+          justifyContent={"space-between"}
+          alignItems={"center"}>
+          <Box display={"flex"} alignItems={"center"} gap={0.75}>
+            <Box>
               <Avatar
                 src={commentData?.user?.picture}
                 sx={{ height: 22, width: 22 }}
               />
+            </Box>
+            <Box display={"flex"} flexWrap={"wrap"} alignItems={"center"}>
+              <MessageRoundedIcon fontSize={"small"} color="primary" />
+              <Typography
+                variant={"commenttitle"}
+                color="primary"
+                paddingLeft={0.5}>
+                Comment{" "}
+              </Typography>
+              {/* <Typography
+                fontSize={"small"}
+                component={"span"}
+                color="primary"
+                pl={0.5}>
+                ({commentData?.id})
+              </Typography> */}
+            </Box>
+            <Box display={"flex"} flexWrap={"wrap"} alignItems={"center"}>
               <Typography variant={"body2"}>
-                by {commentData?.user?.firstName}
+                from{" "}
+                <Typography
+                  component={"span"}
+                  variant={"body2"}
+                  color="primary">
+                  {commentData?.user?.firstName}
+                </Typography>
               </Typography>
             </Box>
-            <Box
-              display={"flex"}
-              alignItems={"center"}
-              flexWrap={"wrap"}
-              gap={1}></Box>
           </Box>
           <Box
             marginLeft={"auto"}
@@ -86,16 +104,16 @@ const Comment = ({ commentData, questionId }) => {
             alignItems={"center"}
             gap={0.5}>
             {commentData.userId === authenticatedUser.id && (
-              <>
-                <IconButton onClick={handleEdit} color="primary">
-                  <EditOutlinedIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => handleDelete(commentData.id)}
-                  color="primary">
-                  <DeleteOutlineIcon />
-                </IconButton>
-              </>
+              <IconButton onClick={handleEdit} color="primary">
+                <EditOutlinedIcon />
+              </IconButton>
+            )}
+            {commentData.userId === authenticatedUser.id && (
+              <IconButton
+                onClick={() => handleDelete(commentData.id)}
+                color="primary">
+                <DeleteOutlineIcon />
+              </IconButton>
             )}
           </Box>
         </Box>

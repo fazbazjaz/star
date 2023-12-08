@@ -21,6 +21,7 @@ import {
 import AnswerForm from "./AnswerForm";
 
 const Answer = ({ answerData }) => {
+  console.log(answerData);
   const { authenticatedUser } = useContext(AuthContext);
 
   const [showUpdateAnswerForm, setShowUpdateAnswerForm] = useState(false);
@@ -224,16 +225,28 @@ const Answer = ({ answerData }) => {
           </Box>
           <Box
             display={"flex"}
-            flexDirection={"column"}
-            justifyContent={"flex-end"}
-            alignItems={"flex-end"}
-            my={1}>
-            <Typography variant={"body2"}>
-              updated {formatDate(answerData.updatedAt)}
-            </Typography>
-            <Typography variant={"body2"}>
-              created {formatDate(answerData.createdAt)}
-            </Typography>
+            justifyContent={"space-between"}
+            alignItems={"center"}>
+            <Box>
+              {answerData?.comments.length > 0 && (
+                <Typography variant={"body2"}>
+                  ({answerData?.comments?.length}) Comments
+                </Typography>
+              )}
+            </Box>
+            <Box
+              display={"flex"}
+              flexDirection={"column"}
+              justifyContent={"flex-end"}
+              alignItems={"flex-end"}
+              mt={1}>
+              <Typography variant={"body2"}>
+                updated {formatDate(answerData.updatedAt)}
+              </Typography>
+              <Typography variant={"body2"}>
+                created {formatDate(answerData.createdAt)}
+              </Typography>
+            </Box>
           </Box>
           {answerData.comments &&
             answerData.comments.map((commentData) => (
