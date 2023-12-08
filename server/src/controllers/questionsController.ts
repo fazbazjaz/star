@@ -12,7 +12,8 @@ import {
   editComment,
   deleteQuestion,
   deleteAnswer,
-  deleteComment
+  deleteComment,
+  getQuestionsBySearch
 } from "../helpers/questions";
 import { logger } from "../logger";
 
@@ -33,7 +34,6 @@ export const getQuestionsByPageHandler = async (
       message: "getQuestionsByPageHandler page",
       value: page
     });
-
     logger.info({
       message: "getQuestionsByPageHandler sort",
       value: sort
@@ -54,6 +54,45 @@ export const getQuestionsByPageHandler = async (
     res.status(200).json(data);
   } catch (error) {
     logger.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const getQuestionsBySearchHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const page = parseInt(String(req.query.page));
+    const limit = parseInt(String(req.query.limit));
+    const searchTerm = String(req.query.term);
+    const sort = String(req.query.sort);
+
+    logger.info({
+      message: "getQuestionsBySearchHandler searchTerm",
+      value: searchTerm
+    });
+
+    if (!searchTerm) {
+      res.status(400).json({ error: "No Search Term" });
+      return;
+    }
+
+    logger.info({
+      message: "getQuestionsBySearchHandler sort",
+      value: sort
+    });
+
+    const query = await getQuestionsBySearch(page, limit, searchTerm, sort);
+    logger.info({
+      message: "getQuestionsBySearchHandler query",
+      value: query
+    });
+
+    const data = query;
+
+    res.status(200).json(data);
+  } catch (error) {
     res.status(500).json({ error: "Server Error" });
   }
 };
@@ -622,12 +661,7 @@ export const deleteCommentHandler = async (req: Request, res: Response) => {
   }
 
   try {
-    console.log("SQL STARTS RUNNING HERE");
-    const deleteCommentQuery = await deleteComment(
-      // questionId,
-      answerId,
-      commentId
-    );
+    const deleteCommentQuery = await deleteComment(answerId, commentId);
     logger.info({
       message: "deleteCommentHandler deleteCommentQuery",
       value: deleteCommentQuery

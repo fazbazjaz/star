@@ -53,6 +53,10 @@ const theme = createTheme({
       fontSize: "1.2rem",
       fontWeight: "500",
     },
+    answersubtitles: {
+      fontSize: "1.2rem",
+      fontWeight: "500",
+    },
     answerbody: {
       fontSize: "1.2rem",
       fontWeight: "500",
