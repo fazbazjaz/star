@@ -40,7 +40,7 @@ const Sort = () => {
         label="Sort"
         onChange={(event) => setSortFunction(event.target.value)}>
         <MenuItem value="popular" sx={{ color: "black" }}>
-          Most Likes
+          Most Popular
         </MenuItem>
         <MenuItem value="recentlyCreated" sx={{ color: "black" }}>
           Recently Created
