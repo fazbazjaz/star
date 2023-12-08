@@ -10,11 +10,19 @@ const LoginLogoutButton = () => {
   return (
     <Box marginLeft={{ xs: "inherit", sm: "auto" }}>
       {authenticatedUser ? (
-        <Button variant="contained" startIcon={<LogoutIcon />} onClick={logout}>
+        <Button
+          size={"small"}
+          variant="contained"
+          startIcon={<LogoutIcon />}
+          onClick={logout}>
           Logout
         </Button>
       ) : (
-        <Button variant="contained" startIcon={<LoginIcon />} onClick={login}>
+        <Button
+          size={"small"}
+          variant="contained"
+          startIcon={<LoginIcon />}
+          onClick={login}>
           Login
         </Button>
       )}

@@ -75,9 +75,28 @@ const theme = createTheme({
       fontSize: "1.2rem",
       fontWeight: "500",
     },
+    heromaincardtitle: {
+      fontSize: "2.5rem",
+    },
+    heromaincardbody: {
+      fontSize: "1.2rem",
+    },
     tabletitle: {
       fontSize: "1.1rem",
       fontWeight: "500",
+    },
+    herosubcardtitle: {
+      fontSize: "3rem",
+      fontWeight: "600",
+    },
+    herosubcardsubtitle: {
+      fontSize: "2rem",
+      fontWeight: "500",
+    },
+    herosubcardslogan: {
+      fontSize: "1.6rem",
+      fontWeight: "400",
+      fontStyle: "italic",
     },
   },
 });
