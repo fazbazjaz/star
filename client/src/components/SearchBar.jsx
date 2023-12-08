@@ -1,6 +1,5 @@
-import { useState, useEffect, useContext } from "react";
-import { Box, FormControl, TextField } from "@mui/material";
-import { SortContext } from "../context/SortContext";
+import { useEffect } from "react";
+import { FormControl, TextField } from "@mui/material";
 import {
   consistentBgColor,
   consistentBorder,
