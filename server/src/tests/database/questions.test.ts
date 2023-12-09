@@ -30,41 +30,45 @@ describe("Get From Questions Table", () => {
   });
 
   test("Should receive one record", async () => {
-    const question = await getOneQuestion(questionId);
+    const question = await getOneQuestion(questionId, "popular");
     expect(question).toBeInstanceOf(Object);
     expect(question?.id).toBeDefined();
     expect(typeof question?.id).toBe("number");
   });
 
   test("The questionId should be same as the id from getOneQuestion", async () => {
-    expect((await getOneQuestion(questionId))!.id).toStrictEqual(questionId);
+    expect((await getOneQuestion(questionId, "popular"))!.id).toStrictEqual(
+      questionId
+    );
   });
 
   test("The questionId should be same as the id from getAllQuestion", async () => {
-    expect((await getQuestionsByPage(5, 1))[0].id).toStrictEqual(questionId);
+    expect((await getQuestionsByPage(5, 1, "popular"))[0].id).toStrictEqual(
+      questionId
+    );
   });
 
   test("The question should be same as the question from getOneQuestion", async () => {
-    expect((await getOneQuestion(questionId))!.question).toStrictEqual(
-      question
-    );
+    expect(
+      (await getOneQuestion(questionId, "popular"))!.question
+    ).toStrictEqual(question);
   });
 
   test("The question should be same as the question from getAllQuestion", async () => {
-    expect((await getOneQuestion(questionId))!.question).toStrictEqual(
-      question
-    );
+    expect(
+      (await getOneQuestion(questionId, "popular"))!.question
+    ).toStrictEqual(question);
   });
 
   test("The question from getOneQuestion should be 'This is a question'", async () => {
-    expect((await getOneQuestion(questionId))!.question).toStrictEqual(
-      "This is a question"
-    );
+    expect(
+      (await getOneQuestion(questionId, "popular"))!.question
+    ).toStrictEqual("This is a question");
   });
 
   test("The question from getQuestionsByPage should be 'This is a question'", async () => {
-    expect((await getQuestionsByPage(5, 1))[0].question).toStrictEqual(
-      "This is a question"
-    );
+    expect(
+      (await getQuestionsByPage(5, 1, "popular"))[0].question
+    ).toStrictEqual("This is a question");
   });
 });
