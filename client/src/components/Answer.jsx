@@ -21,7 +21,6 @@ import {
 import AnswerForm from "./AnswerForm";
 
 const Answer = ({ answerData }) => {
-  console.log(answerData);
   const { authenticatedUser } = useContext(AuthContext);
 
   const [showUpdateAnswerForm, setShowUpdateAnswerForm] = useState(false);
