@@ -1,6 +1,7 @@
 import { OAuth2Client } from "google-auth-library";
 import jwt, { Secret, JwtPayload } from "jsonwebtoken";
 import { Request, Response } from "express";
+import UAParser from "ua-parser-js";
 import { CustomJWTPayload } from "../types/types";
 import { createUser, getUserByGoogleId } from "../helpers/users";
 import { logger } from "../logger";
@@ -103,154 +104,31 @@ export const idTokenHandler = async (req: Request, res: Response) => {
       return res.status(500).json({ error: "Error signing a new customJWT" });
     }
 
-    const userAgent = req.get("User-Agent");
-    logger.info({
-      message: "authorizationCodeRedirectHandler User-Agent 🤖",
-      value: userAgent
-    });
-
-    // Safari on iOS
-    // Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1
-
-    // Chrome on iOS
-    // Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/120.0.6099.101 Mobile/15E148 Safari/604.1
-
-    // Firefox on iOS
-    // Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/120.0 Mobile/15E148 Safari/605.1.15
-
-    // Safari on Mac OS
-    // Mozilla/5.0 (Macintosh; Intel Mac OS X 14_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15
-
-    // Chrome on Mac OS
-    // Mozilla/5.0 (Macintosh; Intel Mac OS X 14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
-
-    // Firefox on Mac OS
-    // Mozilla/5.0 (Macintosh; Intel Mac OS X 14.1; rv:120.0) Gecko/20100101 Firefox/120.0
-
-    const isMacOS = Boolean(userAgent?.includes("Mac OS"));
-    logger.info({
-      message: "authorizationCodeRedirectHandler isMacOS 👿",
-      value: isMacOS
-    });
-
-    const isAppleWebKit = Boolean(userAgent?.includes("AppleWebKit"));
-    logger.info({
-      message: "authorizationCodeRedirectHandler isAppleWebKit 🍏",
-      value: isAppleWebKit
-    });
-
-    const isIPhone = Boolean(userAgent?.includes("iPhone"));
-    logger.info({
-      message: "authorizationCodeRedirectHandler isIphone 📱",
-      value: isIPhone
-    });
-
-    const isIPad = Boolean(userAgent?.includes("iPhone"));
-    logger.info({
-      message: "authorizationCodeRedirectHandler isIPad 📱",
-      value: isIPad
-    });
-
-    const isChromeIOS = Boolean(userAgent?.includes("CriOS"));
-    logger.info({
-      message: "authorizationCodeRedirectHandler isChromeIOS 🌈📱",
-      value: isChromeIOS
-    });
-
-    const isFireFoxIOS = Boolean(userAgent?.includes("FxiOS"));
-    logger.info({
-      message: "authorizationCodeRedirectHandler isFireFoxIOS 🦊📱",
-      value: isFireFoxIOS
-    });
-
-    const isSafari = Boolean(userAgent?.includes("Version"));
-    logger.info({
-      message: "authorizationCodeRedirectHandler isSafari 🦒",
-      value: isSafari
-    });
-
-    const isChrome = Boolean(userAgent?.includes("Chrome"));
-    logger.info({
-      message: "authorizationCodeRedirectHandler isChrome 🌈💻",
-      value: isChrome
-    });
-
-    const isFirefox = Boolean(userAgent?.includes("Firefox"));
-    logger.info({
-      message: "authorizationCodeRedirectHandler isFirefox 🦊💻",
-      value: isFirefox
-    });
-
-    // iPhone OS+safari+crios=iOS Chrome  === secure: false
-    // iPhone OS+safari+fxiOS=iOS Firefox === secure: false
-    // iPhone OS+safari+Version=iOS Safari === secure: false
-
-    // Mac OS+safari+Version=Mac OS safari === secure: false
-    // Mac OS+safari+firefox=Mac OS firefox === secure: true
-    // Mac OS+safari+chrome=Mac OS chrome === secure: true
-
-    let cookieSecureValue;
-
-    if (isIPhone && isAppleWebKit && isSafari) {
-      console.log("-------- [1a] IT IS AN IPHONE AND SAFARI");
-      // iPhone with ALL BROWSERS needs secure: false (???)
-      cookieSecureValue = false;
-    } else if (isIPhone && isAppleWebKit && isChromeIOS) {
-      console.log("-------- [1b] IT IS AN IPHONE AND CHROME");
-      cookieSecureValue = true;
-    } else if (isIPhone && isAppleWebKit && isFireFoxIOS) {
-      console.log("-------- [1c] IT IS AN IPHONE AND FIREFOX");
-      cookieSecureValue = true;
-    } else if (isIPad && isAppleWebKit) {
-      console.log("-------- [2] IT IS AN IPAD");
-      // iPad with ALL BROWSERS needs secure: false
-      cookieSecureValue = false;
-    } else if (isMacOS && isSafari) {
-      console.log("-------- [3a] IT IS MAC OS AND SAFARI");
-      // MacOS with Safari needs secure: false
-      cookieSecureValue = false;
-    } else if (isMacOS && isChrome) {
-      console.log("-------- [3b] IT IS MAC OS AND CHROME");
-      // MacOS with Chrome needs secure: true
-      cookieSecureValue = true;
-    } else if (isMacOS && isFirefox) {
-      console.log("-------- [3c] IT IS MAC OS AND FIREFOX");
-      // MacOS with Firefox needs secure: true
-      cookieSecureValue = true;
-    } else {
-      console.log("-------- [4] IT IS SOMETHING ELSE");
-      // Mac OS with Chrome needs secure: true
-      // Everything else needs secure: true
-      cookieSecureValue = true;
-    }
-
-    logger.info({
-      message: "authorizationCodeRedirectHandler cookieSecureValue 🍪📃",
-      value: cookieSecureValue
-    });
+    const userAgentParser = new UAParser(req.get("User-Agent"));
+    const userAgent = userAgentParser.getResult();
+    logger.info({ message: "idTokenHandler userAgent", value: userAgent });
 
     // Pete Glitch
-    // res.writeHead(200, {
-    //   "Set-Cookie": `customJWT=${customJWT}; path=/; Secure; HttpOnly; SameSite=None; Max-Age=3600000`
+    // res.cookie("token", customJWT, {
+    //   path: "/",
+    //   secure: true,
+    //   httpOnly: true,
+    //   sameSite: "none",
+    //   maxAge: 3600000
     // });
-    // res.end();
 
-    // const oneHourFromNow = new Date(Date.now() + 3600000);
-
-    // [1] HTTP ONLY COOKIE VERSION
     res.cookie("customJWT", customJWT, {
       path: "/",
       httpOnly: true,
       secure: true,
-      // secure: cookieSecureValue,
       // sameSite: "strict",
       // sameSite: "lax",
+      // secure: cookieSecureValue,
       sameSite: "none",
-      // expires: oneHourFromNow,
       // domain: "star-cyf-server-ios.onrender.com"
       // domain: "onrender.com",
-      maxAge: 3600000
-      // expires: oneHourFromNow,
+      maxAge: 3600000,
+      expires: new Date(Date.now() + 3600000)
     });
 
     logger.info({
@@ -259,9 +137,6 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     });
 
     res.end();
-
-    // [2] AUTH HEADER JWT VERSION
-    // res.status(200).json(customJWT);
   } catch (error) {
     logger.error(error);
     res.status(500).json({ error: "Server Error" });

@@ -58,8 +58,8 @@ export const AuthProvider = ({ children }) => {
       return data;
     } catch (error) {
       // console.error("getAuthenticatedUser error:", error);
-      setStatusAndLog(`3️⃣ GET /api/auth/user Error ${error}`);
-      return error;
+      setStatusAndLog(`3️⃣❌ GET /api/auth/user Error ${error}`);
+      throw new Error(error);
     }
   };
 
