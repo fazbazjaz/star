@@ -1,7 +1,14 @@
 import { useContext, useState, useEffect } from "react";
+import UAParser from "ua-parser-js";
 import { Box, Typography, Button } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
-import UAParser from "ua-parser-js";
+import {
+  consistentBorder,
+  consistentBorderRadius,
+  consistentBgColor,
+  consistentBoxShadow,
+  consistentBackdropFilter,
+} from "../themes/ConsistentStyles";
 
 const AuthPage = () => {
   const { login, statusLogs, setStatusLogs, authenticatedUser } =
@@ -51,13 +58,31 @@ const AuthPage = () => {
   return (
     <Box display={"grid"} gap={2}>
       <Typography variant={"pagetitle"}>Auth Page</Typography>
-      <Box>
+      <Box
+        px={4}
+        py={3}
+        border={consistentBorder}
+        borderRadius={consistentBorderRadius}
+        bgcolor={consistentBgColor}
+        boxShadow={consistentBoxShadow}
+        sx={{
+          backdropFilter: consistentBackdropFilter,
+        }}>
         <Typography fontWeight={600}>User Agent:</Typography>
         <Box display={"flex"} flexWrap={"wrap"} gap={1}>
           {renderUserAgentInfo(userAgent)}
         </Box>
       </Box>
       <Box
+        px={4}
+        py={3}
+        border={consistentBorder}
+        borderRadius={consistentBorderRadius}
+        bgcolor={consistentBgColor}
+        boxShadow={consistentBoxShadow}
+        sx={{
+          backdropFilter: consistentBackdropFilter,
+        }}
         display={"flex"}
         justifyContent={"space-between"}
         alignItems={"center"}>
@@ -79,7 +104,16 @@ const AuthPage = () => {
           Clear Cookies
         </Button>
       </Box>
-      <Box>
+      <Box
+        px={4}
+        py={3}
+        border={consistentBorder}
+        borderRadius={consistentBorderRadius}
+        bgcolor={consistentBgColor}
+        boxShadow={consistentBoxShadow}
+        sx={{
+          backdropFilter: consistentBackdropFilter,
+        }}>
         <Box
           display={"flex"}
           justifyContent={"space-between"}
@@ -108,7 +142,16 @@ const AuthPage = () => {
             ))}
         </Box>
       </Box>
-      <Box>
+      <Box
+        px={4}
+        py={3}
+        border={consistentBorder}
+        borderRadius={consistentBorderRadius}
+        bgcolor={consistentBgColor}
+        boxShadow={consistentBoxShadow}
+        sx={{
+          backdropFilter: consistentBackdropFilter,
+        }}>
         <Typography fontWeight={600}>
           AuthProvider State &quot;authenticatedUser&quot;
         </Typography>
