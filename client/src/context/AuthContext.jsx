@@ -12,6 +12,8 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [authenticatedUser, setAuthenticatedUser] = useState(null);
 
+  const [error, setError] = useState(null);
+
   const navigate = useNavigate();
 
   // ----------------------------------------------------------------
@@ -53,6 +55,7 @@ export const AuthProvider = ({ children }) => {
       return data;
     } catch (error) {
       console.error("getAuthenticatedUser error:", error);
+      setError(error);
     }
   }, []);
 
@@ -143,6 +146,7 @@ export const AuthProvider = ({ children }) => {
               "googleAccountsOAuth2InitCodeClientPopupFlow callback error",
               error
             );
+            setError(error);
           }
         },
       });
@@ -218,6 +222,7 @@ export const AuthProvider = ({ children }) => {
           navigate("/profile");
         } catch (error) {
           console.error("googleAccountsIdInitializeFlow callback error", error);
+          setError(error);
         }
       },
     });
@@ -319,8 +324,9 @@ export const AuthProvider = ({ children }) => {
       login,
       logout,
       authenticatedUser,
+      error,
     }),
-    [login, logout, authenticatedUser]
+    [login, logout, authenticatedUser, error]
   );
 
   // ----------------------------------------------------------------
