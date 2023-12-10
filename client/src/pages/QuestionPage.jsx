@@ -29,7 +29,7 @@ const QuestionPage = () => {
   });
 
   return (
-    <Box py={2}>
+    <Box>
       {questionData && (
         <Box>
           <Typography variant={"pagetitle"}>

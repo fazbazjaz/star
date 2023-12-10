@@ -16,7 +16,7 @@ import {
 
 const AboutPage = () => {
   return (
-    <Box my={2} display={"grid"} gap={2}>
+    <Box display={"grid"} gap={2}>
       {/* Box 1 */}
       <Box
         px={4}

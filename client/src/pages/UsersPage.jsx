@@ -24,9 +24,7 @@ const UsersPage = () => {
   });
 
   return (
-    <Box py={2}>
-      {isPending && <Loading />}
-      {isError && <Error message={error.message} />}
+    <Box>
       {usersData && (
         <>
           <Box>
@@ -78,6 +76,8 @@ const UsersPage = () => {
           </Box>
         </>
       )}
+      {isPending && <Loading />}
+      {isError && <Error message={error.message} />}
     </Box>
   );
 };

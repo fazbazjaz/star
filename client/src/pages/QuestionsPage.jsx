@@ -56,7 +56,7 @@ const QuestionsPage = () => {
   }, [questionsByPageData, fetchNextPage]);
 
   return (
-    <Box py={2}>
+    <Box>
       <Box>
         <Box
           display={"flex"}

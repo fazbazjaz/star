@@ -4,7 +4,6 @@ import theme from "../themes/Theme";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Box } from "@mui/material";
 import Header from "../components/Header";
-// import AuthState from "../components/AuthState";
 import { Outlet } from "react-router-dom";
 import Footer from "../components/Footer";
 import { consistentPageBackgroundImage } from "../themes/ConsistentStyles";
@@ -20,9 +19,9 @@ const RootLayout = () => {
             display={"grid"}
             gridTemplateRows={"auto 1fr auto"}>
             <Header />
-            {/* <AuthState /> */}
             <Box
-              px={2}
+              px={3}
+              py={2}
               sx={{
                 backgroundImage: consistentPageBackgroundImage,
                 backgroundSize: "cover",

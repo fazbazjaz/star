@@ -25,7 +25,7 @@ const ProfilePage = () => {
   });
 
   return (
-    <Box py={2}>
+    <Box>
       <Box>
         <Typography variant={"pagetitle"}>Your Profile</Typography>
       </Box>

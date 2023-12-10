@@ -19,6 +19,13 @@ const Navigation = () => {
         variant="contained">
         About
       </Button>
+      <Button
+        size={"small"}
+        component={NavLink}
+        to={"/auth"}
+        variant="contained">
+        Auth
+      </Button>
       {authenticatedUser && (
         <>
           <Button

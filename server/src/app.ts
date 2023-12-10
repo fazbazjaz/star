@@ -13,16 +13,14 @@ export const app = express();
 
 app.use(cookieParser());
 
-const corsOrigin =
-  process.env.NODE_ENV === "production"
-    ? "https://star-cyf-client-ios.onrender.com"
-    : true;
-
 app.use(
   cors({
-    // exposedHeaders: ["set-cookie"],
-    origin: corsOrigin,
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "https://star-cyf-client-ios.onrender.com"
+        : true,
     credentials: true // Server will accept Cookies from the Client
+    // exposedHeaders: ["set-cookie"],
   })
 );
 
