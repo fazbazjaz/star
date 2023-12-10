@@ -12,6 +12,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [authenticatedUser, setAuthenticatedUser] = useState(null);
 
+  const [status, setStatus] = useState("");
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
@@ -157,6 +158,8 @@ export const AuthProvider = ({ children }) => {
   // ----------------------------------------------------------------
 
   const googleAccountsIdInitializeFlow = useCallback(async () => {
+    setStatus("google accounts id initialize and prompt...");
+
     // This method initializes the Google Sign-In client instance.
     // This instance is responsible for managing the sign-in process
     // and providing callbacks for when the user signs in or signs out.
@@ -166,6 +169,7 @@ export const AuthProvider = ({ children }) => {
       // itp_support: itpSupportBoolean(),
       callback: async (googleIdTokenResponse) => {
         try {
+          setStatus("google accounts id callback response");
           // console.log(
           //   "googleAccountsIdInitializeFlow googleIdTokenResponse:",
           //   JSON.stringify(googleIdTokenResponse)
@@ -324,6 +328,7 @@ export const AuthProvider = ({ children }) => {
       login,
       logout,
       authenticatedUser,
+      status,
       error,
     }),
     [login, logout, authenticatedUser, error]
