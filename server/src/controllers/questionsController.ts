@@ -12,7 +12,8 @@ import {
   editComment,
   deleteQuestion,
   deleteAnswer,
-  deleteComment
+  deleteComment,
+  getQuestionsBySearch
 } from "../helpers/questions";
 import { logger } from "../logger";
 
@@ -21,8 +22,10 @@ export const getQuestionsByPageHandler = async (
   res: Response
 ) => {
   try {
-    const limit = parseInt(req.query.limit as string);
-    const page = parseInt(req.query.page as string);
+    const limit = parseInt(String(req.query.limit));
+    const page = parseInt(String(req.query.page));
+    const sort = String(req.query.sort);
+
     logger.info({
       message: "getQuestionsByPageHandler limit",
       value: limit
@@ -31,8 +34,12 @@ export const getQuestionsByPageHandler = async (
       message: "getQuestionsByPageHandler page",
       value: page
     });
+    logger.info({
+      message: "getQuestionsByPageHandler sort",
+      value: sort
+    });
 
-    const query = await getQuestionsByPage(limit, page);
+    const query = await getQuestionsByPage(limit, page, sort);
     logger.info({
       message: "getQuestionsByPageHandler query",
       value: query
@@ -51,15 +58,56 @@ export const getQuestionsByPageHandler = async (
   }
 };
 
+export const getQuestionsBySearchHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const page = parseInt(String(req.query.page));
+    const limit = parseInt(String(req.query.limit));
+    const searchTerm = String(req.query.term);
+    const sort = String(req.query.sort);
+
+    logger.info({
+      message: "getQuestionsBySearchHandler searchTerm",
+      value: searchTerm
+    });
+
+    if (!searchTerm) {
+      res.status(400).json({ error: "No Search Term" });
+      return;
+    }
+
+    logger.info({
+      message: "getQuestionsBySearchHandler sort",
+      value: sort
+    });
+
+    const query = await getQuestionsBySearch(page, limit, searchTerm, sort);
+    logger.info({
+      message: "getQuestionsBySearchHandler query",
+      value: query
+    });
+
+    const data = query;
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
 export const getOneQuestionHandler = async (req: Request, res: Response) => {
   const questionId = parseInt(req.params.id);
+  const sort = String(req.query.sort);
+
   logger.info({
     message: "getOneQuestionHandler questionId",
     value: questionId
   });
 
   try {
-    const query = await getOneQuestion(questionId);
+    const query = await getOneQuestion(questionId, sort);
     logger.info({
       message: "getOneQuestionHandler query",
       value: query
@@ -88,13 +136,19 @@ export const getAllQuestionsByUserHandler = async (
   res: Response
 ) => {
   const userId = parseInt(req.params.id);
+  const sort = String(req.query.sort);
   logger.info({
     message: "getAllQuestionsByUserHandler userId",
     value: userId
   });
 
+  logger.info({
+    message: "getAllQuestionsByUserHandler sort",
+    value: sort
+  });
+
   try {
-    const query = await getAllQuestionsByUser(userId);
+    const query = await getAllQuestionsByUser(userId, sort);
     logger.info({
       message: "getAllQuestionsByUserHandler query",
       value: query
@@ -186,7 +240,7 @@ export const createAnswerHandler = async (req: Request, res: Response) => {
   }
 
   try {
-    const questionIdQuery = await getOneQuestion(questionId);
+    const questionIdQuery = await getOneQuestion(questionId, "popular");
     logger.info({
       message: "createAnswerHandler questionIdQuery",
       value: questionIdQuery
@@ -537,7 +591,7 @@ export const deleteAnswerHandler = async (req: Request, res: Response) => {
       });
     }
 
-    const answerAuthorId = answerQuery[0].questions.userId;
+    const answerAuthorId = answerQuery[0].answers.userId;
 
     logger.info({
       message: "deleteAnswerHandler answerAuthorId",
@@ -607,12 +661,7 @@ export const deleteCommentHandler = async (req: Request, res: Response) => {
   }
 
   try {
-    console.log("SQL STARTS RUNNING HERE");
-    const deleteCommentQuery = await deleteComment(
-      // questionId,
-      answerId,
-      commentId
-    );
+    const deleteCommentQuery = await deleteComment(answerId, commentId);
     logger.info({
       message: "deleteCommentHandler deleteCommentQuery",
       value: deleteCommentQuery

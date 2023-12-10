@@ -4,7 +4,7 @@ import Hero from "../components/Hero";
 
 const HomePage = () => {
   return (
-    <Box>
+    <Box display={"grid"} gridTemplateRows={"1fr auto"}>
       <Hero />
       {/* <Map /> */}
     </Box>

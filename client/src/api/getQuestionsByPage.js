@@ -1,9 +1,11 @@
-const getQuestionsByPage = async ({ pageParam }) => {
+const getQuestionsByPage = async ({ pageParam, queryKey }) => {
   const limit = 5;
+  const sort = queryKey[1];
+
   const response = await fetch(
     `${
       import.meta.env.VITE_SERVER_URL
-    }/api/questions/?limit=${limit}&page=${pageParam}`,
+    }/api/questions/?limit=${limit}&page=${pageParam}&sort=${sort}`,
     {
       headers: {
         "Content-Type": "application/json",

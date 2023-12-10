@@ -1,6 +1,8 @@
-const getAllQuestionsByUserId = async (userId) => {
+const getAllQuestionsByUserId = async (userId, sort) => {
   const response = await fetch(
-    `${import.meta.env.VITE_SERVER_URL}/api/questions/user/${userId}`,
+    `${
+      import.meta.env.VITE_SERVER_URL
+    }/api/questions/user/${userId}?sort=${sort}`,
     {
       headers: {
         "Content-Type": "application/json",
