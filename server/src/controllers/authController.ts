@@ -235,19 +235,21 @@ export const idTokenHandler = async (req: Request, res: Response) => {
     // });
     // res.end();
 
-    const oneHourFromNow = new Date(Date.now() + 3600000);
+    // const oneHourFromNow = new Date(Date.now() + 3600000);
 
     // [1] HTTP ONLY COOKIE VERSION
     res.cookie("customJWT", customJWT, {
       path: "/",
-      secure: cookieSecureValue,
       httpOnly: true,
-      sameSite: "none",
+      secure: true,
+      // secure: cookieSecureValue,
+      // sameSite: "strict",
       // sameSite: "lax",
+      sameSite: "none",
       maxAge: 3600000,
-      expires: oneHourFromNow
+      // expires: oneHourFromNow,
       // domain: "star-cyf-server-ios.onrender.com"
-      // domain: ".onrender.com"
+      domain: "onrender.com"
     });
 
     logger.info({
