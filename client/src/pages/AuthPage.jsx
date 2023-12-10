@@ -1,10 +1,36 @@
 import { useContext, useState, useEffect } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
+import UAParser from "ua-parser-js";
 
 const AuthPage = () => {
   const { login, statusLogs, setStatusLogs, authenticatedUser } =
     useContext(AuthContext);
+
+  const userAgentParser = new UAParser(navigator.userAgent);
+  const userAgent = userAgentParser.getResult();
+
+  const renderUserAgentInfo = (data, parentKey = "") => {
+    return Object.entries(data).map(([key, value], index) => (
+      <Box key={index} flex={1}>
+        {typeof value === "object" ? (
+          renderUserAgentInfo(value, key)
+        ) : (
+          <>
+            <Typography component={"span"} fontSize={{ xs: 10, sm: 12 }}>
+              {parentKey ? `${parentKey}.${key}` : key}:{" "}
+            </Typography>
+            <Typography
+              component={"span"}
+              color={"primary"}
+              fontSize={{ xs: 12, sm: 12 }}>
+              {value}
+            </Typography>
+          </>
+        )}
+      </Box>
+    ));
+  };
 
   const [cookieStatus, setCookieStatus] = useState(document.cookie);
 
@@ -25,6 +51,12 @@ const AuthPage = () => {
   return (
     <Box display={"grid"} gap={2}>
       <Typography variant={"pagetitle"}>Auth Page</Typography>
+      <Box>
+        <Typography fontWeight={600}>User Agent:</Typography>
+        <Box display={"flex"} flexWrap={"wrap"} gap={1}>
+          {renderUserAgentInfo(userAgent)}
+        </Box>
+      </Box>
       <Box
         display={"flex"}
         justifyContent={"space-between"}
@@ -94,7 +126,10 @@ const AuthPage = () => {
                   <Typography
                     component={"span"}
                     color={"primary"}
-                    fontSize={{ xs: 12, sm: 14 }}>
+                    fontSize={{ xs: 12, sm: 14 }}
+                    sx={{
+                      wordBreak: "break-word",
+                    }}>
                     {entry[1] ? entry[1] : ""}
                   </Typography>
                 </Box>
